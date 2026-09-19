@@ -1,129 +1,173 @@
 # Ontology
 
 A Clojure library for tenant-scoped concept graphs, built on Grain's event store.
-The supported public namespace is `ai.obney.ontology.interface`.
-Namespaces under `ai.obney.ontology.core` are implementation details.
-Every public function has argument, result and failure documentation in
-[the API namespace](src/ai/obney/ontology/interface.clj), available through
-`clojure.repl/doc` at the REPL.
-The former `ai.obney.ontology.algorithms` facade has been removed; graph search,
-resolution, RDF import and snapshot export are available through the public
-operations described below.
+It provides typed relationships, hierarchy validation, contribution imports,
+entity resolution, search, and revision snapshots.
 
-The library owns concepts, typed relationships, hierarchy, graph validation,
-source contributions, canonical resolution, search and revision snapshots.
-It accepts extracted knowledge as data. Agent execution, extraction workflows,
-classification, claims, Living Descriptions, consolidation and harvesting belong
-to the application using it.
+The public API is `ai.obney.ontology.interface`. Each function documents its
+arguments, results, and errors in the [API namespace](src/ai/obney/ontology/interface.clj)
+and exposes a Malli schema.
 
-The core dependency set is Clojure and the pinned `grain-core-v2` project in
-[deps.edn](deps.edn). It has no dependency on ORC. Consumers provide the event
-store and tenant context; no model service or search index is needed for ordinary
-creation, import, lookup, lexical search, graph traversal or export.
+Applications supply an event store, a KV store for read-model caching, and
+authenticated tenant context. Extraction and embedding providers are managed
+by the application.
 
-## Local dependency
+## Installation
 
-For a sibling checkout:
+Add a local checkout to your application's `deps.edn`:
 
 ```clojure
 {:deps {ai.obney/ontology {:local/root "../ontology-exp"}}}
 ```
 
-This is a local dependency coordinate, not a claim that the library has been
-published to an artifact repository.
+Library dependencies and pinned versions are listed in [deps.edn](deps.edn).
 
-## Create and query a graph
+## Quick start
+
+Start a REPL with the JVM options required by the LMDB cache:
+
+```sh
+clojure -J--add-opens=java.base/java.nio=ALL-UNNAMED \
+        -J--add-exports=java.base/sun.nio.ch=ALL-UNNAMED
+```
 
 ```clojure
 (require '[ai.obney.grain.event-store-v3.interface :as es]
+         '[ai.obney.grain.kv-store.interface :as kv]
+         '[ai.obney.grain.kv-store-lmdb.interface :as lmdb]
          '[ai.obney.ontology.interface :as ontology])
 
-(def store (es/start {:conn {:type :in-memory}
-                      :event-pubsub nil :logger nil}))
-(def ctx {:event-store store :tenant-id (random-uuid)})
+(def event-store
+  (es/start {:conn {:type :in-memory}}))
 
-(def created (ontology/create-ontology! ctx {:name "Biology" :scope :biology}))
+(def cache
+  (kv/start
+    (lmdb/->KV-Store-LMDB
+      {:storage-dir "target/ontology-cache"
+       :db-name     "read-models"
+       :map-size    (* 64 1024 1024)})))
+
+(def ctx
+  {:event-store event-store
+   :cache       cache
+   :tenant-id   (random-uuid)})
+
+(def created
+  (ontology/create-ontology! ctx {:name "Biology" :scope :biology}))
 (def ontology-id (:ontology-id created))
 
 (ontology/create-concept! ctx ontology-id
-  {:uri "urn:biology:organism" :label "Organism"
-   :description "An individual living system." :scope :biology})
+  {:uri "urn:biology:organism"
+   :label "Organism"
+   :description "An individual living system."
+   :scope :biology})
 
-(def plant (ontology/create-concept! ctx ontology-id
-  {:uri "urn:biology:plant" :label "Plant"
-   :description "A photosynthetic organism." :scope :biology
-   :broader ["urn:biology:organism"]}))
+(def plant
+  (ontology/create-concept! ctx ontology-id
+    {:uri "urn:biology:plant"
+     :label "Plant"
+     :description "A photosynthetic organism."
+     :scope :biology
+     :broader ["urn:biology:organism"]}))
+(def concept-id (:concept-id plant))
 
-(ontology/get-concept ctx ontology-id (:concept-id plant))
+(ontology/get-concept ctx ontology-id concept-id)
 (ontology/get-concept-by-uri ctx ontology-id "urn:biology:plant")
 (ontology/get-concepts ctx {:ontology-id ontology-id})
 (ontology/search ctx ontology-id {:query-text "organism" :limit 10})
-
-;; Stop the store when its application lifecycle ends.
-(es/stop store)
 ```
 
-Ontology, concept and relationship UUIDs are generated independently of command
-IDs. An accepted command retry returns its original generated identities.
+The examples below use this context and graph. Grain caches projected read models
+and their event watermarks in `:cache`, allowing reads to resume from cached
+state and process subsequent events. It also maintains an in-process L1 cache.
 
-Commands return result maps, including graph revision and generated identities.
-Expected failures from all public operations return Cognitect anomaly maps;
-check `:cognitect.anomalies/category` before using a result. Concept lookup and search require tenant context and explicit graph
-identity; tenant-wide administrative enumeration is available through
-`list-ontologies` and unfiltered `get-concepts` and `get-concept-map`. The tenant
-context comes from the host's authenticated application boundary; the library
-does not provide authentication.
+The application owns both stores. Close them after completing the examples or
+during application shutdown:
 
-`update-concept!` takes context, ontology ID, concept ID and a request map
-containing `:changes`. Mutable fields are `:label`, `:description`, `:broader`,
-`:indicators`, `:attributes`, `:embedding`, `:embedding-model`, `:scope`,
-`:alt-labels`, `:provenance` and `:entity-type`. Supplied values replace their
-fields, including whole maps; omitted fields remain unchanged. Concept ID,
-ontology ID and URI are immutable.
-The concept UUID is consistently returned as `:concept-id` by creation, lookup,
-listing, search and snapshot export. Pass that UUID to `update-concept!`; URI
-lookup remains scoped by ontology ID.
-Parent updates maintain the graph's hierarchy views.
+```clojure
+(kv/stop cache)
+(es/stop event-store)
+```
 
-Manual mutation requests accept an optional UUID `:request-id` for retry safety
-and an optional integer `:expected-revision` for a caller revision precondition.
-Omit `:request-id` to generate a new command identity on each call. Retry with the
-same request ID and payload to recover the original result; reusing the ID with
-changed payload returns a conflict. Ontology creation retry keys are tenant-scoped;
-other manual mutation keys are ontology-scoped. Creation generates entity UUIDs
-independently of request IDs. Grain command names, IDs and timestamps are internal.
-Imports use `:contribution-id` instead and reject `:request-id`.
+For a persistent event store, supply a stable `:ontology/store-id` in the context
+to reuse cached projections across store restarts. This ID must uniquely identify
+the underlying event store and change when that store is replaced. The in-memory
+example uses automatic store-instance isolation.
+
+Mutations return result maps containing the committed revision and operation
+identities. Expected failures return Cognitect anomaly maps. Check
+`:cognitect.anomalies/category` before consuming a result, including results
+from `ontology-exists?`.
+
+## Concepts and relationships
+
+Concept creation requires nonblank `:uri`, `:label`, and `:description` strings.
+Each concept has a UUID `:concept-id` and an ontology-qualified URI. Individual
+lookups accept either identity and return the same record, including derived
+relationship views.
 
 ```clojure
 (ontology/update-concept! ctx ontology-id concept-id
-  {:changes {:label "Plants"}
-   :request-id (random-uuid)
-   :expected-revision (ontology/get-revision ctx ontology-id)})
+  {:changes {:label "Plants"
+             :alt-labels ["Plantae"]}})
 
 (ontology/register-predicate! ctx ontology-id
-  {:predicate "app:related" :policy {:symmetric? true}})
+  {:predicate "app:related"
+   :policy {:symmetric? true}})
+
+(ontology/create-relationship! ctx
+  {:source-ontology-id ontology-id
+   :source-uri "urn:biology:plant"
+   :target-ontology-id ontology-id
+   :target-uri "urn:biology:organism"
+   :predicate "app:related"})
 ```
 
-Relationships use qualified endpoints:
+Updates support `:label`, `:description`, `:scope`, `:broader`, `:indicators`,
+`:attributes`, `:alt-labels`, `:provenance`, `:entity-type`, `:embedding`, and
+`:embedding-model`. Supplied values replace entire fields, including maps;
+omitted fields remain unchanged. Concept ID, ontology ID, and URI are immutable.
+An empty `:broader` vector removes all parents. Hierarchy changes maintain
+inverse views and reject cycles.
+
+Predicate policies support `:symmetric?`, `:inverse`, `:hierarchical?`, and
+`:cross-ontology?`. Default policies cover `skos:broader`, `skos:narrower`,
+`skos:related`, `owl:sameAs`, and `rdfs:subClassOf`. Ontology creation may supply
+policy overrides. `register-predicate!` adds a policy for a new predicate.
+
+Both relationship endpoints must exist in the tenant. Cross-ontology links
+require permission in the source graph's predicate policy. Relationship reads
+and snapshots include permitted incident links and their logical inverse views.
+
+## Collection reads
+
+`get-concepts` and `get-concept-map` accept a context and optional filters:
+
+| Filter | Selection |
+| --- | --- |
+| `:ontology-id` | One graph |
+| `:ontology-ids` | A collection of graphs |
+| `:scope` | Concepts with the specified scope |
+| `:broader-uri` | Concepts with the specified direct parent |
+
+Use at most one ontology selector. Without a selector, reads span the tenant.
+An empty `:ontology-ids` collection selects nothing. Any missing explicitly
+selected graph returns a `not-found` anomaly.
 
 ```clojure
-(ontology/create-relationship! ctx
-  {:source-ontology-id ontology-id :source-uri "urn:biology:plant"
-   :target-ontology-id ontology-id :target-uri "urn:biology:organism"
-   :predicate "skos:related"})
+(ontology/get-concepts ctx {:ontology-id ontology-id :scope :biology})
+(ontology/get-concept-map ctx {:ontology-ids [ontology-id]})
+(ontology/list-ontologies ctx)
 ```
 
-Applications register their predicates with `register-predicate!`. Built-in
-policies cover SKOS broader/narrower/related, OWL sameAs and RDFS subClassOf.
-Custom policies can declare cross-ontology access, symmetry and hierarchy.
-Application vocabulary has no executable meaning inside the library.
-Contribution edges are local to their target graph. Use `create-relationship!`
-for an explicitly permitted cross-ontology link; an import rejects endpoints
-qualified to a different graph.
+`get-concepts` returns a vector sorted by `[ontology-id uri]`.
+`get-concept-map` uses those qualified identities as keys, preserving equal
+URIs across graphs.
 
-## Import a contribution
+## Contributions and RDF
 
-Run extraction in the application, then submit its output:
+A contribution atomically imports concepts, relationships, schema, instances,
+and RDF triples into one graph.
 
 ```clojure
 (def request
@@ -131,108 +175,120 @@ Run extraction in the application, then submit its output:
    :source {:source-id (random-uuid)
             :content-hash "sha256-of-the-source-bytes"
             :producer {:name "catalog-parser" :version "1"}}
-   :concepts [{:uri "urn:biology:oak" :label "Oak"
-               :description "A tree in the genus Quercus." :scope :biology
-               :broader ["urn:biology:plant"]}]
-   :relationships []
-   :tbox {:classes [] :object-properties [] :datatype-properties []}
-   :abox []})
+   :concepts [{:uri "urn:biology:oak"
+               :label "Oak"
+               :description "A tree in the genus Quercus."
+               :scope :biology
+               :broader ["urn:biology:plant"]}]})
 
 (ontology/import-contribution! ctx ontology-id request)
 ```
 
-Import and search use `[ctx ontology-id request]`. The positional ontology ID
-selects the graph; leave `:ontology-id` out of the request map. Contribution
-history retains the full input envelope, including that ontology ID.
+Optional fields include `:relationships`, `:tbox`, `:abox`, `:rdf-triples`,
+`:resolution-policy`, and `:expected-revision`. Imports upsert supplied records;
+omission does not delete existing knowledge. Supplied parent lists replace
+prior parents. Contribution relationships must remain within the target graph.
 
-The contribution ID is the idempotency key. Retry the identical request to
-recover its original result. Reusing its ID with changed content is a conflict;
-a new contribution with a supplied stale expected revision is also a conflict.
-A new contribution ID may interpret the same source bytes again.
+Set `:resolution-policy` to `{:match-labels? true :similarity-threshold 0.85}`
+to enable normalized-label and compatible embedding matching. Existing concept
+identities take precedence when selecting canonical URIs. Producer metadata
+and evidence references are retained as opaque data.
 
-`:expected-revision` is optional. Supply it when a change should apply only to
-a graph version the caller has reviewed. Without it, the import validates
-against current state. Every mutation still uses an atomic append condition
-to reject conflicting writes during execution. Imports use additive
-upserts: omission does not delete existing knowledge. Supplied parent lists
-replace that concept's parent list.
+`import-rdf!` accepts the same source and contribution identity fields, with
+`:content` containing the supported N-Triples subset. It supports URI subjects
+and URI or literal objects, including language and datatype literals. Blank
+nodes and malformed statements are rejected. Custom object predicates require
+registered policies.
 
-`:resolution-policy {:match-labels? true :similarity-threshold 0.85}` enables
-normalized-label resolution and optional matching of supplied embeddings.
-Existing concept identities are preferred as canonical. Producer metadata and
-source references are data; the library does not execute or inspect a producer.
+## Retries and concurrency
 
-`import-rdf!` takes `ctx`, `ontology-id` and a request map with the same
-source, contribution ID and revision envelope,
-plus `:content` containing the supported N-Triples subset. URI subjects and URI
-or literal objects are supported, including language and datatype literals.
-Blank-node statements and malformed input are rejected. Register policies for
-nonstandard object predicates before import. No model call is required.
+Manual mutations accept an optional UUID `:request-id`. Imports use the required
+`:contribution-id` as their retry key and reject `:request-id`.
 
-## History and export
+The same key and payload return the original committed result, even after later
+writes. Reusing a key with a changed payload returns a conflict. Ontology creation
+keys are scoped to the tenant; other mutation keys are scoped to the graph.
+Entity UUIDs are independent of retry keys. A new contribution ID may import
+another interpretation of the same source bytes.
 
-`get-sources`, `get-contributions` and `get-canonical-mappings` accept context
-and ontology ID. `export-snapshot` accepts those arguments plus an optional
-revision. Its result contains concepts, relationships, TBox, ABox, raw RDF
-triples, Turtle output, statement count and checksum. The default revision is
-current. Export data comes from graph history.
-
-Contribution records contain `:contribution-id`, `:ontology-id`, `:source`,
-`:input`, `:canonical-map`, `:resolution`, `:result` and `:recorded-at`.
-The input preserves the graph-qualified contribution before canonicalization.
-For RDF imports, it contains the parsed contribution, not the original RDF text.
-
-Search combines lexical matches, optional graph seeds and optional embeddings.
-Pass `:seed-uris` for graph traversal. An optional `:embed-query` function and
-`:embedding-model` identify the query embedding provider; it is supplied by the
-host, not loaded from an orchestration component.
-
-## Concept collection reads
-
-`get-concepts` and `get-concept-map` both accept `[ctx]` for tenant-wide reads or
-`[ctx filters]`. Supported filters are `:ontology-id`, `:ontology-ids`, `:scope`
-and `:broader-uri`. Use only one ontology selector. Both functions apply the
-same validation and missing-graph rules.
+Every mutation checks concurrency atomically at commit. An optional
+`:expected-revision` adds a caller-supplied precondition:
 
 ```clojure
-(ontology/get-concept-map ctx {:ontology-id ontology-id :scope :biology})
+(ontology/update-concept! ctx ontology-id concept-id
+  {:changes {:description "A member of the kingdom Plantae."}
+   :request-id (random-uuid)
+   :expected-revision (ontology/get-revision ctx ontology-id)})
 ```
 
-`get-concepts` returns a vector. `get-concept-map` returns a map keyed by
-`[ontology-id uri]`, preserving concepts that share a URI across graphs. Empty
-selections return `[]` and `{}` respectively.
+Graph revisions start at 1. Omitting `:expected-revision` validates the mutation
+against the graph state read during execution.
 
-## Errors and missing resources
+## Search
+
+Search combines lexical matching, graph traversal, and optional embedding
+comparisons within one ontology:
+
+```clojure
+(ontology/search ctx ontology-id
+  {:query-text "tree"
+   :seed-uris ["urn:biology:plant"]
+   :max-depth 2
+   :limit 10
+   :weights {:lexical 1.0 :graph 1.0 :embedding 1.0}})
+```
+
+The default limit is 10 and traversal depth is 2. Traversal includes seeds and
+reachable broader, narrower, and related concepts through the requested depth.
+The result limit applies after combining signal ranks. Results contain concept
+records with `:score`; scores represent ranking strength, not probabilities.
+URI order breaks ties.
+
+For embedding search, supply `:embed-query`, a function from query text to a
+vector, and `:embedding-model`. Comparisons require matching model identifiers
+and valid vectors of equal dimension. Unusable vectors contribute no signal.
+
+## History and snapshots
+
+| Operation | Result |
+| --- | --- |
+| `get-revision` | Graph revision |
+| `get-relationships` | Logical relationships incident to the graph |
+| `get-sources` | Source versions and registration times |
+| `get-contributions` | Contribution history and resolution evidence |
+| `get-canonical-mappings` | Accumulated source URI → canonical URI mappings |
+| `export-snapshot` | Graph data, Turtle output, statement count, and SHA-256 checksum |
+
+These operations take `ctx` and `ontology-id`. `export-snapshot` also accepts
+an optional positive revision; omission or `nil` selects the latest revision.
+
+Contribution records contain `:contribution-id`, `:ontology-id`, `:source`,
+`:input`, `:canonical-map`, `:resolution`, `:result`, and `:recorded-at`.
+The input preserves the graph-qualified contribution before canonicalization.
+For RDF imports, it contains the parsed contribution rather than source text.
+
+## Error handling
+
+Expected failures return maps with `:cognitect.anomalies/category` and a message.
 
 | Situation | Result |
 | --- | --- |
-| Missing ontology or concept lookup | `nil` |
-| Revision of a missing ontology | `nil` |
-| Ontology existence check | Boolean, or an anomaly for invalid context/input |
-| Existing graph with no matching records | Empty collection (`[]`, or `{}` for mappings) |
-| Invalid arguments | `:cognitect.anomalies/incorrect` |
+| Missing ontology, concept, or revision lookup | `nil` |
+| Ontology existence check | Boolean, or an anomaly for invalid input/context |
+| Existing graph with no matching records | Empty collection |
+| Invalid arguments or malformed RDF | `:cognitect.anomalies/incorrect` |
 | Missing tenant context | `:cognitect.anomalies/forbidden` |
-| Explicit collection/search scope, mutation target, or export resource missing | `:cognitect.anomalies/not-found` |
+| Missing selected graph, mutation target, or export revision | `:cognitect.anomalies/not-found` |
 | Stale revision, changed retry payload, or concurrent write | `:cognitect.anomalies/conflict` |
 
-A multi-ontology read returns `not-found` if any selected graph is missing; it
-does not return partial results. An empty `:ontology-ids` collection returns
-`[]` from `get-concepts` and `{}` from `get-concept-map`. Use either `:ontology-id` or `:ontology-ids`, not both. Unfiltered concept
-reads remain tenant-wide. Missing graphs in another tenant follow the same
-rules as any other missing graph.
-
-An export revision must be a positive integer; a valid revision that does not
-exist returns `not-found`. RDF parsing errors return `incorrect`. Storage
-anomalies keep their original categories. Unexpected implementation and query
-embedding provider exceptions propagate with their diagnostic information.
+Multi-graph reads return an anomaly if any selected graph is missing. Storage
+anomalies retain their categories. Unexpected exceptions, including embedding
+provider exceptions, propagate.
 
 ## Malli contracts
 
-Every public function carries a `:malli/schema` metadata value describing its
-arguments and return value, including all arities, anomaly maps and nullable
-lookups. Reusable schemas live under `core` and are registered by Grain’s
-`defschemas` macro with namespaced keyword references. Obtain the supported
-function contracts from the public Vars:
+Public Vars expose argument and result schemas through `:malli/schema` metadata.
+Schemas cover all arities, anomaly results, and nullable lookups.
 
 ```clojure
 (require '[malli.core :as m]
@@ -242,77 +298,55 @@ function contracts from the public Vars:
 (m/validate (first (m/children search-schema))
             [ctx ontology-id {:query-text "plant"}])
 
-;; Optional development-time argument/result checking:
 (mi/collect! {:ns 'ai.obney.ontology.interface})
 (def instrumentation
   {:data (select-keys (m/function-schemas) ['ai.obney.ontology.interface])})
 (mi/instrument! instrumentation)
-;; ... use the API ...
+
+;; Disable instrumentation after development-time checks.
 (mi/unstrument! instrumentation)
 ```
 
-Schemas describe valid calls. Instrumentation is opt-in and throws on invalid
-arguments before normal anomaly handling runs. Loading the library or collecting
-schemas does not enable instrumentation. Graph-dependent checks such as resource
-existence, hierarchy validity, revision conflicts and predicate permissions still
-run in the operations. Embeddings and model identifiers remain opaque by design;
-unusable vectors are ignored during search. Maps remain open except where the
-API explicitly rejects unknown fields, such as predicate policies and TBox sections.
+Instrumentation is opt-in. It throws on invalid arguments before normal anomaly
+handling runs. Resource existence, hierarchy, revision, and policy checks run
+when operations execute. Request maps generally permit additional fields;
+predicate policies and TBox sections reject unknown keys.
 
 ## Development
 
+Run the test suite or a focused namespace with the Clojure CLI:
+
 ```sh
 clojure -M:test
-# Full obligation, spec, property and mutation verification:
+clojure -M:test ai.obney.ontology.rdf-test
+```
+
+The suite covers public contracts, graph algorithms, property tests, and SQLite
+persistence, replay, and concurrent writes. Additional verification requires
+Python 3 and the Allium CLI:
+
+```sh
 bash scripts/verify-tests.sh
 ```
 
-The suite includes public API and algorithm tests, generated mutation sequences
-checked against an independent model, and real SQLite persistence, restart,
-write-failure and concurrent-write tests. It runs without ORC or a model service.
-`test.check` and the SQLite adapter are test-only dependencies.
+This runs specification checks, obligation mapping, tests, an extended property
+campaign, and a mutation audit. Reports are written to `evidence/`.
 
-Run a focused suite or a larger reproducible property campaign:
+The [Allium specification](specs/ontology.allium) defines behavioral contracts.
+The [coverage ledger](docs/TEST-COVERAGE.md) maps obligations to executable tests.
 
-```sh
-clojure -M:test ai.obney.ontology.rdf-test
-ONTOLOGY_TEST_SEED=7 ONTOLOGY_TEST_TRIALS=500 clojure -M:test ai.obney.ontology.property-test
-clojure -Sdeps '{:paths ["src" "test"]}' -M scripts/mutation_audit.clj
-```
+## Performance and architecture
 
-The last command checks that existing tests detect six deliberately introduced
-regressions using temporary function replacements. It does not modify source
-files. See [the test assessment](docs/TEST-ASSESSMENT.md) for measured results
-and remaining coverage work, and
-[specs/COVERAGE.md](specs/COVERAGE.md) for the characterized structural diagnostic
-baseline; structural analysis is not runtime conformance proof.
-
-[The clean-break migration](docs/extraction-migration.md) describes ORC's
-integration boundary. [The specification](specs/ontology.allium) is the durable
-behavioral contract.
-
-## Benchmarking
-
-For stage-level latency and allocation attribution, including Grain's μ/trace
-spans and SQLite writer context, see [contribution profiling](docs/PROFILING.md).
-
-The benchmark harness targets 10,000 and 20,000 concepts on in-memory and SQLite
-stores. It records raw latency/allocation samples, GC activity, fixture loading
-cost and source/environment metadata. Each case runs in its own JVM with a time
-limit; timeouts are retained separately from completed measurements.
+Run benchmarks against in-memory and SQLite stores:
 
 ```sh
 python3 scripts/benchmark.py --output target/benchmarks/my-baseline
 ```
 
-See [benchmark methodology and workloads](docs/BENCHMARKS.md) for controls,
-history-length experiments and interpretation limits. Benchmark dependencies
-are confined to the `:bench` alias. The
-[initial 10,000/20,000-concept baseline](docs/BENCHMARK-BASELINE.md) records
-measured replay/import costs, lookup timeouts and the fixed-size history control.
+See [benchmark methodology](docs/BENCHMARKS.md) for workloads and measurement
+controls, and [contribution profiling](docs/PROFILING.md) for latency and
+allocation analysis.
 
-See [scoped reads](docs/SCOPED-READS.md) for event tags, Grain projections, cache context and concurrency behavior.
-
-Accepted contributions persist [resolved record changes](docs/CONTRIBUTION-DELTAS.md), including explicit relationship removals, rather than repeating the ontology snapshot.
-
-Mutation commands use [incrementally maintained graph indexes](docs/MUTATION-INDEXES.md) for parents, hierarchy, resolution, connected scope and counts.
+Implementation documentation covers [scoped reads](docs/SCOPED-READS.md),
+[contribution deltas](docs/CONTRIBUTION-DELTAS.md), and
+[incremental graph indexes](docs/MUTATION-INDEXES.md).
