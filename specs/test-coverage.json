@@ -1,5 +1,5 @@
 {
-  "spec_sha256": "c4554f181e353af7bdc1e7208593e043c665e34d9295bdd35c4a8948bdb652e2",
+  "spec_sha256": "61f629870707783d5324b73eb68c9b4ec20d5dd454bafa9cebfcf71964452fca",
   "obligations": {
     "entity-fields.OntologyConsumer": {
       "tests": [
@@ -56,17 +56,19 @@
       "tests": [
         "ai.obney.ontology.boundary-test/incremental-import-preserves-identities-schema-and-instances",
         "ai.obney.ontology.boundary-test/contribution-history-retains-original-input",
-        "ai.obney.ontology.mutation-test/invalid-contribution-envelopes-are-atomic"
+        "ai.obney.ontology.mutation-test/invalid-contribution-envelopes-are-atomic",
+        "ai.obney.ontology.boundary-test/imports-without-expected-revision-use-current-state"
       ],
-      "review": "Language-level mapping: immutable Clojure maps have structural equality; original request retention, metadata replay and request-digest retry tests exercise equality at the boundary. Public envelope uses source.source-id/content-hash, contribution-id, expected-revision, concepts, relationships, tbox, abox, source.producer and resolution-policy. Optional collections default empty. Original request is retained separately from the canonical graph."
+      "review": "Language-level mapping: immutable Clojure maps have structural equality; original request retention, metadata replay and request-digest retry tests exercise equality at the boundary. Public envelope uses source.source-id/content-hash, contribution-id, optional expected-revision, concepts, relationships, tbox, abox, source.producer and resolution-policy. Optional collections default empty. Original request is retained separately from the canonical graph. Omitted expected revisions accept current-state imports and RDF imports; supplied stale revisions still reject."
     },
     "entity-fields.ContributionRequest": {
       "tests": [
         "ai.obney.ontology.boundary-test/incremental-import-preserves-identities-schema-and-instances",
         "ai.obney.ontology.boundary-test/contribution-history-retains-original-input",
-        "ai.obney.ontology.mutation-test/invalid-contribution-envelopes-are-atomic"
+        "ai.obney.ontology.mutation-test/invalid-contribution-envelopes-are-atomic",
+        "ai.obney.ontology.boundary-test/imports-without-expected-revision-use-current-state"
       ],
-      "review": "Public envelope uses source.source-id/content-hash, contribution-id, expected-revision, concepts, relationships, tbox, abox, source.producer and resolution-policy. Optional collections default empty. Original request is retained separately from the canonical graph."
+      "review": "Public envelope uses source.source-id/content-hash, contribution-id, optional expected-revision, concepts, relationships, tbox, abox, source.producer and resolution-policy. Optional collections default empty. Original request is retained separately from the canonical graph. Omitted expected revisions accept current-state imports and RDF imports; supplied stale revisions still reject."
     },
     "contract-signature.CustomOntologyMutation.create_concept": {
       "tests": [
@@ -587,9 +589,10 @@
         "ai.obney.ontology.boundary-test/contribution-history-retains-original-input",
         "ai.obney.ontology.boundary-test/stale-revisions-and-invalid-imports-are-atomic",
         "ai.obney.ontology.boundary-test/retry-identity-is-independent-of-source-content",
-        "ai.obney.ontology.mutation-test/invalid-contribution-envelopes-are-atomic"
+        "ai.obney.ontology.mutation-test/invalid-contribution-envelopes-are-atomic",
+        "ai.obney.ontology.boundary-test/imports-without-expected-revision-use-current-state"
       ],
-      "review": "New valid key commits source version and canonical graph once. Existing key dispatches retry/conflict; new stale revision and malformed graph/envelope reject atomically."
+      "review": "New valid key commits source version and canonical graph once. Existing key dispatches retry/conflict; new stale revision and malformed graph/envelope reject atomically. Omitted expected revisions accept current-state imports and RDF imports; supplied stale revisions still reject."
     },
     "rule-failure.ImportContribution.1": {
       "tests": [
@@ -597,9 +600,10 @@
         "ai.obney.ontology.boundary-test/contribution-history-retains-original-input",
         "ai.obney.ontology.boundary-test/stale-revisions-and-invalid-imports-are-atomic",
         "ai.obney.ontology.boundary-test/retry-identity-is-independent-of-source-content",
-        "ai.obney.ontology.mutation-test/invalid-contribution-envelopes-are-atomic"
+        "ai.obney.ontology.mutation-test/invalid-contribution-envelopes-are-atomic",
+        "ai.obney.ontology.boundary-test/imports-without-expected-revision-use-current-state"
       ],
-      "review": "New valid key commits source version and canonical graph once. Existing key dispatches retry/conflict; new stale revision and malformed graph/envelope reject atomically."
+      "review": "New valid key commits source version and canonical graph once. Existing key dispatches retry/conflict; new stale revision and malformed graph/envelope reject atomically. Omitted expected revisions accept current-state imports and RDF imports; supplied stale revisions still reject."
     },
     "rule-failure.ImportContribution.2": {
       "tests": [
@@ -607,9 +611,10 @@
         "ai.obney.ontology.boundary-test/contribution-history-retains-original-input",
         "ai.obney.ontology.boundary-test/stale-revisions-and-invalid-imports-are-atomic",
         "ai.obney.ontology.boundary-test/retry-identity-is-independent-of-source-content",
-        "ai.obney.ontology.mutation-test/invalid-contribution-envelopes-are-atomic"
+        "ai.obney.ontology.mutation-test/invalid-contribution-envelopes-are-atomic",
+        "ai.obney.ontology.boundary-test/imports-without-expected-revision-use-current-state"
       ],
-      "review": "New valid key commits source version and canonical graph once. Existing key dispatches retry/conflict; new stale revision and malformed graph/envelope reject atomically."
+      "review": "New valid key commits source version and canonical graph once. Existing key dispatches retry/conflict; new stale revision and malformed graph/envelope reject atomically. Omitted expected revisions accept current-state imports and RDF imports; supplied stale revisions still reject."
     },
     "rule-failure.ImportContribution.3": {
       "tests": [
@@ -617,9 +622,10 @@
         "ai.obney.ontology.boundary-test/contribution-history-retains-original-input",
         "ai.obney.ontology.boundary-test/stale-revisions-and-invalid-imports-are-atomic",
         "ai.obney.ontology.boundary-test/retry-identity-is-independent-of-source-content",
-        "ai.obney.ontology.mutation-test/invalid-contribution-envelopes-are-atomic"
+        "ai.obney.ontology.mutation-test/invalid-contribution-envelopes-are-atomic",
+        "ai.obney.ontology.boundary-test/imports-without-expected-revision-use-current-state"
       ],
-      "review": "New valid key commits source version and canonical graph once. Existing key dispatches retry/conflict; new stale revision and malformed graph/envelope reject atomically."
+      "review": "New valid key commits source version and canonical graph once. Existing key dispatches retry/conflict; new stale revision and malformed graph/envelope reject atomically. Omitted expected revisions accept current-state imports and RDF imports; supplied stale revisions still reject."
     },
     "rule-entity-creation.ImportContribution.1": {
       "tests": [
@@ -628,9 +634,10 @@
         "ai.obney.ontology.boundary-test/stale-revisions-and-invalid-imports-are-atomic",
         "ai.obney.ontology.boundary-test/retry-identity-is-independent-of-source-content",
         "ai.obney.ontology.mutation-test/invalid-contribution-envelopes-are-atomic",
-        "ai.obney.ontology.resolution-test/contribution-records-retain-digest-result-and-source-time"
+        "ai.obney.ontology.resolution-test/contribution-records-retain-digest-result-and-source-time",
+        "ai.obney.ontology.boundary-test/imports-without-expected-revision-use-current-state"
       ],
-      "review": "New valid key commits source version and canonical graph once. Existing key dispatches retry/conflict; new stale revision and malformed graph/envelope reject atomically."
+      "review": "New valid key commits source version and canonical graph once. Existing key dispatches retry/conflict; new stale revision and malformed graph/envelope reject atomically. Omitted expected revisions accept current-state imports and RDF imports; supplied stale revisions still reject."
     },
     "rule-success.RetryContribution": {
       "tests": [
@@ -786,9 +793,13 @@
         "ai.obney.ontology.mutation-test/invalid-manual-mutations-are-atomic",
         "ai.obney.ontology.durable-test/actual-sqlite-rejection-leaves-no-graph-or-retry-record",
         "ai.obney.ontology.durable-test/sqlite-competing-writes-have-one-revision-winner",
-        "ai.obney.ontology.indexes-test/imports-validate-once-and-use-only-the-affected-parent-index"
+        "ai.obney.ontology.indexes-test/imports-validate-once-and-use-only-the-affected-parent-index",
+        "ai.obney.ontology.durable-test/ontology-creation-retry-keys-are-atomic-and-tenant-scoped",
+        "ai.obney.ontology.errors-test/all-public-operations-return-forbidden-without-tenant",
+        "ai.obney.ontology.errors-test/invalid-inputs-return-incorrect-instead-of-throwing",
+        "ai.obney.ontology.errors-test/rdf-input-errors-are-classified-and-unexpected-errors-propagate"
       ],
-      "review": "Validation, retry, stale revision and actual storage failure leave graph/history unchanged; SQLite compare-and-append gives one winner for competing writes. Mutation-index regression witnesses verify incremental index freshness and command behavior without changing this contract."
+      "review": "Validation, retry, stale revision and actual storage failure leave graph/history unchanged; SQLite compare-and-append gives one winner for competing writes. Mutation-index regression witnesses verify incremental index freshness and command behavior without changing this contract. Entity IDs differ from command IDs; ontology creation retry keys deduplicate atomically across concurrency and SQLite restart, while independent keys and tenants remain independent. Expected public failures return anomaly categories; unexpected command exceptions propagate without appending events."
     },
     "prose.HierarchyConsistency": {
       "tests": [
@@ -825,9 +836,12 @@
         "ai.obney.ontology.boundary-test/model-free-search-stays-scoped",
         "ai.obney.ontology.mutation-test/required-identities-never-broaden-queries",
         "ai.obney.ontology.property-test/generated-mutation-sequences-match-independent-model-and-replay",
-        "ai.obney.ontology.durable-test/a-fresh-jvm-reconstructs-the-durable-graph"
+        "ai.obney.ontology.durable-test/a-fresh-jvm-reconstructs-the-durable-graph",
+        "ai.obney.ontology.errors-test/missing-resources-and-empty-results-are-distinct",
+        "ai.obney.ontology.errors-test/all-public-operations-return-forbidden-without-tenant",
+        "ai.obney.ontology.mutation-test/concept-map-shares-list-scoping-and-error-contract"
       ],
-      "review": "Qualified reads/search plus all generated historical snapshots and fresh-store/process replay preserve graph/provenance without optional model services."
+      "review": "Qualified reads/search plus all generated historical snapshots and fresh-store/process replay preserve graph/provenance without optional model services. Missing point/revision reads return nil; explicitly scoped collections/search/export report not-found, including partial multi-graph selections. Concept maps share list filters, preserve qualified URI keys, exclude foreign tenants, and return matching anomalies for invalid or missing scopes."
     },
     "prose.ContributionIdentity": {
       "tests": [
@@ -837,9 +851,12 @@
         "ai.obney.ontology.durable-test/sqlite-close-reopen-replays-revisions-and-retries",
         "ai.obney.ontology.boundary-test/incremental-import-preserves-identities-schema-and-instances",
         "ai.obney.ontology.boundary-test/contribution-history-retains-original-input",
-        "ai.obney.ontology.resolution-test/contribution-records-retain-digest-result-and-source-time"
+        "ai.obney.ontology.resolution-test/contribution-records-retain-digest-result-and-source-time",
+        "ai.obney.ontology.boundary-test/imports-without-expected-revision-use-current-state",
+        "ai.obney.ontology.boundary-test/competing-contributions-check-revision-at-append",
+        "ai.obney.ontology.durable-test/sqlite-competing-writes-have-one-revision-winner"
       ],
-      "review": "Scoped retry, changed payload, new interpretations of same bytes, later writes, durable reopen and additive upserts are exercised separately."
+      "review": "Scoped retry, changed payload, new interpretations of same bytes, later writes, durable reopen and additive upserts are exercised separately. Omitted expected revisions accept current-state imports and RDF imports; supplied stale revisions still reject. In-memory and SQLite competing imports without revision preconditions still have one CAS winner."
     },
     "prose.DeterministicResolutionAndMerge": {
       "tests": [
@@ -862,9 +879,10 @@
         "ai.obney.ontology.rdf-test/raw-triple-contributions-are-validated-before-commit",
         "ai.obney.ontology.rdf-test/complete-schema-and-instance-statements-survive-export",
         "ai.obney.ontology.rdf-test/exported-schema-and-individuals-can-be-imported-again",
-        "ai.obney.ontology.property-test/literal-export-roundtrip-has-exact-statements-and-checksum"
+        "ai.obney.ontology.property-test/literal-export-roundtrip-has-exact-statements-and-checksum",
+        "ai.obney.ontology.errors-test/rdf-input-errors-are-classified-and-unexpected-errors-propagate"
       ],
-      "review": "Supported N-Triples are parsed without a model; malformed syntax/Unicode, unsupported nodes and raw triples reject atomically. Schema/instance/literal round trips retain statements."
+      "review": "Supported N-Triples are parsed without a model; malformed syntax/Unicode, unsupported nodes and raw triples reject atomically. Schema/instance/literal round trips retain statements. RDF parser errors return incorrect while storage anomalies and unexpected exceptions retain their classification and diagnostics."
     },
     "prose.OpaqueProducerProvenance": {
       "tests": [

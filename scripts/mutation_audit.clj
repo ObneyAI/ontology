@@ -6,7 +6,7 @@
          '[ai.obney.ontology.core.commands :as commands]
          '[ai.obney.ontology.core.state :as state]
          '[ai.obney.ontology.core.rdf :as rdf]
-         '[ai.obney.ontology.algorithms :as algorithms])
+         '[ai.obney.ontology.core.entity-resolver :as entity-resolver])
 
 (defn run-isolated [test-var replacements]
   (binding [test/*report-counters* (ref test/*initial-report-counters*)
@@ -24,7 +24,7 @@
                {:name :ignore-rdf-validity :test #'rdf-tests/raw-triple-contributions-are-validated-before-commit
                 :replace {#'rdf/validate-triples! identity}}
                {:name :compare-invalid-vectors :test #'search-tests/unusable-vectors-do-not-participate-in-ranking
-                :replace {#'algorithms/cosine-similarity (fn [& _] 1.0)}}
+                :replace {#'entity-resolver/cosine-similarity (fn [& _] 1.0)}}
                {:name :remove-append-cas :test #'boundary/competing-contributions-check-revision-at-append
                 :replace {#'commands/command-result (fn [& args] (dissoc (apply command-result args) :command-result/cas))}}]
       results (mapv (fn [{:keys [name test replace]}]

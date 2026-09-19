@@ -32,7 +32,7 @@ value ContributionRequest {
     source_identifier: String
     content_hash: String
     idempotency_key: String
-    expected_revision: Integer
+    expected_revision: Integer?
     concepts: List<ConceptDefinition>
     relationships: Any
     schema: Any
@@ -50,6 +50,11 @@ contract CustomOntologyMutation {
         -- Authorize and validate the complete change before appending any events.
         -- Failed validation and stale revisions leave the graph unchanged.
         -- Command retries return the original result without duplicate events.
+        -- Expected failures are returned with explicit categories: invalid input,
+        -- forbidden context, missing resources or conflicting writes. Unexpected
+        -- implementation exceptions retain their diagnostic information.
+        -- Created entity identifiers are independent of command identifiers;
+        -- retries recover the originally generated entity identifiers.
 
     @invariant HierarchyConsistency
         -- Broader and narrower are inverse views of one hierarchy. Updating
@@ -94,6 +99,10 @@ contract ScopedConceptLookup {
         -- Lookup, traversal, search, sources, mappings and snapshots include only
         -- the requested tenant and ontology. Search returns qualified identities.
         -- No optional search provider is required for graph creation or retrieval.
+        -- Missing single-resource lookups and revisions return no value.
+        -- Explicit collection and search scopes must exist; a missing graph
+        -- is reported as not found, including in a multi-graph selection.
+        -- Existing graphs with no matches return empty collections.
         -- Export of a revision includes concepts, edges, schema and instances
         -- at that revision, and replay reproduces the same graph and provenance.
 }
@@ -106,8 +115,10 @@ contract GraphContributions {
     @invariant ContributionIdentity
         -- Idempotency is tenant and ontology scoped. Same key and same request
         -- returns the original committed result, even after the graph advances.
-        -- Same key with changed payload is rejected; a stale expected revision
+        -- Same key with changed payload is rejected; a supplied stale expected revision
         -- on a new key is rejected. Neither rejection changes graph or history.
+        -- Without an expected revision, imports validate against current state.
+        -- Concurrent changes to that validated state prevent the commit.
         -- Content hash identifies source bytes, not every interpretation of them:
         -- a new key may re-extract unchanged content under another producer.
         -- Imports are additive upserts, not implicit deletion of older knowledge.
@@ -144,6 +155,8 @@ contract GraphContributions {
         -- N-Triples parsing requires no external model. Preserve URI resources,
         -- literals, supported schema and instance triples in queries and export;
         -- unsupported or malformed input is rejected rather than silently lost.
+        -- Parsing failures are invalid input; storage and implementation failures
+        -- are not reclassified as parsing failures.
 
     @invariant OpaqueProducerProvenance
         -- Retain the original submitted contribution separately from merged
@@ -323,7 +336,7 @@ rule LinkConcepts {
 rule ImportContribution {
     when: ContributionImportRequested(ontology, request)
     requires: not contribution_exists(ontology, request.idempotency_key)
-    requires: request.expected_revision = ontology.revision
+    requires: request.expected_revision = null or request.expected_revision = ontology.revision
     requires: contribution_is_valid(ontology, request)
     let merged = resolve_and_validate(ontology, request)
     ensures:

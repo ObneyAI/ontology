@@ -29,7 +29,7 @@
                                                        :embedding-model "m" :embedding [1 0])))]
       (check-indexes (graph-state ctx oid))
       (h/ok! (o/update-concept! ctx oid (:concept-id child)
-                               {:label "New-Label" :broader ["urn:b"] :embedding [1 0 0]}))
+                               {:changes {:label "New-Label" :broader ["urn:b"] :embedding [1 0 0]}}))
       (let [s (graph-state ctx oid)]
         (check-indexes s)
         (is (= #{[oid "urn:child"]} (get-in s [:indexes :labels [oid :domain "new label"]])))
@@ -40,7 +40,7 @@
         (is (= #{(state/edge-key (state/edge oid "urn:child" "skos:broader" "urn:b"))}
                (state/parent-keys s oid "urn:child"))))
       (let [input (h/request ctx oid [(assoc (h/concept "urn:child") :broader [] :alt-labels ["Replacement"])])
-            result (h/ok! (o/import-contribution! ctx input)) s (graph-state ctx oid)]
+            result (h/ok! (o/import-contribution! ctx oid input)) s (graph-state ctx oid)]
         (check-indexes s)
         (is (= 3 (:concept-count result)))
         (is (= 0 (:relationship-count result)))
@@ -62,7 +62,7 @@
                     state/replace-parents (fn [& args] (swap! replacements inc) (apply replace args))
                     idx/rebuild (fn [& _] (throw (ex-info "Warm command rebuilt indexes" {})))
                     idx/resolution-candidates (fn [& _] (throw (ex-info "Disabled matching prepared candidates" {})))]
-        (h/ok! (o/import-contribution! ctx input)))
+        (h/ok! (o/import-contribution! ctx oid input)))
       (is (= 1 @validations))
       (is (zero? @replacements))
       (graph-state ctx oid)
@@ -71,7 +71,7 @@
         (with-redefs [commands/validate-graph! (fn [& args] (swap! validations inc) (apply validate args))
                       state/parent-keys (fn [s id uri]
                                           (let [ks (parent-keys s id uri)] (swap! parent-visits conj ks) ks))]
-          (h/ok! (o/import-contribution! ctx input)))
+          (h/ok! (o/import-contribution! ctx oid input)))
         (is (= 1 @validations))
         (is (= [#{(state/edge-key (state/edge oid "urn:1" "skos:broader" "urn:root"))}] @parent-visits))
         (is (= 99 (count (get-in (graph-state ctx oid) [:indexes :outgoing oid]))))))))
@@ -122,14 +122,14 @@
         saved (try
                 (let [oid (h/graph ctx)]
                   (h/add! ctx oid "urn:parent")
-                  (h/ok! (o/import-contribution! ctx (h/request ctx oid [(assoc (h/concept "urn:child") :broader ["urn:parent"])])))
+                  (h/ok! (o/import-contribution! ctx oid (h/request ctx oid [(assoc (h/concept "urn:child") :broader ["urn:parent"])])))
                   {:oid oid :indexes (:indexes (graph-state ctx oid))})
                 (finally (es/stop store)))]
     (try
       (let [store (durable/open-store file) ctx {:event-store store :tenant-id tenant} oid (:oid saved)]
         (try
           (is (= (:indexes saved) (:indexes (graph-state ctx oid))))
-          (h/ok! (o/import-contribution! ctx (h/request ctx oid [(assoc (h/concept "urn:child") :broader [])])))
+          (h/ok! (o/import-contribution! ctx oid (h/request ctx oid [(assoc (h/concept "urn:child") :broader [])])))
           (check-indexes (graph-state ctx oid))
           (is (empty? (get-in (graph-state ctx oid) [:indexes :hierarchy])))
           (finally (es/stop store))))
@@ -138,14 +138,14 @@
 (deftest enabled-import-resolution-receives-indexed-candidates
   (h/with-context [ctx]
     (let [oid (h/graph ctx)
-          _ (h/ok! (o/import-contribution! ctx (h/request ctx oid (mapv #(h/concept (str "urn:" %)) (range 100)))))
+          _ (h/ok! (o/import-contribution! ctx oid (h/request ctx oid (mapv #(h/concept (str "urn:" %)) (range 100)))))
           input (assoc (h/request ctx oid [(assoc (h/concept "urn:new") :label " URN:27 ")])
                        :resolution-policy {:match-labels? true})
           candidates (atom nil) select idx/resolution-candidates]
       (with-redefs [idx/resolution-candidates (fn [& args]
                                               (let [result (apply select args)]
                                                 (reset! candidates (mapv :uri result)) result))]
-        (is (= "urn:27" (get-in (h/ok! (o/import-contribution! ctx input)) [:canonical-map "urn:new"]))))
+        (is (= "urn:27" (get-in (h/ok! (o/import-contribution! ctx oid input)) [:canonical-map "urn:new"]))))
       (is (= ["urn:27"] @candidates))
       (is (= 100 (count (o/get-concepts ctx {:ontology-id oid})))))))
 
@@ -156,7 +156,7 @@
                                                          :target-ontology-id to :target-uri "urn:node" :predicate "urn:parent"}))]
       (doseq [oid [a b c]]
         (h/add! ctx oid "urn:node")
-        (h/ok! (o/register-predicate! ctx oid "urn:parent" {:hierarchical? true :cross-ontology? true})))
+        (h/ok! (o/register-predicate! ctx oid {:predicate "urn:parent" :policy {:hierarchical? true :cross-ontology? true}})))
       (h/ok! (link a b)) (h/ok! (link b c))
       (check-indexes (graph-state ctx b))
       (let [before (h/graph-events ctx)]
@@ -166,15 +166,15 @@
 (deftest hierarchy-checks-only-new-connections
   (h/with-context [ctx]
     (let [oid (h/graph ctx) a (h/add! ctx oid "urn:a") _ (h/add! ctx oid "urn:b")
-          _ (h/ok! (o/import-contribution! ctx (h/request ctx oid [(assoc (h/concept "urn:b") :broader ["urn:a"])])))
+          _ (h/ok! (o/import-contribution! ctx oid (h/request ctx oid [(assoc (h/concept "urn:b") :broader ["urn:a"])])))
           check commands/validate-hierarchy-edge! calls (atom [])]
       (with-redefs [commands/validate-hierarchy-edge!
                     (fn [adjacency source target]
                       (swap! calls conj [source target]) (check adjacency source target))]
-        (h/ok! (o/update-concept! ctx oid (:concept-id a) {:description "Changed"}))
-        (h/ok! (o/import-contribution! ctx (h/request ctx oid [(assoc (h/concept "urn:b") :broader [])])))
+        (h/ok! (o/update-concept! ctx oid (:concept-id a) {:changes {:description "Changed"}}))
+        (h/ok! (o/import-contribution! ctx oid (h/request ctx oid [(assoc (h/concept "urn:b") :broader [])])))
         (is (empty? @calls))
-        (h/ok! (o/import-contribution! ctx (h/request ctx oid [(assoc (h/concept "urn:a") :broader ["urn:b"])])))
+        (h/ok! (o/import-contribution! ctx oid (h/request ctx oid [(assoc (h/concept "urn:a") :broader ["urn:b"])])))
         (is (= [[[oid "urn:a"] [oid "urn:b"]]] @calls))
         ;; Another hierarchical predicate between the same nodes adds no reachability.
         (h/ok! (o/create-relationship! ctx {:source-ontology-id oid :target-ontology-id oid
@@ -187,15 +187,15 @@
           ctx (if file {:event-store (durable/open-store file) :tenant-id (random-uuid)} (h/context))]
       (try
         (let [oid (h/graph ctx)]
-          (h/ok! (o/import-contribution! ctx (h/request ctx oid [(h/concept "urn:a")
+          (h/ok! (o/import-contribution! ctx oid (h/request ctx oid [(h/concept "urn:a")
                                                                (assoc (h/concept "urn:b") :broader ["urn:a"])])))
           ;; Reverse the edge atomically: the removed path must not reject the new edge.
-          (is (not (h/anomaly? (o/import-contribution! ctx (h/request ctx oid
+          (is (not (h/anomaly? (o/import-contribution! ctx oid (h/request ctx oid
                                 [(assoc (h/concept "urn:a") :broader ["urn:b"])
                                  (assoc (h/concept "urn:b") :broader [])])))))
           (let [before (h/graph-events ctx)]
             ;; A cycle consisting entirely of edges introduced in one contribution.
-            (is (h/anomaly? (o/import-contribution! ctx (h/request ctx oid
+            (is (h/anomaly? (o/import-contribution! ctx oid (h/request ctx oid
                               [(assoc (h/concept "urn:x") :broader ["urn:y"])
                                (assoc (h/concept "urn:y") :broader ["urn:z"])
                                (assoc (h/concept "urn:z") :broader ["urn:x"])]))))
@@ -245,17 +245,17 @@
 (deftest validation-visits-only-changed-records
   (h/with-context [ctx]
     (let [oid (h/graph ctx) root (h/add! ctx oid "urn:root")
-          _ (h/ok! (o/import-contribution! ctx (h/request ctx oid
+          _ (h/ok! (o/import-contribution! ctx oid (h/request ctx oid
                     (mapv #(assoc (h/concept (str "urn:old" %)) :broader ["urn:root"]) (range 100)))))
           concepts (atom 0) edges (atom 0)
           check-c commands/validate-concept! check-e commands/validate-relationship!]
       (with-redefs [commands/validate-concept! (fn [c] (swap! concepts inc) (check-c c))
                     commands/validate-relationship! (fn [s e] (swap! edges inc) (check-e s e))]
-        (h/ok! (o/import-contribution! ctx (h/request ctx oid
+        (h/ok! (o/import-contribution! ctx oid (h/request ctx oid
                   (mapv #(assoc (h/concept (str "urn:new" %)) :broader ["urn:root"]) (range 10)))))
         (is (= [10 10] [@concepts @edges]))
         (reset! concepts 0) (reset! edges 0)
-        (h/ok! (o/update-concept! ctx oid (:concept-id root) {:description "Changed"}))
+        (h/ok! (o/update-concept! ctx oid (:concept-id root) {:changes {:description "Changed"}}))
         (is (= [1 0] [@concepts @edges]))
         (reset! concepts 0)
         (h/ok! (o/create-relationship! ctx {:source-ontology-id oid :target-ontology-id oid
@@ -289,13 +289,13 @@
           ctx (if file {:event-store (durable/open-store file) :tenant-id (random-uuid)} (h/context))]
       (try
         (let [oid (h/graph ctx)]
-          (h/ok! (o/import-contribution! ctx (h/request ctx oid [(h/concept "urn:root")
+          (h/ok! (o/import-contribution! ctx oid (h/request ctx oid [(h/concept "urn:root")
                             (assoc (h/concept "urn:child") :broader ["urn:root"])])))
           (doseq [records [[(assoc (h/concept "urn:child") :label " ")]
                            [(assoc (h/concept "urn:child") :broader ["urn:missing"])]
                            [(assoc (h/concept "urn:child") :broader ["urn:child"])]]]
             (let [before (h/capture ctx oid)]
-              (is (h/anomaly? (o/import-contribution! ctx (h/request ctx oid records))))
+              (is (h/anomaly? (o/import-contribution! ctx oid (h/request ctx oid records))))
               (is (= before (h/capture ctx oid))))))
         (finally (es/stop (:event-store ctx)) (when file (durable/cleanup file)))))))
 
@@ -322,3 +322,39 @@
                                      (catch clojure.lang.ExceptionInfo _ false))]
                      (= (boolean expected) actual))) :seed 20260920)]
     (is (:pass? result) (pr-str result))))
+
+(deftest concept-metadata-updates-replace-values-and-refresh-indexes
+  (h/with-context [ctx]
+    (let [oid (h/graph ctx)
+          created (h/ok! (o/create-concept! ctx oid
+                          (assoc (h/concept "urn:item") :alt-labels ["Old alias"]
+                                 :provenance {:old true} :embedding-model "m" :embedding [1 0])))
+          cid (:concept-id created)
+          original (o/get-concept ctx oid cid)]
+      ;; Scope controls index buckets until an explicit entity type is supplied.
+      (h/ok! (o/update-concept! ctx oid cid {:changes {:scope :new-scope}}))
+      (let [s (graph-state ctx oid)]
+        (check-indexes s)
+        (is (nil? (get-in s [:indexes :labels [oid :domain "old alias"]])))
+        (is (= #{[oid "urn:item"]} (get-in s [:indexes :labels [oid :new-scope "old alias"]])))
+        (is (= [] (o/get-concepts ctx {:ontology-id oid :scope :domain})))
+        (is (= [cid] (mapv :concept-id (o/get-concepts ctx {:ontology-id oid :scope :new-scope})))))
+      (doseq [changes [{:entity-type "NewType"} {:alt-labels ["New alias"]}
+                       {:provenance {:replacement true}}]]
+        (h/ok! (o/update-concept! ctx oid cid {:changes changes})))
+      (let [current (o/get-concept ctx oid cid)
+            s (graph-state ctx oid)]
+        (check-indexes s)
+        (is (= {:replacement true} (:provenance current)))
+        (is (= ["New alias"] (:alt-labels current)))
+        (is (= (select-keys original [:concept-id :ontology-id :uri :label :description :created-at])
+               (select-keys current [:concept-id :ontology-id :uri :label :description :created-at])))
+        (is (nil? (get-in s [:indexes :labels [oid :new-scope "old alias"]])))
+        (is (nil? (get-in s [:indexes :labels [oid "NewType" "old alias"]])))
+        (is (= #{[oid "urn:item"]} (get-in s [:indexes :labels [oid "NewType" "new alias"]])))
+        (is (nil? (get-in s [:indexes :embeddings [oid :new-scope "m" 2]])))
+        (is (= #{[oid "urn:item"]} (get-in s [:indexes :embeddings [oid "NewType" "m" 2]])))
+        (h/with-context [fresh]
+          (h/replay! ctx fresh)
+          (is (= current (o/get-concept fresh oid cid)))
+          (is (= (:indexes s) (:indexes (graph-state fresh oid)))))))))

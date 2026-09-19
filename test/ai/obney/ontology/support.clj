@@ -14,7 +14,7 @@
 (defn concept [uri] {:uri uri :label uri :description (str "Description " uri) :scope :domain})
 (defn add! [ctx oid uri] (ok! (o/create-concept! ctx oid (concept uri))))
 (defn request [ctx oid concepts]
-  {:ontology-id oid :contribution-id (random-uuid) :expected-revision (o/get-revision ctx oid)
+  {:contribution-id (random-uuid) :expected-revision (o/get-revision ctx oid)
    :source {:source-id (random-uuid) :content-hash "fixture"} :concepts concepts})
 (defn graph-events [ctx]
   (into [] (es/read (:event-store ctx) {:tenant-id (:tenant-id ctx) :types o/graph-event-types})))

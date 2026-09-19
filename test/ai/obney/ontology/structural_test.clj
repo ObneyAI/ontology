@@ -40,7 +40,7 @@
         (o/get-concept-by-uri ctx oid "urn:one")
         (is (empty? (consumed reads)))
         (is (every? :after (query-maps reads)))
-        (h/ok! (o/update-concept! ctx oid (:concept-id c) {:label "Updated"}))
+        (h/ok! (o/update-concept! ctx oid (:concept-id c) {:changes {:label "Updated"}}))
         (h/add! ctx other "urn:noise")
         (reset! reads [])
         (is (= "Updated" (:label (o/get-concept-by-uri ctx oid "urn:one"))))
@@ -54,7 +54,7 @@
     (let [oid (h/graph ctx) _ (h/add! ctx oid "urn:a") _ (h/add! ctx oid "urn:b")
           child (h/ok! (o/create-concept! ctx oid (assoc (h/concept "urn:child") :broader ["urn:a"])))]
       (is (= #{"urn:child"} (:narrower (o/get-concept-by-uri ctx oid "urn:a"))))
-      (h/ok! (o/update-concept! ctx oid (:concept-id child) {:broader ["urn:b"]}))
+      (h/ok! (o/update-concept! ctx oid (:concept-id child) {:changes {:broader ["urn:b"]}}))
       (let [tags (:event/tags (last (h/graph-events ctx)))]
         (is (every? tags (map #(streams/concept-tag oid %) ["urn:a" "urn:b" "urn:child"]))))
       (is (= #{} (:narrower (o/get-concept-by-uri ctx oid "urn:a"))))
@@ -66,7 +66,7 @@
   (h/with-context [ctx]
     (let [oid (h/graph ctx) _ (h/add! ctx oid "urn:unchanged")
           input (h/request ctx oid [(h/concept "urn:added")])
-          result (h/ok! (o/import-contribution! ctx input))
+          result (h/ok! (o/import-contribution! ctx oid input))
           e (last (h/graph-events ctx)) tags (:event/tags e)
           [ctx reads] (observed ctx)]
       (is (= 1 (count (get-in e [:changes :concepts :upserts]))))
@@ -76,7 +76,7 @@
       (is (contains? tags [:source (get-in input [:source :source-id])]))
       (h/add! ctx oid "urn:later")
       (reset! reads [])
-      (is (= result (o/import-contribution! ctx input)))
+      (is (= result (o/import-contribution! ctx oid input)))
       (is (= 1 (count (consumed reads))))
       (is (every? #(= #{(streams/request-tag oid (:contribution-id input))} (:tags %)) (query-maps reads)))
       (is (= "urn:added" (:uri (o/get-concept-by-uri ctx oid "urn:added")))))))
@@ -89,18 +89,22 @@
       (try
         (let [oid (h/graph ctx) other-oid (h/graph ctx) request-id (random-uuid)
               input (assoc (h/request ctx oid [(h/concept "urn:first")]) :contribution-id request-id)
-              result (h/ok! (o/import-contribution! ctx input))]
+              result (h/ok! (o/import-contribution! ctx oid input))]
           (is (nil? (state/read-request ctx other-oid request-id)))
           (is (nil? (state/read-request other-tenant oid request-id)))
-          (h/ok! (h/send! other-tenant :ontology/create-ontology {:name "Other tenant"} oid))
+          (h/ok! (es/append (:event-store ctx)
+                           {:tenant-id (:tenant-id other-tenant)
+                            :events (mapv #(dissoc % :event/id :event/timestamp)
+                                          (filter #(= :ontology/ontology-created (:event/type %))
+                                                  (h/graph-events ctx)))}))
           (doseq [[scope id uri] [[ctx other-oid "urn:other-ontology"] [other-tenant oid "urn:other-tenant"]]]
             (let [request (assoc (h/request scope id [(h/concept uri)]) :contribution-id request-id)
-                  accepted (h/ok! (o/import-contribution! scope request))
+                  accepted (h/ok! (o/import-contribution! scope id request))
                   before (count (h/graph-events scope))]
-              (is (= accepted (o/import-contribution! scope request)))
+              (is (= accepted (o/import-contribution! scope id request)))
               (is (= before (count (h/graph-events scope))))
-              (is (h/rejected? #(o/import-contribution! scope (assoc request :concepts [(h/concept "urn:changed")]))))))
-          (is (= result (o/import-contribution! ctx input))))
+              (is (h/rejected? #(o/import-contribution! scope id (assoc request :concepts [(h/concept "urn:changed")]))))))
+          (is (= result (o/import-contribution! ctx oid input))))
         (finally
           (es/stop (:event-store ctx))
           (when file (durable/cleanup file)))))))
@@ -112,7 +116,7 @@
           [ctx reads] (observed ctx)]
       (is (= 2 (count (o/get-relationships ctx oid))))
       (is (= 2 (count (consumed reads))))
-      (h/ok! (o/update-concept! ctx oid (:concept-id parent) {:label "Renamed"}))
+      (h/ok! (o/update-concept! ctx oid (:concept-id parent) {:changes {:label "Renamed"}}))
       (reset! reads [])
       (is (= 2 (count (o/get-relationships ctx oid))))
       (is (empty? (consumed reads))))))
@@ -147,7 +151,7 @@
   (h/with-context [ctx]
     (let [a (h/graph ctx) b (h/graph ctx)]
       (h/add! ctx a "urn:a") (h/add! ctx b "urn:b")
-      (h/ok! (o/register-predicate! ctx a "urn:forward" {:inverse "urn:back" :cross-ontology? true}))
+      (h/ok! (o/register-predicate! ctx a {:predicate "urn:forward" :policy {:inverse "urn:back" :cross-ontology? true}}))
       (h/ok! (o/create-relationship! ctx {:source-ontology-id a :source-uri "urn:a"
                                          :target-ontology-id b :target-uri "urn:b" :predicate "urn:forward"}))
       (is (= #{[a "urn:a"]} (get-in (o/get-concept-by-uri ctx b "urn:b") [:relations "urn:back"])))

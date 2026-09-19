@@ -4,7 +4,9 @@
             [clojure.test.check.generators :as gen]
             [clojure.test.check.properties :as prop]
             [ai.obney.ontology.interface :as o]
-            [ai.obney.ontology.algorithms :as a]
+            [ai.obney.ontology.core.entity-resolver :as entity-resolver]
+            [ai.obney.ontology.core.rdf :as rdf]
+            [ai.obney.ontology.core.source-registry :as source-registry]
             [ai.obney.ontology.support :as h]))
 
 (def seed (Long/parseLong (or (System/getenv "ONTOLOGY_TEST_SEED") "20260918")))
@@ -53,10 +55,10 @@
                 before-events (h/graph-events ctx)
                 result (case op
                          :add (o/create-concept! ctx oid (assoc (h/concept u) :label label))
-                         :rename (o/update-concept! ctx oid (or (:id c) (random-uuid)) {:label label})
-                         :parents (o/update-concept! ctx oid (or (:id c) (random-uuid)) {:broader [parent]})
-                         (:import :bad-import) (o/import-contribution! ctx input)
-                         :retry (when prior (o/import-contribution! ctx (first prior))))
+                         :rename (o/update-concept! ctx oid (or (:concept-id c) (random-uuid)) {:changes {:label label}})
+                         :parents (o/update-concept! ctx oid (or (:concept-id c) (random-uuid)) {:changes {:broader [parent]}})
+                         (:import :bad-import) (o/import-contribution! ctx oid input)
+                         :retry (when prior (o/import-contribution! ctx oid (first prior))))
                 changes? (and allowed (not= op :retry))
                 expected (if changes?
                            (case op
@@ -92,8 +94,8 @@
                         prefer gen/boolean]
             (let [existing (if prefer #{(first names)} #{})
                   expected (if prefer (first names) (first (sort-by (juxt count identity) names)))]
-              (= expected (a/select-canonical-uri names existing)
-                 (a/select-canonical-uri (reverse names) existing))))))
+              (= expected (entity-resolver/select-canonical-uri names existing)
+                 (entity-resolver/select-canonical-uri (reverse names) existing))))))
 
 (deftest literal-export-roundtrip-has-exact-statements-and-checksum
   (check! "literal-roundtrip"
@@ -101,12 +103,12 @@
             (h/with-context [ctx]
               (let [oid (h/graph ctx) literal (apply str pieces)
                     input (assoc (h/request ctx oid []) :rdf-triples [{:subject "urn:s" :predicate "urn:p" :literal literal}])]
-                (h/ok! (o/import-contribution! ctx input))
+                (h/ok! (o/import-contribution! ctx oid input))
                 (let [snapshot (o/export-snapshot ctx oid)
-                      triples (a/parse-ntriples (:ttl-output snapshot))]
+                      triples (rdf/parse-ntriples (:ttl-output snapshot))]
                   (and (some #(= literal (:literal %)) triples)
                        (= (:triple-count snapshot) (count triples))
-                       (= (:checksum snapshot) (a/sha256 (:ttl-output snapshot))))))))))
+                       (= (:checksum snapshot) (source-registry/sha256 (:ttl-output snapshot))))))))))
 
 (deftest disjoint-contributions-have-order-independent-rdf
   (check! "disjoint-import-order"
@@ -115,7 +117,7 @@
                   snapshots (mapv (fn [cs]
                                     (h/with-context [ctx]
                                       (let [oid (h/graph ctx)]
-                                        (doseq [c cs] (h/ok! (o/import-contribution! ctx (h/request ctx oid [c]))))
+                                        (doseq [c cs] (h/ok! (o/import-contribution! ctx oid (h/request ctx oid [c]))))
                                         (select-keys (o/export-snapshot ctx oid) [:ttl-output :checksum :triple-count]))))
                                   [records (reverse records)])]
               (apply = snapshots)))))
@@ -129,11 +131,11 @@
             (if-let [[source version] (first remaining)]
               (let [sid (java.util.UUID/nameUUIDFromBytes (.getBytes (str source) "UTF-8"))
                     hash (str "version-" version)
-                    _ (h/ok! (o/import-contribution! ctx (assoc (h/request ctx oid []) :source {:source-id sid :content-hash hash})))
+                    _ (h/ok! (o/import-contribution! ctx oid (assoc (h/request ctx oid []) :source {:source-id sid :content-hash hash})))
                     expected (conj expected [sid hash])
                     actual (mapv (juxt :source-id :content-hash) (o/get-sources ctx oid))]
                 (and (= expected (set actual)) (= (count actual) (count expected))
-                     (empty? (o/get-sources foreign oid))
+                     (= :cognitect.anomalies/not-found (:cognitect.anomalies/category (o/get-sources foreign oid)))
                      (recur (rest remaining) expected)))
               true)))))))
 
@@ -144,7 +146,7 @@
             original {:uri "urn:original" :label "Original" :source-id "a" :entity-type "T" :embedding-model "m" :embedding [scale 0.0]}
             incoming {:uri "urn:new" :label "New" :source-id "b" :entity-type "T" :embedding-model "m"
                       :embedding [(* scale (Math/cos theta)) (* scale (Math/sin theta))]}
-            result (a/resolve-incremental [incoming] [original] #{"urn:original"} {:similarity-threshold 0.0})]
+            result (entity-resolver/resolve-incremental [incoming] [original] #{"urn:original"} {:similarity-threshold 0.0})]
         (and (seq (:matches result))
              (every? #(and (Double/isFinite (double (:similarity-score %))) (<= 0 (:similarity-score %) 1)) (:matches result))
              (= "urn:original" (get (:canonical-map result) "urn:new")))))))

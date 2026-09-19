@@ -25,7 +25,7 @@
 (defn- concept-entry [idx [oid uri :as key] c add?]
   (let [idx (-> idx
                 (membership [:concept-uris oid] uri add?)
-                (membership [:concept-ids [oid (:id c)]] key add?))
+                (membership [:concept-ids [oid (:concept-id c)]] key add?))
         idx (reduce #(membership %1 [:labels [oid (entity-type c) %2]] key add?) idx (labels c))]
     (if-let [bucket (embedding-key oid c)]
       (membership idx [:embeddings bucket] key add?) idx)))

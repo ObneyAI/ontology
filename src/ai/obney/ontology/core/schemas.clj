@@ -18,6 +18,10 @@
               [:provenance {:optional true} :map]])
 
 (def changes [:map
+              [:scope {:optional true} scope]
+              [:alt-labels {:optional true} [:vector :string]]
+              [:provenance {:optional true} :map]
+              [:entity-type {:optional true} :string]
               [:label {:optional true} :string]
               [:description {:optional true} :string]
               [:broader {:optional true} [:vector :string]]
@@ -33,7 +37,7 @@
                                  [:source-uri :string] [:target-uri :string] [:predicate :string]]
    :ontology/register-predicate [:map [:ontology-id :uuid] [:predicate :string] [:policy policy]]
    :ontology/import-contribution [:map [:ontology-id :uuid] [:contribution-id :uuid]
-                                 [:expected-revision :int]
+                                 [:expected-revision {:optional true} :int]
                                  [:source [:map [:source-id :uuid] [:content-hash :string]
                                            [:producer {:optional true} :map]]]
                                  [:concepts [:vector concept]]

@@ -1,6 +1,7 @@
 (ns ai.obney.ontology.core.rdf
   "Deterministic import of the supported N-Triples subset."
-  (:require [clojure.string :as str]))
+  (:require [clojure.string :as str]
+            [ai.obney.ontology.core.errors :as errors]))
 
 (def ^:private rdf-type-uri
   "http://www.w3.org/1999/02/22-rdf-syntax-ns#type")
@@ -34,8 +35,13 @@
                  (case (subs escape 1 2)
                    "t" "\t" "b" "\b" "n" "\n" "r" "\r" "f" "\f"
                    "\"" "\"" "'" "'" "\\" "\\"
-                   ("u" "U") (String. (Character/toChars (Integer/parseInt (subs escape 2) 16)))
-                   (throw (ex-info "Unsupported RDF literal escape" {:escape escape}))))))
+                   ("u" "U") (let [_ (errors/require! (re-matches #"(?:[0-9A-Fa-f]{4}|[0-9A-Fa-f]{8})" (subs escape 2))
+                                                   "Invalid Unicode escape")
+                                     code-point (Long/parseLong (subs escape 2) 16)]
+                               (errors/require! (<= 0 code-point Character/MAX_CODE_POINT)
+                                                "Invalid Unicode code point")
+                               (String. (Character/toChars (int code-point))))
+                   (errors/fail! :cognitect.anomalies/incorrect "Unsupported RDF literal escape")))))
 
 (defn- parse-ntriples-line [line-number line]
   (when-not (or (str/blank? line) (str/starts-with? (str/trim line) "#"))
@@ -50,7 +56,9 @@
        :datatype datatype
        :literal (some-> literal unescape-literal)}
       (throw (ex-info "Malformed N-Triples statement"
-                      {:line line-number :statement line})))))
+                      {:cognitect.anomalies/category :cognitect.anomalies/incorrect
+                       :cognitect.anomalies/message "Malformed N-Triples statement"
+                       :line line-number :statement line})))))
 
 (defn- valid-unicode? [s]
   (loop [i 0]
@@ -85,7 +93,7 @@
   "Parse the supported URI-subject N-Triples subset; reject unsupported statements."
   [content]
   (when-not (string? content)
-    (throw (ex-info "N-Triples content must be a string" {})))
+    (errors/fail! :cognitect.anomalies/incorrect "N-Triples content must be a string"))
   (->> (str/split-lines content)
        (map-indexed #(parse-ntriples-line (inc %1) %2))
        (remove nil?) vec validate-triples!))
@@ -99,8 +107,7 @@
    predicates are normalized to the relationship vocabulary used by the ontology graph."
   [source-id content _config]
   (when-not (string? content)
-    (throw (ex-info "RDF import requires N-Triples string content"
-                    {:source-id source-id})))
+    (errors/fail! :cognitect.anomalies/incorrect "RDF import requires N-Triples string content"))
   (let [triples (parse-ntriples content)
         uri-objects (keep :object-uri triples)
         uris (into #{} (concat (map :subject triples) uri-objects))

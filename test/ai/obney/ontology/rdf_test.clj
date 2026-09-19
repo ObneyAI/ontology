@@ -2,11 +2,12 @@
   (:require [clojure.test :refer [deftest is]]
             [clojure.string :as str]
             [ai.obney.ontology.interface :as o]
-            [ai.obney.ontology.algorithms :as a]
+            [ai.obney.ontology.core.rdf :as rdf]
+            [ai.obney.ontology.core.source-registry :as source-registry]
             [ai.obney.ontology.support :as h]))
 
 (defn import! [ctx oid content]
-  (o/import-rdf! ctx (assoc (dissoc (h/request ctx oid []) :concepts) :content content)))
+  (o/import-rdf! ctx oid (assoc (dissoc (h/request ctx oid []) :concepts) :content content)))
 
 (deftest malformed-or-unsupported-rdf-is-rejected-atomically
   (h/with-context [ctx]
@@ -29,11 +30,11 @@
                  "<urn:s> <urn:r> \"42\"^^<http://www.w3.org/2001/XMLSchema#integer> ."]
           content (str/join "\n" lines)]
       (h/ok! (import! ctx oid content))
-      (let [snapshot (o/export-snapshot ctx oid) parsed (a/parse-ntriples (:ttl-output snapshot))
-            raw (set (a/parse-ntriples content))]
+      (let [snapshot (o/export-snapshot ctx oid) parsed (rdf/parse-ntriples (:ttl-output snapshot))
+            raw (set (rdf/parse-ntriples content))]
         (is (every? (set parsed) raw))
         (is (= (:triple-count snapshot) (count parsed)))
-        (is (= (:checksum snapshot) (a/sha256 (:ttl-output snapshot))))
+        (is (= (:checksum snapshot) (source-registry/sha256 (:ttl-output snapshot))))
         (is (= #{"line\nquote\"slash\\tab\t" "λ 🌳" "42"}
                (set (keep :literal raw))))))))
 
@@ -46,8 +47,8 @@
                               :object-properties [{:uri "urn:parent" :domain "urn:C" :range "urn:C"}]
                               :datatype-properties [{:uri "urn:age" :domain "urn:C" :datatype "xsd:integer"}]}
                        :abox [{:uri "urn:i" :type "urn:C" :properties properties}])]
-      (h/ok! (o/import-contribution! ctx input))
-      (let [snapshot (o/export-snapshot ctx oid) triples (a/parse-ntriples (:ttl-output snapshot))]
+      (h/ok! (o/import-contribution! ctx oid input))
+      (let [snapshot (o/export-snapshot ctx oid) triples (rdf/parse-ntriples (:ttl-output snapshot))]
         (doseq [[p v] properties]
           (is (some #(and (= "urn:i" (:subject %)) (= p (:predicate %)) (= v (:literal %))) triples)))
         (is (some #(and (= "urn:parent" (:subject %)) (= "urn:C" (:object-uri %))) triples))
@@ -61,7 +62,7 @@
                       {:subject "urn:s" :predicate "urn:p" :object-uri "urn:o" :literal "both"}
                       {:subject "urn:s" :predicate "urn:p" :literal 42}
                       {:subject "urn:s" :predicate "urn:p" :literal "x" :language "en" :datatype "xsd:string"}]]
-        (is (h/anomaly? (o/import-contribution! ctx (assoc (h/request ctx oid []) :rdf-triples [triple]))))
+        (is (h/anomaly? (o/import-contribution! ctx oid (assoc (h/request ctx oid []) :rdf-triples [triple]))))
         (is (= before (h/capture ctx oid)))))))
 
 (deftest export-rejects-nonexistent-revisions
@@ -79,10 +80,10 @@
                                 :object-properties [{:uri "urn:p" :domain "urn:C" :range "urn:C"}]
                                 :datatype-properties [{:uri "urn:age" :domain "urn:C" :datatype "xsd:integer"}]}
                          :abox [{:uri "urn:i" :type "urn:C" :properties {"urn:age" "42"}}])]
-      (h/ok! (o/import-contribution! ctx request))
+      (h/ok! (o/import-contribution! ctx oid request))
       (let [exported (:ttl-output (o/export-snapshot ctx oid))
             result (import! ctx copy exported)]
         (is (not (h/anomaly? result)) (pr-str result))
         (when-not (h/anomaly? result)
-          (is (every? (set (a/parse-ntriples (:ttl-output (o/export-snapshot ctx copy))))
-                      (a/parse-ntriples exported))))))))
+          (is (every? (set (rdf/parse-ntriples (:ttl-output (o/export-snapshot ctx copy))))
+                      (rdf/parse-ntriples exported))))))))

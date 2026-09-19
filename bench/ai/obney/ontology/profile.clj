@@ -2,7 +2,7 @@
   "Single-client stage profiling using the same μ/trace tree as Grain."
   (:refer-clojure :exclude [run!])
   (:require [ai.obney.ontology.benchmark :as bench]
-            [ai.obney.ontology.algorithms :as algorithms]
+            [ai.obney.ontology.core.source-registry :as source-registry]
             [ai.obney.ontology.core.trace :as trace]
             [ai.obney.grain.event-store-v3.interface :as es]
             [ai.obney.grain.read-model-processor-v2.interface :as rmp]
@@ -194,7 +194,7 @@
                                                             [(io/file "deps.edn")
                                                              (io/file "bench/ai/obney/ontology/benchmark.clj")
                                                              (io/file "bench/ai/obney/ontology/profile.clj")])]
-                                           [(str file) (algorithms/sha256 (slurp file))]))
+                                           [(str file) (source-registry/sha256 (slurp file))]))
                     :profile-start-concepts (if (= operation :import-delta)
                                               (+ n (* (:delta-size options) (+ (:warmup options) (:samples options)))) n)
                     :grain-sha "dbf5b5229aad09785e40f71e96adf65c90f971d5"

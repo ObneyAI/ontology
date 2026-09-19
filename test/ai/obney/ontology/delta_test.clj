@@ -31,10 +31,10 @@
 (deftest a-small-contribution-does-not-carry-the-existing-graph
   (h/with-context [ctx]
     (let [oid (h/graph ctx)
-          _ (h/ok! (o/import-contribution! ctx (h/request ctx oid (mapv #(h/concept (str "urn:" %)) (range 1000)))))
+          _ (h/ok! (o/import-contribution! ctx oid (h/request ctx oid (mapv #(h/concept (str "urn:" %)) (range 1000)))))
           before (state/read-state (assoc ctx :ontology/ids #{oid}))
           input (h/request ctx oid [(assoc (h/concept "urn:1") :label "Changed")])
-          result (h/ok! (o/import-contribution! ctx input))
+          result (h/ok! (o/import-contribution! ctx oid input))
           event (last (h/graph-events ctx)) changes (:changes event)
           after (state/read-state (assoc ctx :ontology/ids #{oid}))]
       (is (= #{[oid "urn:1"]} (set (keys (get-in changes [:concepts :upserts])))))
@@ -45,7 +45,7 @@
       (is (= (select-keys after [:concepts :edges :tbox :abox :rdf-triples])
              (select-keys (d/apply-changes before oid changes) [:concepts :edges :tbox :abox :rdf-triples])))
       (is (= "Changed" (:label (o/get-concept-by-uri ctx oid "urn:1"))))
-      (is (= result (o/import-contribution! ctx input)))
+      (is (= result (o/import-contribution! ctx oid input)))
       (h/with-context [fresh]
         (h/replay! ctx fresh)
         (is (= (o/export-snapshot ctx oid) (o/export-snapshot fresh oid)))
@@ -54,12 +54,12 @@
 (deftest contribution-parent-diffs-update-both-endpoints-and-history
   (h/with-context [ctx]
     (let [oid (h/graph ctx) _ (h/add! ctx oid "urn:a") _ (h/add! ctx oid "urn:b")
-          _ (h/ok! (o/import-contribution! ctx (h/request ctx oid [(assoc (h/concept "urn:child") :broader ["urn:a"])])))
+          _ (h/ok! (o/import-contribution! ctx oid (h/request ctx oid [(assoc (h/concept "urn:child") :broader ["urn:a"])])))
           snapshot (o/export-snapshot ctx oid) revision (:revision snapshot)]
       (o/get-concept-by-uri ctx oid "urn:a")
       (o/get-concept-by-uri ctx oid "urn:b")
       (o/get-concept-by-uri ctx oid "urn:child")
-      (h/ok! (o/import-contribution! ctx (h/request ctx oid [(assoc (h/concept "urn:child") :broader ["urn:b"])])))
+      (h/ok! (o/import-contribution! ctx oid (h/request ctx oid [(assoc (h/concept "urn:child") :broader ["urn:b"])])))
       (let [event (last (h/graph-events ctx))]
         (is (= [(state/edge-key (state/edge oid "urn:child" "skos:broader" "urn:a"))]
                (get-in event [:changes :relationships :removals])))
@@ -75,13 +75,13 @@
   (h/with-context [ctx]
     (let [oid (h/graph ctx) _ (h/add! ctx oid "urn:existing")
           before (o/export-snapshot ctx oid) input (h/request ctx oid [])
-          result (h/ok! (o/import-contribution! ctx input)) event (last (h/graph-events ctx))]
+          result (h/ok! (o/import-contribution! ctx oid input)) event (last (h/graph-events ctx))]
       (is (= (inc (:revision before)) (:revision result)))
       (is (every? empty? (vals (get-in event [:changes :concepts]))))
       (is (= (:concepts before) (:concepts (o/export-snapshot ctx oid))))
       (is (= 1 (count (o/get-contributions ctx oid))))
       (is (= 1 (count (o/get-sources ctx oid))))
-      (is (= result (o/import-contribution! ctx input))))))
+      (is (= result (o/import-contribution! ctx oid input))))))
 
 (deftest touched-records-report-net-changes-only
   (let [oid (random-uuid)
@@ -131,14 +131,14 @@
 (deftest imports-diff-only-touched-identities-and-do-not-persist-tracking
   (h/with-context [ctx]
     (let [oid (h/graph ctx)
-          _ (h/ok! (o/import-contribution! ctx (h/request ctx oid
+          _ (h/ok! (o/import-contribution! ctx oid (h/request ctx oid
                     (mapv #(h/concept (str "urn:old" %)) (range 100)))))
           records d/records sizes (atom [])
           input (h/request ctx oid (mapv #(assoc (h/concept (str "urn:new" %)) :broader ["urn:old0"]) (range 10)))]
       (with-redefs [d/records (fn [before after]
                                (swap! sizes conj [(count before) (count after)])
                                (records before after))]
-        (h/ok! (o/import-contribution! ctx input)))
+        (h/ok! (o/import-contribution! ctx oid input)))
       (is (= [[0 10] [0 10]] (vec (take 2 @sizes))))
       (is (every? #(every? (fn [n] (<= n 10)) %) @sizes))
       (is (not-any? #(and (map? %) (contains? % ::d/touched))

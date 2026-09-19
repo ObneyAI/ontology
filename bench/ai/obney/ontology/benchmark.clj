@@ -1,7 +1,7 @@
 (ns ai.obney.ontology.benchmark
   "Standalone, single-client end-to-end benchmarks. Timings use monotonic nanoseconds."
   (:require [ai.obney.ontology.interface :as o]
-            [ai.obney.ontology.algorithms :as algorithms]
+            [ai.obney.ontology.core.source-registry :as source-registry]
             [ai.obney.ontology.core.state :as state]
             [ai.obney.grain.event-store-v3.interface :as es]
             [clojure.edn :as edn]
@@ -52,7 +52,7 @@
    :embedding-model "benchmark-synthetic"
    :embedding (mapv (fn [d] (Math/sin (double (+ (* 31 i) d 1)))) (range dimensions))})
 (defn request [oid revision key concepts]
-  {:ontology-id oid :contribution-id (id key) :expected-revision revision
+  {:contribution-id (id key) :expected-revision revision
    :source {:source-id (id (str "source-" key)) :content-hash (str "synthetic-" key)}
    :concepts (vec concepts)})
 
@@ -109,20 +109,20 @@
         revision (atom 1) last-input (atom nil)]
     (doseq [[i batch] (map-indexed vector (partition-all batch-size records))]
       (let [input (request oid @revision (str "initial-" i) batch)]
-        (reset! revision (:revision (ok! (o/import-contribution! ctx input))))
+        (reset! revision (:revision (ok! (o/import-contribution! ctx oid input))))
         (reset! last-input input)))
     ;; Additional contributions upsert an existing record, keeping graph size fixed.
     (dotimes [i history]
       (let [input (request oid @revision (str "history-" i) [(first records)])]
-        (reset! revision (:revision (ok! (o/import-contribution! ctx input))))
+        (reset! revision (:revision (ok! (o/import-contribution! ctx oid input))))
         (reset! last-input input)))
     {:oid oid :records records :last-input @last-input :revision @revision}))
 
 (defn workloads [ctx {:keys [oid records last-input]} {:keys [delta-size dimensions]}]
   (let [n (count records) target (:uri (last records)) baseline (o/get-revision ctx oid)
-        original-retry (ok! (o/import-contribution! ctx last-input))
+        original-retry (ok! (o/import-contribution! ctx oid last-input))
         next-id (atom n) command-index (atom 0) write-revision (atom baseline)
-        update-id (get-in (state/read-state ctx) [:concepts [oid target] :id])
+        update-id (:concept-id (o/get-concept-by-uri ctx oid target))
         new-command #(str "measured-" (swap! command-index inc))
         accept-write (fn [result]
                        (ok! result)
@@ -138,13 +138,13 @@
       :run #(o/get-concepts ctx {:ontology-id oid})
       :check #(verify! (= n (count %)) {:operation :list-concepts})}
      {:name :search-lexical :kind :read
-      :run #(o/search ctx {:ontology-id oid :query-text "category 7" :limit 10})
+      :run #(o/search ctx oid {:query-text "category 7" :limit 10})
       :check #(verify! (and (seq %) (every? (fn [c] (= oid (:ontology-id c))) %)) {:operation :search-lexical})}
      {:name :search-graph :kind :read
-      :run #(o/search ctx {:ontology-id oid :seed-uris [(uri 0)] :max-depth 2 :limit 10})
+      :run #(o/search ctx oid {:seed-uris [(uri 0)] :max-depth 2 :limit 10})
       :check #(verify! (some (fn [c] (= (uri 0) (:uri c))) %) {:operation :search-graph})}
      {:name :search-vector :kind :read
-      :run #(o/search ctx {:ontology-id oid :query-text "vector" :limit 10
+      :run #(o/search ctx oid {:query-text "vector" :limit 10
                           :embedding-model "benchmark-synthetic" :embed-query (constantly (:embedding (last records)))})
       :check #(verify! (= target (:uri (first %))) {:operation :search-vector})}
      {:name :export-current :kind :read
@@ -154,24 +154,24 @@
       :run #(o/export-snapshot ctx oid 2)
       :check #(verify! (and (= 2 (:revision %)) (seq (:concepts %))) {:operation :export-first-import})}
      {:name :retry-contribution :kind :retry
-      :run #(o/import-contribution! ctx last-input)
+      :run #(o/import-contribution! ctx oid last-input)
       :check #(verify! (= original-retry %) {:operation :retry-contribution})}
      {:name :update-concept :kind :write
-      :run #(o/update-concept! ctx oid update-id {:attributes {:benchmark (new-command)}})
+      :run #(o/update-concept! ctx oid update-id {:changes {:attributes {:benchmark (new-command)}}})
       :check accept-write}
      {:name :import-resolved :kind :write
       :run #(let [key (new-command)
                   aliases (mapv (fn [i] (-> (nth records (mod i n))
                                             (assoc :uri (str "urn:bench:alias:" key ":" i))
                                             (dissoc :embedding :embedding-model :broader))) (range (min n delta-size)))]
-              (o/import-contribution! ctx (assoc (request oid @write-revision key aliases)
+              (o/import-contribution! ctx oid (assoc (request oid @write-revision key aliases)
                                                 :resolution-policy {:match-labels? true :similarity-threshold 1.0})))
       :check (fn [r] (accept-write r) (verify! (= n (:concept-count r)) {:operation :import-resolved :result r}))}
      {:name :import-delta :kind :write
       :run #(let [start @next-id key (new-command)
                   input (request oid @write-revision key (mapv (fn [i] (concept i dimensions)) (range start (+ start delta-size))))]
               (swap! next-id + delta-size)
-              (o/import-contribution! ctx input))
+              (o/import-contribution! ctx oid input))
       :check (fn [r] (accept-write r) (verify! (= @next-id (:concept-count r)) {:operation :import-delta :result r}))}]))
 
 (defn benchmark! [options emit!]
@@ -222,7 +222,7 @@
                   :source-sha256 (into (sorted-map)
                                       (for [file (concat (filter #(.isFile %) (file-seq (io/file "src")))
                                                         [(io/file "deps.edn") (io/file "bench/ai/obney/ontology/benchmark.clj")])]
-                                        [(str file) (algorithms/sha256 (slurp file))]))
+                                        [(str file) (source-registry/sha256 (slurp file))]))
                   :deps (edn/read-string (slurp "deps.edn"))}
         rows (atom [])]
     (spit (io/file dir "metadata.edn") (pr-str metadata))

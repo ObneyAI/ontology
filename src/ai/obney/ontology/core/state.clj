@@ -70,7 +70,7 @@
   (let [old (get-in state [:concepts [oid (:uri c)]])
         c (-> (merge old c)
               (assoc :ontology-id oid)
-              (update :id #(or (:id old) % (:concept-id c)
+              (update :concept-id #(or (:concept-id old) %
                               (java.util.UUID/nameUUIDFromBytes
                                (.getBytes (str oid "|" (:uri c)) "UTF-8")))))]
     (let [record (dissoc c :broader :narrower :related)
@@ -103,11 +103,11 @@
             (put-concept state oid
                          (-> (select-keys e [:uri :label :description :scope :broader :indicators
                                              :provenance :attributes :embedding :embedding-model :created-at :entity-type :alt-labels])
-                             (assoc :id (:concept-id e))))
+                             (assoc :concept-id (:concept-id e))))
 
             :ontology/concept-updated
             (if-let [uri (or (:uri e)
-                            (some (fn [[[_ uri] c]] (when (and (= oid (:ontology-id c)) (= (:concept-id e) (:id c))) uri))
+                            (some (fn [[[_ uri] c]] (when (and (= oid (:ontology-id c)) (= (:concept-id e) (:concept-id c))) uri))
                                   (:concepts state)))]
               (put-concept state oid (assoc (:changes e) :uri uri :updated-at (:updated-at e)))
               state)
@@ -133,7 +133,7 @@
         (cond-> (reduce #(update-in %1 [:revisions %2] (fnil inc 0))
                         (update result :event-count (fnil inc 0)) affected)
           (:request-id e)
-          (assoc-in [:requests [(or oid (:source-ontology-id e)) (:request-id e)]]
+          (assoc-in [:requests [(streams/request-ontology-id e) (:request-id e)]]
                     {:request-hash (:request-hash e) :result (:result e)}))
         result))))
 
@@ -170,7 +170,7 @@
 (defreadmodel :ontology.graph requests {:events events :version 1}
   [s e]
   (let [e (event-data e)]
-    (assoc s [(:ontology-id e) (:request-id e)] (select-keys e [:request-hash :result]))))
+    (assoc s [(streams/request-ontology-id e) (:request-id e)] (select-keys e [:request-hash :result]))))
 
 (defn- incident? [[oid uri] e]
   (or (= [oid uri] [(:source-ontology-id e) (:source-uri e)])
@@ -252,8 +252,7 @@
     (if-let [command (:command ctx)]
       (let [head (:event/id (first (into [] (es/read (:event-store ctx)
                                                     {:tenant-id (:tenant-id ctx) :types events :reverse? true :limit 1}))))
-            ids (set (remove nil? [(or (:ontology-id command) (:source-ontology-id command)
-                                      (when (= :ontology/create-ontology (:command/name command)) (:command/id command)))
+            ids (set (remove nil? [(or (:ontology-id command) (:source-ontology-id command))
                                   (:target-ontology-id command)]))]
         (assoc (connected-state ctx ids) :read-head head))
       (let [ids (:ontology/ids ctx)]
@@ -263,7 +262,10 @@
     (read-state (assoc ctx :ontology/ids #{oid}))
     (let [metadata (metadata-state ctx oid)
           event-id (when (pos-int? requested-revision) (get-in metadata [:revision-events oid requested-revision]))]
-      (when-not event-id (throw (ex-info "Graph revision not found" {:revision requested-revision})))
+      (when-not event-id (throw (ex-info "Graph revision not found"
+                                      {:cognitect.anomalies/category :cognitect.anomalies/not-found
+                                       :cognitect.anomalies/message "Graph revision not found"
+                                       :revision requested-revision})))
       (with-policies ctx (graph-state ctx #{oid} event-id) #{oid} event-id))))
 
 (defn- logical-edges [state]
@@ -290,9 +292,13 @@
                 (= predicate "skos:broader") (update-in [target :narrower] (fnil conj #{}) (:source-uri e))
                 (= predicate "skos:related") (update-in [source :related] (fnil conj #{}) (:target-uri e)))))
           {} (logical-edges state)))
+(defn- concept-record-view [c relations]
+  (merge c
+         {:broader #{} :narrower #{} :related #{} :relations {}}
+         relations))
 (defn concept-view [state key]
   (when-let [c (get-in state [:concepts key])]
-    (merge c {:broader #{} :narrower #{} :related #{} :relations {}} (get (adjacency state) key))))
+    (concept-record-view c (get (adjacency state) key))))
 (defn concepts
   ([state] (concepts state {}))
   ([state {:keys [ids scope broader-uri]}]
@@ -300,5 +306,5 @@
      (->> (:concepts state)
           (filter (fn [[[oid _] c]] (and (or (nil? ids) (contains? ids oid)) (or (nil? scope) (= scope (:scope c))))))
           (sort-by key)
-          (map (fn [[key c]] (merge c {:broader #{} :narrower #{} :related #{} :relations {}} (get index key))))
+          (map (fn [[key c]] (concept-record-view c (get index key))))
           (filter #(or (nil? broader-uri) (contains? (:broader %) broader-uri))) vec))))

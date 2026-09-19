@@ -5,7 +5,8 @@
             [ai.obney.ontology.core.indexes :as indexes]
             [ai.obney.ontology.core.schemas]
             [ai.obney.ontology.core.rdf :as rdf]
-            [ai.obney.ontology.algorithms :as algorithms]
+            [ai.obney.ontology.core.entity-resolver :as entity-resolver]
+            [ai.obney.ontology.core.source-registry :as source-registry]
             [ai.obney.grain.command-processor-v2.interface :refer [defcommand]]
             [ai.obney.grain.event-store-v3.interface :as es]
             [clojure.string :as str]
@@ -24,7 +25,7 @@
                                      (cond (map? v) (into (sorted-map-by #(compare (pr-str %1) (pr-str %2))) v)
                                            (set? v) (vec (sort-by pr-str v))
                                            :else v)) value)]
-      (algorithms/sha256 (pr-str canonical)))))
+      (source-registry/sha256 (pr-str canonical)))))
 
 (defn require-ontology! [s oid]
   (when-not (get-in s [:ontologies oid]) (fail! ::anom/not-found "Ontology not found")))
@@ -75,7 +76,8 @@
   (let [source [(:source-ontology-id e) (:source-uri e)]
         target [(:target-ontology-id e) (:target-uri e)]
         policy (get-in s [:ontologies (:source-ontology-id e) :predicate-policies (:predicate e)])]
-    (require! (and (get-in s [:concepts source]) (get-in s [:concepts target])) "Relationship endpoints must exist")
+    (when-not (and (get-in s [:concepts source]) (get-in s [:concepts target]))
+      (fail! ::anom/not-found "Relationship endpoints must exist"))
     (require! policy (str "Undeclared predicate: " (:predicate e)))
     (require! (or (= (first source) (first target)) (:cross-ontology? policy))
               "Predicate does not permit cross-ontology relationships")
@@ -116,10 +118,13 @@
             {:command-result/events [] :command-result/data (:result prior)}
             {::anom/category ::anom/conflict ::anom/message "Idempotency key reused with different payload"})
           (do
+            (when oid (require-ontology! s oid))
             (when (and (contains? command :expected-revision)
                        (not= (:expected-revision command) (state/revision s oid)))
               (fail! ::anom/conflict "Stale ontology revision"))
             (let [{:keys [type body result]} (make-change s)
+                  request-ontology-id oid
+                  oid (or oid (:ontology-id result))
                   result (assoc result :ontology-id oid :revision (inc (state/revision s oid)))
                   body (assoc body :ontology-id oid :request-id request-id :request-hash request-hash :result result)
                   event (es/->event {:type type :tags #{} :body body})
@@ -131,18 +136,26 @@
                :command-result/data result
                ;; A connected graph may span several ontology streams. Grain CAS
                ;; accepts one query, so use a tenant suffix for that case.
-               :command-result/cas (cond-> {:types state/events :limit 1
-                                            :predicate-fn #(empty? (into [] (take 1) %))}
-                                     (:read-head s) (assoc :after (:read-head s))
-                                     (= 1 (count ids)) (assoc :tags #{[:ontology (first ids)]}))}))))
-      (catch clojure.lang.ExceptionInfo e
+               :command-result/cas (if (nil? request-ontology-id)
+                                     ;; Creation has no graph identity yet. Atomically claim
+                                     ;; its tenant-scoped retry key, even across concurrent creates.
+                                     {:types state/events :limit 1
+                                      :tags #{(streams/request-tag nil request-id)}
+                                      :predicate-fn #(empty? (into [] (take 1) %))}
+                                     (cond-> {:types state/events :limit 1
+                                              :predicate-fn #(empty? (into [] (take 1) %))}
+                                       (:read-head s) (assoc :after (:read-head s))
+                                       (= 1 (count ids)) (assoc :tags #{[:ontology (first ids)]})))}))))
+      (catch Exception e
         (if (::anom/category (ex-data e)) (ex-data e)
-            {::anom/category ::anom/fault ::anom/message (.getMessage e)})))))
+            ;; Grain catches handler exceptions. Preserve the cause for the public
+            ;; dispatcher to rethrow after the engine declines to append events.
+            {::anom/category ::anom/fault ::anom/message (.getMessage e) ::exception e})))))
 
 (defcommand :ontology create-ontology {:authorized? tenant-scoped?}
   [ctx]
-  (let [{:keys [name] :as p} (:command ctx) id (:command/id p)]
-    (command-result ctx id id
+  (let [{:keys [name] :as p} (:command ctx) id (random-uuid)]
+    (command-result ctx nil (:command/id p)
       (fn [_]
         (require! (nonblank? name) "Ontology name must be nonblank")
         {:type :ontology/ontology-created
@@ -152,8 +165,8 @@
 
 (defcommand :ontology create-concept {:authorized? tenant-scoped?}
   [ctx]
-  (let [{:keys [ontology-id uri] :as p} (:command ctx) id (:command/id p)]
-    (command-result ctx ontology-id id
+  (let [{:keys [ontology-id uri] :as p} (:command ctx) id (random-uuid)]
+    (command-result ctx ontology-id (:command/id p)
       (fn [s]
         (require-ontology! s ontology-id)
         (when (get-in s [:concepts [ontology-id uri]]) (fail! ::anom/conflict "Concept URI already exists"))
@@ -171,7 +184,8 @@
         (require-ontology! s ontology-id)
         (let [key (first (get-in s [:indexes :concept-ids [ontology-id concept-id]]))
               c (get-in s [:concepts key])
-              changes (select-keys changes [:label :description :broader :indicators :attributes :embedding :embedding-model])]
+              changes (select-keys changes [:label :description :broader :indicators :attributes :embedding :embedding-model
+                                            :scope :alt-labels :provenance :entity-type])]
           (when-not c (fail! ::anom/not-found "Concept not found"))
           (require! (seq changes) "No mutable fields supplied")
           {:type :ontology/concept-updated
@@ -181,7 +195,8 @@
 
 (defcommand :ontology create-relationship {:authorized? tenant-scoped?}
   [ctx]
-  (let [{:keys [source-ontology-id target-ontology-id] :as p} (:command ctx)]
+  (let [{:keys [source-ontology-id target-ontology-id] :as p} (:command ctx)
+        relationship-id (random-uuid)]
     (command-result ctx source-ontology-id (:command/id p)
       (fn [s]
         (require-ontology! s source-ontology-id)
@@ -191,8 +206,8 @@
                       (state/relationships s source-ontology-id))
             (fail! ::anom/conflict "Relationship already exists"))
           {:type :ontology/relationship-created
-           :body (assoc e :relationship-id (:command/id p) :created-at (str (java.time.Instant/now)))
-           :result (assoc e :relationship-id (:command/id p))})))))
+           :body (assoc e :relationship-id relationship-id :created-at (str (java.time.Instant/now)))
+           :result (assoc e :relationship-id relationship-id)})))))
 
 (defcommand :ontology register-predicate {:authorized? tenant-scoped?}
   [ctx]
@@ -268,7 +283,7 @@
                                (update :entity-type (fn [t] (or t (:scope %) "Concept")))) concepts)
           existing-uris (get-in s [:indexes :concept-uris ontology-id] #{})
           resolution (if (:match-labels? resolution-policy)
-                       (algorithms/resolve-incremental incoming (indexes/resolution-candidates s ontology-id incoming) existing-uris
+                       (entity-resolver/resolve-incremental incoming (indexes/resolution-candidates s ontology-id incoming) existing-uris
                                                        {:similarity-threshold (or (:similarity-threshold resolution-policy) 0.85)})
                        {:canonical-map {} :exact-matches 0 :semantic-matches 0})
           canonical (:canonical-map resolution)

@@ -7,8 +7,8 @@
       (let [oid (:ontology-id (o/create-ontology! ctx {:name "Embeddings"}))]
         (o/create-concept! ctx oid {:uri "urn:old" :label "old name" :description "old"
                                    :embedding [1.0 0.0] :embedding-model "m1"})
-        (let [result (o/import-contribution! ctx
-                       {:ontology-id oid :contribution-id (random-uuid)
+        (let [result (o/import-contribution! ctx oid
+                       {:contribution-id (random-uuid)
                         :expected-revision (o/get-revision ctx oid)
                         :source {:source-id (random-uuid) :content-hash "abc"}
                         :resolution-policy {:match-labels? true}
