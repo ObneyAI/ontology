@@ -1,0 +1,17 @@
+
+Testing ai.obney.ontology.property-test
+canonical-choice {:seed 20260918, :num-tests 60, :pass? true, :time-elapsed-ms 27}
+disjoint-import-order {:seed 20260918, :num-tests 60, :pass? true, :time-elapsed-ms 404}
+literal-roundtrip {:seed 20260918, :num-tests 60, :pass? true, :time-elapsed-ms 53}
+mutation-sequences {:seed 20260918, :num-tests 60, :pass? true, :time-elapsed-ms 707}
+source-versions {:seed 20260918, :num-tests 60, :pass? true, :time-elapsed-ms 137}
+resolution-scores {:seed 20260918, :num-tests 60, :pass? true, :time-elapsed-ms 6}
+
+Testing ai.obney.ontology.resolution-test
+
+FAIL in (duplicate-uri-candidate-order-is-deterministic) (resolution_test.clj:101)
+expected: (apply = outputs)
+  actual: (not (apply #object[clojure.core$_EQ_ 0x7f448d3d "clojure.core$_EQ_@7f448d3d"] ["<urn:duplicate> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#Concept> .\n<urn:duplicate> <http://www.w3.org/2004/02/skos/core#definition> \"Description urn:duplicate\"@en .\n<urn:duplicate> <http://www.w3.org/2004/02/skos/core#prefLabel> \"Second\"@en .\n<urn:duplicate> <urn:fixture:entityType> \":domain\" .\n<urn:fixture:> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Ontology> ." "<urn:duplicate> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#Concept> .\n<urn:duplicate> <http://www.w3.org/2004/02/skos/core#definition> \"Description urn:duplicate\"@en .\n<urn:duplicate> <http://www.w3.org/2004/02/skos/core#prefLabel> \"First\"@en .\n<urn:duplicate> <urn:fixture:entityType> \":domain\" .\n<urn:fixture:> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Ontology> ."]))
+
+Ran 14 tests containing 63 assertions.
+1 failures, 0 errors.

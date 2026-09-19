@@ -1,0 +1,1 @@
+{:gc-ms 402, :event-count 11, :gc-count 249, :operation :populate, :history 0, :allocated-bytes 28518711808, :concepts 10000, :storage-bytes 53077024, :kind :setup, :elapsed-ms 18449.528958, :backend :sqlite}

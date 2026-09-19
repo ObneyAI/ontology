@@ -1,0 +1,14 @@
+
+Testing ai.obney.ontology.property-test
+canonical-choice {:seed 20260918, :num-tests 60, :pass? true, :time-elapsed-ms 30}
+disjoint-import-order {:seed 20260918, :num-tests 1, :pass? false, :shrunk {:total-nodes-visited 9, :depth 5, :pass? false, :result false, :result-data nil, :time-shrinking-ms 54, :smallest [[]]}}
+
+FAIL in (disjoint-contributions-have-order-independent-rdf) (property_test.clj:15)
+{:shrunk {:total-nodes-visited 9, :depth 5, :pass? false, :result false, :result-data nil, :time-shrinking-ms 54, :smallest [[""]]}, :failed-after-ms 62, :num-tests 1, :seed 20260918, :fail [["IaPMdg" "R" "" "9e" "tC8" "nAMBP" "5d6" "Y4TG"]], :result false, :result-data nil, :failing-size 0, :pass? false}
+expected: (:pass? result)
+  actual: false
+literal-roundtrip {:seed 20260918, :num-tests 60, :pass? true, :time-elapsed-ms 101}
+mutation-sequences {:seed 20260918, :num-tests 60, :pass? true, :time-elapsed-ms 948}
+
+Ran 4 tests containing 4 assertions.
+1 failures, 0 errors.

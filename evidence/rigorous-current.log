@@ -1,0 +1,25 @@
+
+Testing ai.obney.ontology.algorithms-test
+
+Testing ai.obney.ontology.boundary-test
+
+Testing ai.obney.ontology.durable-test
+
+Testing ai.obney.ontology.mutation-test
+
+Testing ai.obney.ontology.property-test
+canonical-choice {:seed 20260918, :num-tests 60, :pass? true, :time-elapsed-ms 23}
+disjoint-import-order {:seed 20260918, :num-tests 60, :pass? true, :time-elapsed-ms 257}
+literal-roundtrip {:seed 20260918, :num-tests 60, :pass? true, :time-elapsed-ms 43}
+mutation-sequences {:seed 20260918, :num-tests 60, :pass? true, :time-elapsed-ms 759}
+source-versions {:seed 20260918, :num-tests 60, :pass? true, :time-elapsed-ms 142}
+resolution-scores {:seed 20260918, :num-tests 60, :pass? true, :time-elapsed-ms 4}
+
+Testing ai.obney.ontology.rdf-test
+
+Testing ai.obney.ontology.resolution-test
+
+Testing ai.obney.ontology.search-test
+
+Ran 72 tests containing 539 assertions.
+0 failures, 0 errors.

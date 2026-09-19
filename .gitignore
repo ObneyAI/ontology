@@ -1,0 +1,25 @@
+# Clojure tooling and build output (includes local benchmark runs).
+.cpcache/
+.allium-loop/
+target/
+.clj-kondo/.cache/
+.lsp/.cache/
+.nrepl-port
+*.class
+
+# Python helper caches.
+__pycache__/
+*.py[cod]
+
+# JVM crash diagnostics and heap dumps.
+hs_err_pid*.log
+replay_pid*.log
+*.hprof
+
+# macOS metadata and editor temporary files.
+.DS_Store
+*.swp
+*.swo
+*~
+
+# Keep curated evidence/ logs, CSV, EDN and JSON reports versionable.

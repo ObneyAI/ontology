@@ -1,0 +1,10 @@
+
+Testing ai.obney.ontology.rdf-test
+
+FAIL in (exported-schema-and-individuals-can-be-imported-again) (rdf_test.clj:85)
+#:cognitect.anomalies{:category :cognitect.anomalies/incorrect, :message "Undeclared predicate: http://www.w3.org/2000/01/rdf-schema#domain"}
+expected: (not (h/anomaly? result))
+  actual: (not (not true))
+
+Ran 6 tests containing 59 assertions.
+1 failures, 0 errors.

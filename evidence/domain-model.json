@@ -1,0 +1,417 @@
+{
+  "entities": [
+    {
+      "fields": [
+        {
+          "name": "tenant_id",
+          "type_expr": "String"
+        }
+      ],
+      "kind": "external",
+      "name": "OntologyConsumer"
+    },
+    {
+      "fields": [
+        {
+          "name": "tenant_id",
+          "type_expr": "String"
+        },
+        {
+          "name": "ontology_id",
+          "type_expr": "String"
+        },
+        {
+          "name": "name",
+          "type_expr": "String"
+        },
+        {
+          "name": "scope",
+          "optional": true,
+          "type_expr": "Any?"
+        },
+        {
+          "name": "description",
+          "optional": true,
+          "type_expr": "String?"
+        },
+        {
+          "name": "base_uri",
+          "optional": true,
+          "type_expr": "String?"
+        },
+        {
+          "name": "revision",
+          "type_expr": "Integer"
+        },
+        {
+          "name": "created_at",
+          "type_expr": "Timestamp"
+        }
+      ],
+      "kind": "internal",
+      "name": "Ontology",
+      "relationships": [
+        {
+          "name": "concepts",
+          "target": "Concept"
+        }
+      ]
+    },
+    {
+      "fields": [
+        {
+          "name": "ontology",
+          "type_expr": "Ontology"
+        },
+        {
+          "name": "uri",
+          "type_expr": "String"
+        },
+        {
+          "name": "label",
+          "type_expr": "String"
+        },
+        {
+          "name": "description",
+          "type_expr": "String"
+        },
+        {
+          "name": "scope",
+          "optional": true,
+          "type_expr": "Any?"
+        },
+        {
+          "name": "provenance",
+          "optional": true,
+          "type_expr": "Any?"
+        },
+        {
+          "name": "broader_uris",
+          "type_expr": "List<String>"
+        },
+        {
+          "name": "indicators",
+          "optional": true,
+          "type_expr": "List<String>?"
+        },
+        {
+          "name": "attributes",
+          "optional": true,
+          "type_expr": "Any?"
+        },
+        {
+          "name": "embedding",
+          "optional": true,
+          "type_expr": "Any?"
+        },
+        {
+          "name": "embedding_model",
+          "optional": true,
+          "type_expr": "Any?"
+        },
+        {
+          "name": "created_at",
+          "type_expr": "Timestamp"
+        },
+        {
+          "name": "updated_at",
+          "optional": true,
+          "type_expr": "Timestamp?"
+        }
+      ],
+      "kind": "internal",
+      "name": "Concept",
+      "relationships": [
+        {
+          "name": "outgoing",
+          "target": "ConceptRelationship"
+        },
+        {
+          "name": "incoming",
+          "target": "ConceptRelationship"
+        }
+      ]
+    },
+    {
+      "fields": [
+        {
+          "name": "source",
+          "type_expr": "Concept"
+        },
+        {
+          "name": "target",
+          "type_expr": "Concept"
+        },
+        {
+          "name": "predicate",
+          "type_expr": "String"
+        },
+        {
+          "name": "metadata",
+          "optional": true,
+          "type_expr": "RelationshipMetadata?"
+        },
+        {
+          "name": "created_at",
+          "type_expr": "Timestamp"
+        }
+      ],
+      "kind": "internal",
+      "name": "ConceptRelationship"
+    },
+    {
+      "fields": [
+        {
+          "name": "ontology",
+          "type_expr": "Ontology"
+        },
+        {
+          "name": "source_uri",
+          "type_expr": "String"
+        },
+        {
+          "name": "canonical_uri",
+          "type_expr": "String"
+        },
+        {
+          "name": "match_type",
+          "type_expr": "String"
+        },
+        {
+          "name": "similarity",
+          "type_expr": "Decimal"
+        }
+      ],
+      "kind": "internal",
+      "name": "CanonicalMapping"
+    },
+    {
+      "fields": [
+        {
+          "name": "ontology",
+          "type_expr": "Ontology"
+        },
+        {
+          "name": "predicate",
+          "type_expr": "String"
+        },
+        {
+          "name": "cross_ontology",
+          "type_expr": "Boolean"
+        },
+        {
+          "name": "inverse",
+          "optional": true,
+          "type_expr": "String?"
+        },
+        {
+          "name": "acyclic",
+          "type_expr": "Boolean"
+        }
+      ],
+      "kind": "internal",
+      "name": "PredicatePolicy"
+    },
+    {
+      "fields": [
+        {
+          "name": "ontology",
+          "type_expr": "Ontology"
+        },
+        {
+          "name": "source_identifier",
+          "type_expr": "String"
+        },
+        {
+          "name": "content_hash",
+          "type_expr": "String"
+        },
+        {
+          "name": "registered_at",
+          "type_expr": "Timestamp"
+        }
+      ],
+      "kind": "internal",
+      "name": "RegisteredSource"
+    },
+    {
+      "fields": [
+        {
+          "name": "ontology",
+          "type_expr": "Ontology"
+        },
+        {
+          "name": "source",
+          "type_expr": "RegisteredSource"
+        },
+        {
+          "name": "idempotency_key",
+          "type_expr": "String"
+        },
+        {
+          "name": "request_digest",
+          "type_expr": "String"
+        },
+        {
+          "name": "revision",
+          "type_expr": "Integer"
+        },
+        {
+          "name": "result",
+          "type_expr": "Any"
+        }
+      ],
+      "kind": "internal",
+      "name": "Contribution"
+    }
+  ],
+  "value_types": [
+    {
+      "fields": [
+        {
+          "name": "uri",
+          "type_expr": "String"
+        },
+        {
+          "name": "label",
+          "type_expr": "String"
+        },
+        {
+          "name": "description",
+          "type_expr": "String"
+        },
+        {
+          "name": "scope",
+          "optional": true,
+          "type_expr": "Any?"
+        },
+        {
+          "name": "broader_uris",
+          "type_expr": "List<String>"
+        },
+        {
+          "name": "indicators",
+          "optional": true,
+          "type_expr": "List<String>?"
+        },
+        {
+          "name": "provenance",
+          "optional": true,
+          "type_expr": "Any?"
+        },
+        {
+          "name": "attributes",
+          "optional": true,
+          "type_expr": "Any?"
+        },
+        {
+          "name": "embedding",
+          "optional": true,
+          "type_expr": "Any?"
+        },
+        {
+          "name": "embedding_model",
+          "optional": true,
+          "type_expr": "Any?"
+        }
+      ],
+      "name": "ConceptDefinition"
+    },
+    {
+      "fields": [
+        {
+          "name": "label",
+          "optional": true,
+          "type_expr": "String?"
+        },
+        {
+          "name": "description",
+          "optional": true,
+          "type_expr": "String?"
+        },
+        {
+          "name": "broader_uris",
+          "optional": true,
+          "type_expr": "List<String>?"
+        },
+        {
+          "name": "indicators",
+          "optional": true,
+          "type_expr": "List<String>?"
+        },
+        {
+          "name": "attributes",
+          "optional": true,
+          "type_expr": "Any?"
+        },
+        {
+          "name": "embedding",
+          "optional": true,
+          "type_expr": "Any?"
+        },
+        {
+          "name": "embedding_model",
+          "optional": true,
+          "type_expr": "Any?"
+        }
+      ],
+      "name": "ConceptChanges"
+    },
+    {
+      "fields": [
+        {
+          "name": "source_reference",
+          "optional": true,
+          "type_expr": "String?"
+        }
+      ],
+      "name": "RelationshipMetadata"
+    },
+    {
+      "fields": [
+        {
+          "name": "source_identifier",
+          "type_expr": "String"
+        },
+        {
+          "name": "content_hash",
+          "type_expr": "String"
+        },
+        {
+          "name": "idempotency_key",
+          "type_expr": "String"
+        },
+        {
+          "name": "expected_revision",
+          "type_expr": "Integer"
+        },
+        {
+          "name": "concepts",
+          "type_expr": "List<ConceptDefinition>"
+        },
+        {
+          "name": "relationships",
+          "type_expr": "Any"
+        },
+        {
+          "name": "schema",
+          "type_expr": "Any"
+        },
+        {
+          "name": "instances",
+          "type_expr": "Any"
+        },
+        {
+          "name": "producer",
+          "type_expr": "Any"
+        },
+        {
+          "name": "resolution_policy",
+          "type_expr": "Any"
+        }
+      ],
+      "name": "ContributionRequest"
+    }
+  ],
+  "version": 3
+}

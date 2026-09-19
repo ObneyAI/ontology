@@ -1,0 +1,8 @@
+Command: clojure -M evidence/embedding-resolution-probe.clj
+Executed against standalone deps.edn and real in-memory Grain event store.
+Exit code: 0
+Public import embedding model cases passed: matching, different, absent.
+
+Matching named model + equal vectors merges into an existing canonical concept.
+Different named models + equal vectors remain separate concepts.
+Absent incoming model + equal vectors remains a separate concept.

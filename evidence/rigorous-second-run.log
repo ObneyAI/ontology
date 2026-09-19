@@ -1,0 +1,11 @@
+
+Testing ai.obney.ontology.boundary-test
+
+Testing ai.obney.ontology.mutation-test
+
+Testing ai.obney.ontology.rdf-test
+
+Testing ai.obney.ontology.search-test
+
+Ran 38 tests containing 317 assertions.
+0 failures, 0 errors.

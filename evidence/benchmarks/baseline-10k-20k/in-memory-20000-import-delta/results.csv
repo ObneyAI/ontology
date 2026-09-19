@@ -1,0 +1,3 @@
+backend,concepts,history,operation,kind,median-ms,min-ms,max-ms,mean-ms,median-allocated-bytes,gc-count,gc-ms,elapsed-ms,start-revision,end-revision,storage-bytes
+in-memory,20000,0,populate,setup,,,,,,515,656,63331.715959,,,
+in-memory,20000,0,import-delta,write,2905.612958,2715.037333,3029.892417,2883.5142360000004,4293979600,35,98,,21,25,

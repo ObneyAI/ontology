@@ -1,0 +1,404 @@
+-- allium: 3
+-- Standalone graph knowledge management. No execution or learning policy.
+
+external entity OntologyConsumer { tenant_id: String }
+
+value ConceptDefinition {
+    uri: String
+    label: String
+    description: String
+    scope: Any?
+    broader_uris: List<String>
+    indicators: List<String>?
+    provenance: Any?
+    attributes: Any?
+    embedding: Any?
+    embedding_model: Any?
+}
+
+value ConceptChanges {
+    label: String?
+    description: String?
+    broader_uris: List<String>?
+    indicators: List<String>?
+    attributes: Any?
+    embedding: Any?
+    embedding_model: Any?
+}
+
+value RelationshipMetadata { source_reference: String? }
+
+value ContributionRequest {
+    source_identifier: String
+    content_hash: String
+    idempotency_key: String
+    expected_revision: Integer
+    concepts: List<ConceptDefinition>
+    relationships: Any
+    schema: Any
+    instances: Any
+    producer: Any
+    resolution_policy: Any
+}
+
+contract CustomOntologyMutation {
+    create_concept: (ontology: Ontology, definition: ConceptDefinition) -> Concept
+    update_concept: (ontology: Ontology, concept: Concept, changes: ConceptChanges) -> Concept
+    create_relationship: (source: Concept, target: Concept, predicate: String, metadata: RelationshipMetadata) -> ConceptRelationship
+
+    @invariant AtomicValidatedMutation
+        -- Authorize and validate the complete change before appending any events.
+        -- Failed validation and stale revisions leave the graph unchanged.
+        -- Command retries return the original result without duplicate events.
+
+    @invariant HierarchyConsistency
+        -- Broader and narrower are inverse views of one hierarchy. Updating
+        -- parents removes obsolete inverse edges. Reject self-links and cycles.
+        -- Imported and manually authored changes obey identical validation.
+}
+
+contract ScopedConceptLookup {
+    get_ontology: (tenant_id: String, ontology_identifier: String) -> Ontology?
+    list_ontologies: (tenant_id: String) -> List<Ontology>
+    ontology_exists: (tenant_id: String, ontology_identifier: String) -> Boolean
+    get_concept: (ontology: Ontology, uri: String) -> Concept?
+    list_concepts: (ontology: Ontology) -> List<Concept>
+    search: (ontology: Ontology, query: String, limit: Integer) -> Any
+    export_snapshot: (ontology: Ontology, revision: Integer) -> Any
+
+    @invariant QualifiedIdentityRequired
+        -- Every concept lookup requires both tenant and ontology identity.
+        -- URI-only global lookup is not part of the public graph contract.
+
+    @invariant SearchValidityAndDeterminism
+        -- Traversal depth is a nonnegative integer and the result limit is a
+        -- positive integer. Signal weights are finite and nonnegative.
+        -- Lexical matching is case-insensitive; equal ranking scores use URI
+        -- order. Graph-only search includes seeds through the requested depth.
+        -- Vector comparison requires matching named models, equal dimensions,
+        -- finite components and nonzero norms. Invalid vectors contribute no
+        -- ranking signal; large finite vectors must not overflow comparison.
+
+    @invariant ScopedSearchAndExport
+        -- Lookup, traversal, search, sources, mappings and snapshots include only
+        -- the requested tenant and ontology. Search returns qualified identities.
+        -- No optional search provider is required for graph creation or retrieval.
+        -- Export of a revision includes concepts, edges, schema and instances
+        -- at that revision, and replay reproduces the same graph and provenance.
+}
+
+contract GraphContributions {
+    import_contribution: (ontology: Ontology, request: ContributionRequest) -> Contribution
+    import_rdf: (ontology: Ontology, request: ContributionRequest, ntriples: String) -> Contribution
+    register_predicate: (ontology: Ontology, policy: PredicatePolicy) -> PredicatePolicy
+
+    @invariant ContributionIdentity
+        -- Idempotency is tenant and ontology scoped. Same key and same request
+        -- returns the original committed result, even after the graph advances.
+        -- Same key with changed payload is rejected; a stale expected revision
+        -- on a new key is rejected. Neither rejection changes graph or history.
+        -- Content hash identifies source bytes, not every interpretation of them:
+        -- a new key may re-extract unchanged content under another producer.
+        -- Imports are additive upserts, not implicit deletion of older knowledge.
+
+    @invariant DeterministicResolutionAndMerge
+        -- Explicit resolution policy combines exact identity, normalized labels
+        -- and type-compatible matching. Both normalized-label and semantic matching
+        -- require the same entity type; semantic comparisons require comparable
+        -- supplied embeddings. Existing manual identities remain canonical.
+        -- A supplied similarity threshold must be finite and between zero and one.
+        -- Rewrite all edges to canonical identities, upsert changed concepts,
+        -- retain mappings and bounded match scores, and validate the merged
+        -- graph before an atomic commit. Snapshots and queries see that graph.
+        -- Reject a resolution that would map one existing concept identity to
+        -- another existing identity. Ambiguous candidate matches cannot collapse
+        -- previously established identities or leave contradictory mappings.
+        -- Permuting candidates within one contribution does not change its
+        -- canonical graph content. Replaying preserves creation and update times.
+
+    @invariant DeterministicRdfImport
+        -- N-Triples parsing requires no external model. Preserve URI resources,
+        -- literals, supported schema and instance triples in queries and export;
+        -- unsupported or malformed input is rejected rather than silently lost.
+
+    @invariant OpaqueProducerProvenance
+        -- Retain the original submitted contribution separately from merged
+        -- graph state so resolution decisions can be reconstructed.
+        -- Retain source ID, content hash, contribution identity, producer name
+        -- and version, optional model metadata and opaque evidence references.
+        -- Never interpret or dereference a producer's execution history.
+}
+
+entity Ontology {
+    tenant_id: String
+    ontology_id: String
+    name: String
+    scope: Any?
+    description: String?
+    base_uri: String?
+    revision: Integer
+    created_at: Timestamp
+    concepts: Concept with ontology = this
+}
+
+entity Concept {
+    ontology: Ontology
+    uri: String
+    label: String
+    description: String
+    scope: Any?
+    provenance: Any?
+    broader_uris: List<String>
+    indicators: List<String>?
+    attributes: Any?
+    embedding: Any?
+    embedding_model: Any?
+    created_at: Timestamp
+    updated_at: Timestamp?
+
+    outgoing: ConceptRelationship with source = this
+    incoming: ConceptRelationship with target = this
+}
+
+entity ConceptRelationship {
+    source: Concept
+    target: Concept
+    predicate: String
+    metadata: RelationshipMetadata?
+    created_at: Timestamp
+}
+
+entity CanonicalMapping {
+    ontology: Ontology
+    source_uri: String
+    canonical_uri: String
+    match_type: String
+    similarity: Decimal
+}
+
+entity PredicatePolicy {
+    ontology: Ontology
+    predicate: String
+    cross_ontology: Boolean
+    inverse: String?
+    acyclic: Boolean
+}
+
+entity RegisteredSource {
+    ontology: Ontology
+    source_identifier: String
+    content_hash: String
+    registered_at: Timestamp
+}
+
+entity Contribution {
+    ontology: Ontology
+    source: RegisteredSource
+    idempotency_key: String
+    request_digest: String
+    revision: Integer
+    result: Any
+}
+
+rule InitializeOntology {
+    when: InitializeOntologyRequested(consumer, name, scope, description, base_uri)
+    requires: nonblank(name)
+    let ontology_id = new_identifier()
+    ensures: Ontology.created(
+        tenant_id: consumer.tenant_id,
+        ontology_id: ontology_id,
+        name: name,
+        scope: scope,
+        description: description,
+        base_uri: base_uri,
+        revision: 1,
+        created_at: now
+    )
+}
+
+rule AddConcept {
+    when: ConceptCreationRequested(ontology, definition)
+    requires: nonblank(definition.uri)
+    requires: nonblank(definition.label)
+    requires: nonblank(definition.description)
+    requires: ontology.concepts.none(concept => concept.uri = definition.uri)
+    requires: definition.broader_uris.all(uri => ontology.concepts.any(concept => concept.uri = uri))
+    requires: hierarchy_definition_is_valid(ontology, definition)
+
+    ensures: Concept.created(
+        ontology: ontology,
+        uri: definition.uri,
+        label: definition.label,
+        description: definition.description,
+        scope: definition.scope,
+        provenance: definition.provenance,
+        broader_uris: definition.broader_uris,
+        indicators: definition.indicators,
+        attributes: definition.attributes,
+        embedding: definition.embedding,
+        embedding_model: definition.embedding_model,
+        created_at: now,
+        updated_at: null
+    )
+    ensures: ontology.revision = ontology.revision + 1
+}
+
+rule UpdateConcept {
+    when: ConceptUpdateRequested(ontology, concept, changes)
+    requires: concept.ontology = ontology
+    requires: has_mutable_changes(changes)
+    requires: changes.label = null or nonblank(changes.label)
+    requires: changes.description = null or nonblank(changes.description)
+    requires: changes.broader_uris = null or changes.broader_uris.all(uri => ontology.concepts.any(candidate => candidate.uri = uri))
+    requires: updated_hierarchy_is_valid(ontology, concept, changes)
+    ensures:
+        if changes.label != null:
+            concept.label = changes.label
+        if changes.description != null:
+            concept.description = changes.description
+        if changes.broader_uris != null:
+            concept.broader_uris = changes.broader_uris
+        if changes.indicators != null:
+            concept.indicators = changes.indicators
+        if changes.attributes != null:
+            concept.attributes = changes.attributes
+        if embedding_change_supplied(changes):
+            concept.embedding = changes.embedding
+        if embedding_model_change_supplied(changes):
+            concept.embedding_model = changes.embedding_model
+        concept.updated_at = now
+    ensures: ontology.revision = ontology.revision + 1
+}
+
+rule RegisterPredicate {
+    when: PredicateRegistrationRequested(ontology, predicate, cross_ontology, inverse, acyclic)
+    requires: nonblank(predicate)
+    requires: registered_policy(ontology, predicate) = null
+    ensures: PredicatePolicy.created(ontology: ontology, predicate: predicate,
+        cross_ontology: cross_ontology, inverse: inverse, acyclic: acyclic)
+    ensures: ontology.revision = ontology.revision + 1
+}
+
+rule LinkConcepts {
+    when: RelationshipCreationRequested(source, target, predicate, metadata)
+    let policy = registered_policy(source.ontology, predicate)
+    requires: source != target
+    requires: policy != null
+    requires: source.ontology.tenant_id = target.ontology.tenant_id
+    requires: policy.cross_ontology or source.ontology = target.ontology
+    requires: source.outgoing.none(edge => edge.target = target and edge.predicate = predicate)
+    requires: hierarchy_remains_valid(source, target, policy)
+    ensures: ConceptRelationship.created(source: source, target: target,
+        predicate: predicate, metadata: metadata, created_at: now)
+    ensures: source.ontology.revision = source.ontology.revision + 1
+    ensures:
+        if target.ontology != source.ontology:
+            target.ontology.revision = target.ontology.revision + 1
+}
+
+rule ImportContribution {
+    when: ContributionImportRequested(ontology, request)
+    requires: not contribution_exists(ontology, request.idempotency_key)
+    requires: request.expected_revision = ontology.revision
+    requires: contribution_is_valid(ontology, request)
+    let merged = resolve_and_validate(ontology, request)
+    ensures:
+        if not source_version_exists(ontology, request.source_identifier, request.content_hash):
+            RegisteredSource.created(ontology: ontology,
+                source_identifier: request.source_identifier,
+                content_hash: request.content_hash, registered_at: now)
+    ensures: Contribution.created(ontology: ontology,
+        source: source_version(ontology, request.source_identifier, request.content_hash),
+        idempotency_key: request.idempotency_key,
+        request_digest: contribution_digest(request),
+        revision: ontology.revision + 1, result: merged)
+    ensures: CanonicalGraphCommitted(ontology: ontology, merged: merged)
+    ensures: ontology.revision = ontology.revision + 1
+}
+
+rule RetryContribution {
+    when: ContributionImportRequested(ontology, request)
+    let prior = prior_contribution(ontology, request.idempotency_key)
+    requires: prior != null
+    requires: prior.request_digest = contribution_digest(request)
+    ensures: ContributionReturned(contribution: prior)
+}
+
+rule RejectContribution {
+    when: ContributionImportRequested(ontology, request)
+    requires: contribution_conflicts_or_invalid(ontology, request)
+    ensures: ContributionRejected(ontology: ontology, reason: rejection_reason(ontology, request))
+}
+
+rule SearchGraph {
+    when: GraphSearchRequested(ontology, query, limit)
+    requires: limit > 0
+    ensures: GraphSearchCompleted(ontology: ontology, results: scoped_search(ontology, query, limit))
+}
+
+rule ExportGraph {
+    when: GraphExportRequested(ontology, revision)
+    requires: revision >= 1 and revision <= ontology.revision
+    ensures: GraphSnapshotReturned(ontology: ontology, revision: revision,
+        snapshot: replay_and_export(ontology, revision))
+}
+
+invariant ConceptUrisAreUniqueWithinOntology {
+    for a in Concepts:
+        for b in Concepts:
+            a != b and a.ontology = b.ontology implies a.uri != b.uri
+}
+
+invariant RelationshipEdgesAreUnique {
+    for a in ConceptRelationships:
+        for b in ConceptRelationships:
+            a != b implies a.source != b.source or a.target != b.target or a.predicate != b.predicate
+}
+
+invariant ResolutionScoresAreBounded {
+    for mapping in CanonicalMappings:
+        mapping.similarity >= 0 and mapping.similarity <= 1
+}
+
+invariant TenantQualifiedRelationships {
+    for edge in ConceptRelationships:
+        edge.source.ontology.tenant_id = edge.target.ontology.tenant_id
+}
+
+invariant SourceVersionsAreScoped {
+    for a in RegisteredSources:
+        for b in RegisteredSources:
+            a != b and a.ontology = b.ontology and a.source_identifier = b.source_identifier
+                implies a.content_hash != b.content_hash
+}
+
+surface OntologyGraph {
+    facing consumer: OntologyConsumer
+    provides:
+        InitializeOntologyRequested(consumer, name, scope, description, base_uri)
+        ConceptCreationRequested(ontology, definition)
+        ConceptUpdateRequested(ontology, concept, changes)
+        RelationshipCreationRequested(source, target, predicate, metadata)
+        PredicateRegistrationRequested(ontology, predicate, cross_ontology, inverse, acyclic)
+        ContributionImportRequested(ontology, request)
+        GraphSearchRequested(ontology, query, limit)
+        GraphExportRequested(ontology, revision)
+    exposes:
+        Ontology
+        Concept
+        ConceptRelationship
+        PredicatePolicy
+        RegisteredSource
+        Contribution
+        CanonicalMapping
+    contracts:
+        fulfils CustomOntologyMutation
+        fulfils ScopedConceptLookup
+        fulfils GraphContributions
+    @guarantee TenantBoundary
+        -- Every operation is authorized within the initiating tenant. Equal IDs
+        -- and source hashes across tenants never share data or deduplication.
+    @guarantee GraphOnly
+        -- The graph lifecycle accepts domain data without requiring an execution
+        -- engine, model workflow, trace subscription or caller namespace loader.
+}

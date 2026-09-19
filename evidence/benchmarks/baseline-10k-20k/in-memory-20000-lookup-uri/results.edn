@@ -1,0 +1,1 @@
+{:gc-ms 686, :event-count 21, :gc-count 567, :operation :populate, :history 0, :allocated-bytes 109729969976, :concepts 20000, :storage-bytes nil, :kind :setup, :elapsed-ms 63740.867875, :backend :in-memory}

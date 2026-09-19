@@ -1,0 +1,9 @@
+
+Testing ai.obney.ontology.algorithms-test
+
+FAIL in (concept-and-relationship-deduplication-preserve-information) (algorithms_test.clj:38)
+expected: (= 2 (count (:alt-labels merged)))
+  actual: (not (= 2 3))
+
+Ran 7 tests containing 45 assertions.
+1 failures, 0 errors.

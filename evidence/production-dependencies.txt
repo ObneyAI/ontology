@@ -1,0 +1,250 @@
+org.clojure/clojure 1.12.0
+  . org.clojure/spec.alpha 0.5.238
+  . org.clojure/core.specs.alpha 0.4.74
+obneyai/grain-core-v2 dbf5b52
+  . gcv2/read-model-processor-v2 /Users/obneyai/.gitlibs/libs/obneyai/grain-core-v2/dbf5b5229aad09785e40f71e96adf65c90f971d5/components/read-model-processor-v2
+    X metosin/malli 0.16.4 :superseded
+      X fipp/fipp 0.6.26 :parent-omitted
+      X mvxcvi/arrangement 2.1.0 :parent-omitted
+      X borkdude/dynaload 0.3.5 :parent-omitted
+      X borkdude/edamame 1.4.27 :parent-omitted
+      X org.clojure/test.check 1.1.1 :parent-omitted
+  . gcv2/event-store-v3 /Users/obneyai/.gitlibs/libs/obneyai/grain-core-v2/dbf5b5229aad09785e40f71e96adf65c90f971d5/components/event-store-v3
+    . danlentz/clj-uuid 0.2.0
+      . org.clj-commons/primitive-math 1.0.1
+  . gcv2/fressian-util /Users/obneyai/.gitlibs/libs/obneyai/grain-core-v2/dbf5b5229aad09785e40f71e96adf65c90f971d5/components/fressian-util
+    . org.clojure/data.fressian 1.1.0
+      . org.fressian/fressian 0.6.8
+  . gcv2/kv-store-lmdb /Users/obneyai/.gitlibs/libs/obneyai/grain-core-v2/dbf5b5229aad09785e40f71e96adf65c90f971d5/components/kv-store-lmdb
+    . org.lmdbjava/lmdbjava 0.9.2
+      . com.github.jnr/jnr-constants 0.10.4
+      . com.github.jnr/jnr-ffi 2.2.18
+        . com.github.jnr/jffi 1.3.14
+        . com.github.jnr/jffi$native 1.3.14
+        . org.ow2.asm/asm 9.7.1
+        . org.ow2.asm/asm-commons 9.7.1
+          . org.ow2.asm/asm 9.7.1
+          . org.ow2.asm/asm-tree 9.7.1
+        . org.ow2.asm/asm-analysis 9.7.1
+          . org.ow2.asm/asm-tree 9.7.1
+        . org.ow2.asm/asm-tree 9.7.1
+          . org.ow2.asm/asm 9.7.1
+        . org.ow2.asm/asm-util 9.7.1
+          . org.ow2.asm/asm 9.7.1
+          . org.ow2.asm/asm-tree 9.7.1
+          . org.ow2.asm/asm-analysis 9.7.1
+        . com.github.jnr/jnr-a64asm 1.0.0
+        . com.github.jnr/jnr-x86asm 1.0.2
+      . org.lmdbjava/native 0.9.33-2
+    . org.lmdbjava/lmdbjava-native-osx-x86_64 0.9.29-1
+  . gcv2/event-model /Users/obneyai/.gitlibs/libs/obneyai/grain-core-v2/dbf5b5229aad09785e40f71e96adf65c90f971d5/components/event-model
+    . metosin/malli 0.16.4
+  . gcv2/kv-store /Users/obneyai/.gitlibs/libs/obneyai/grain-core-v2/dbf5b5229aad09785e40f71e96adf65c90f971d5/components/kv-store
+  . gcv2/schema-util /Users/obneyai/.gitlibs/libs/obneyai/grain-core-v2/dbf5b5229aad09785e40f71e96adf65c90f971d5/components/schema-util
+    . metosin/malli 0.17.0 :newer-version
+      . fipp/fipp 0.6.27
+        . org.clojure/core.rrb-vector 0.1.2
+      . mvxcvi/arrangement 2.1.0
+      . borkdude/dynaload 0.3.5
+      . borkdude/edamame 1.4.27
+        X org.clojure/tools.reader 1.3.4 :older-version
+      . org.clojure/test.check 1.1.1
+    . org.clojure/core.async 1.7.701
+      . org.clojure/tools.analyzer.jvm 1.3.1
+        . org.clojure/tools.analyzer 1.2.0
+        . org.clojure/core.memoize 1.1.266
+          . org.clojure/core.cache 1.1.234
+            . org.clojure/data.priority-map 1.2.0
+        X org.ow2.asm/asm 9.2 :older-version
+        . org.clojure/tools.reader 1.5.0 :newer-version
+  . gcv2/command-processor-v2 /Users/obneyai/.gitlibs/libs/obneyai/grain-core-v2/dbf5b5229aad09785e40f71e96adf65c90f971d5/components/command-processor-v2
+    . integrant/integrant 0.13.1
+      . weavejester/dependency 0.2.1
+    . com.brunobonacci/mulog 0.9.0
+      . amalloy/ring-buffer 1.3.1
+    . com.cognitect/anomalies 0.1.12
+    . metosin/malli 0.17.0
+    . org.clojure/core.async 1.7.701
+    . danlentz/clj-uuid 0.2.0
+  . gcv2/time /Users/obneyai/.gitlibs/libs/obneyai/grain-core-v2/dbf5b5229aad09785e40f71e96adf65c90f971d5/components/time
+    . tick/tick 1.0
+      . com.widdindustries/cljc.java-time 0.1.21
+        . com.widdindustries/cljs.java-time 0.1.20
+      . com.widdindustries/time-literals 0.1.10
+  . gcv2/query-processor /Users/obneyai/.gitlibs/libs/obneyai/grain-core-v2/dbf5b5229aad09785e40f71e96adf65c90f971d5/components/query-processor
+    . integrant/integrant 0.13.1
+    . com.brunobonacci/mulog 0.9.0
+    . com.cognitect/anomalies 0.1.12
+    . metosin/malli 0.17.0
+    . org.clojure/core.async 1.7.701
+  . gcv2/event-tailer /Users/obneyai/.gitlibs/libs/obneyai/grain-core-v2/dbf5b5229aad09785e40f71e96adf65c90f971d5/components/event-tailer
+    . com.brunobonacci/mulog 0.9.0
+  . gcv2/webserver /Users/obneyai/.gitlibs/libs/obneyai/grain-core-v2/dbf5b5229aad09785e40f71e96adf65c90f971d5/components/webserver
+    . io.pedestal/pedestal.service 0.7.2
+      . commons-codec/commons-codec 1.16.1
+      . io.pedestal/pedestal.log 0.7.2
+        . io.pedestal/pedestal.common 0.7.2
+          . org.clj-commons/pretty 3.0.0
+        . io.dropwizard.metrics/metrics-core 4.2.19
+          X org.slf4j/slf4j-api 1.7.36 :older-version
+        . io.opentracing/opentracing-api 0.33.0
+        . io.pedestal/pedestal.telemetry 0.7.2
+        . io.opentracing/opentracing-util 0.33.0
+          . io.opentracing/opentracing-api 0.33.0
+          . io.opentracing/opentracing-noop 0.33.0
+            . io.opentracing/opentracing-api 0.33.0
+        . org.slf4j/slf4j-api 2.0.12 :newer-version
+        . io.dropwizard.metrics/metrics-jmx 4.2.19
+          . io.dropwizard.metrics/metrics-core 4.2.19
+          X org.slf4j/slf4j-api 1.7.36 :older-version
+      . io.pedestal/pedestal.interceptor 0.7.2
+        . io.pedestal/pedestal.common 0.7.2
+        . io.pedestal/pedestal.log 0.7.2
+        X org.clojure/core.async 1.6.681 :older-version
+      . io.pedestal/pedestal.telemetry 0.7.2
+        . io.pedestal/pedestal.common 0.7.2
+        . io.opentelemetry/opentelemetry-api 1.36.0
+          . io.opentelemetry/opentelemetry-context 1.36.0
+      . com.cognitect/transit-clj 1.0.333
+      . crypto-random/crypto-random 1.2.1
+        X commons-codec/commons-codec 1.15 :older-version
+      . crypto-equality/crypto-equality 1.0.1
+      . cheshire/cheshire 5.12.0
+        . com.fasterxml.jackson.core/jackson-core 2.15.2
+        . com.fasterxml.jackson.dataformat/jackson-dataformat-smile 2.15.2
+          . com.fasterxml.jackson.core/jackson-core 2.15.2
+        . com.fasterxml.jackson.dataformat/jackson-dataformat-cbor 2.15.2
+          . com.fasterxml.jackson.core/jackson-core 2.15.2
+        . tigris/tigris 0.1.2
+      X org.clojure/tools.reader 1.4.1 :superseded
+      . io.pedestal/pedestal.route 0.7.2
+        . io.pedestal/pedestal.log 0.7.2
+        . io.pedestal/pedestal.interceptor 0.7.2
+        X org.clojure/core.async 1.6.681 :older-version
+        . org.clj-commons/pretty 3.0.0
+      . ring/ring-core 1.12.0
+        . org.ring-clojure/ring-core-protocols 1.12.0
+        . org.ring-clojure/ring-websocket-protocols 1.12.0
+        . ring/ring-codec 1.2.0
+        . commons-io/commons-io 2.15.1
+        . org.apache.commons/commons-fileupload2-core 2.0.0-M1
+          X commons-io/commons-io 2.13.0 :older-version
+        . crypto-random/crypto-random 1.2.1
+        . crypto-equality/crypto-equality 1.0.1
+      X org.clojure/core.async 1.6.681 :older-version
+    . io.pedestal/pedestal.jetty 0.7.1
+      . org.eclipse.jetty/jetty-servlet 11.0.20
+        . org.eclipse.jetty/jetty-security 11.0.20
+          . org.eclipse.jetty/jetty-server 11.0.20
+          X org.slf4j/slf4j-api 2.0.9 :older-version
+        X org.slf4j/slf4j-api 2.0.9 :older-version
+      . org.eclipse.jetty.http2/http2-server 11.0.20
+        . org.eclipse.jetty/jetty-server 11.0.20
+        . org.eclipse.jetty.http2/http2-common 11.0.20
+          . org.eclipse.jetty.http2/http2-hpack 11.0.20
+            . org.eclipse.jetty/jetty-http 11.0.20
+            . org.eclipse.jetty/jetty-io 11.0.20
+            . org.eclipse.jetty/jetty-util 11.0.20
+            X org.slf4j/slf4j-api 2.0.9 :older-version
+          X org.slf4j/slf4j-api 2.0.9 :older-version
+        X org.slf4j/slf4j-api 2.0.9 :older-version
+      X io.pedestal/pedestal.log 0.7.1 :older-version
+      X io.pedestal/pedestal.service 0.7.1 :older-version
+      . org.eclipse.jetty.websocket/websocket-jakarta-server 11.0.20
+        . org.eclipse.jetty/jetty-annotations 11.0.20
+          . jakarta.annotation/jakarta.annotation-api 2.1.1
+          . org.eclipse.jetty/jetty-plus 11.0.20
+            . jakarta.transaction/jakarta.transaction-api 2.0.0
+            . org.eclipse.jetty/jetty-jndi 11.0.20
+              . org.eclipse.jetty/jetty-util 11.0.20
+              X org.slf4j/slf4j-api 2.0.9 :older-version
+            . org.eclipse.jetty/jetty-webapp 11.0.20
+            X org.slf4j/slf4j-api 2.0.9 :older-version
+          . org.eclipse.jetty/jetty-webapp 11.0.20
+            . org.eclipse.jetty/jetty-servlet 11.0.20
+            . org.eclipse.jetty/jetty-xml 11.0.20
+              . org.eclipse.jetty/jetty-util 11.0.20
+              X org.slf4j/slf4j-api 2.0.9 :older-version
+            X org.slf4j/slf4j-api 2.0.9 :older-version
+          . org.eclipse.jetty.toolchain/jetty-jakarta-servlet-api 5.0.2
+          X org.ow2.asm/asm 9.6 :older-version
+          X org.ow2.asm/asm-commons 9.6 :older-version
+          X org.slf4j/slf4j-api 2.0.9 :older-version
+        . org.eclipse.jetty.toolchain/jetty-jakarta-websocket-api 2.0.0
+        . org.eclipse.jetty.websocket/websocket-jakarta-client 11.0.20
+          . org.eclipse.jetty/jetty-client 11.0.20
+            . org.eclipse.jetty/jetty-alpn-client 11.0.20
+              . org.eclipse.jetty/jetty-io 11.0.20
+              X org.slf4j/slf4j-api 2.0.9 :older-version
+            . org.eclipse.jetty/jetty-http 11.0.20
+            . org.eclipse.jetty/jetty-io 11.0.20
+            X org.slf4j/slf4j-api 2.0.9 :older-version
+          . org.eclipse.jetty.toolchain/jetty-jakarta-websocket-api 2.0.0
+          . org.eclipse.jetty.websocket/websocket-core-client 11.0.20
+            . org.eclipse.jetty/jetty-client 11.0.20
+            . org.eclipse.jetty.websocket/websocket-core-common 11.0.20
+              . org.eclipse.jetty/jetty-http 11.0.20
+              . org.eclipse.jetty/jetty-io 11.0.20
+              X org.slf4j/slf4j-api 2.0.9 :older-version
+          . org.eclipse.jetty.websocket/websocket-jakarta-common 11.0.20
+            . org.eclipse.jetty.toolchain/jetty-jakarta-websocket-api 2.0.0
+            . org.eclipse.jetty.websocket/websocket-core-client 11.0.20
+            X org.slf4j/slf4j-api 2.0.9 :older-version
+        . org.eclipse.jetty.websocket/websocket-servlet 11.0.20
+          . org.eclipse.jetty/jetty-servlet 11.0.20
+          . org.eclipse.jetty.websocket/websocket-core-server 11.0.20
+            . org.eclipse.jetty/jetty-server 11.0.20
+            . org.eclipse.jetty.websocket/websocket-core-common 11.0.20
+          X org.slf4j/slf4j-api 2.0.9 :older-version
+        X org.slf4j/slf4j-api 2.0.9 :older-version
+      . org.eclipse.jetty/jetty-server 11.0.20
+        . org.eclipse.jetty/jetty-http 11.0.20
+          . org.eclipse.jetty/jetty-io 11.0.20
+          . org.eclipse.jetty/jetty-util 11.0.20
+            X org.slf4j/slf4j-api 2.0.9 :older-version
+          X org.slf4j/slf4j-api 2.0.9 :older-version
+        . org.eclipse.jetty/jetty-io 11.0.20
+          . org.eclipse.jetty/jetty-util 11.0.20
+          X org.slf4j/slf4j-api 2.0.9 :older-version
+        . org.eclipse.jetty.toolchain/jetty-jakarta-servlet-api 5.0.2
+        X org.slf4j/slf4j-api 2.0.9 :older-version
+      . org.eclipse.jetty.toolchain/jetty-jakarta-websocket-api 2.0.0
+      . org.eclipse.jetty/jetty-alpn-server 11.0.20
+        . org.eclipse.jetty/jetty-server 11.0.20
+        X org.slf4j/slf4j-api 2.0.9 :older-version
+    . org.clojure/data.json 2.5.1
+    . integrant/integrant 0.13.1
+  . gcv2/pubsub /Users/obneyai/.gitlibs/libs/obneyai/grain-core-v2/dbf5b5229aad09785e40f71e96adf65c90f971d5/components/pubsub
+    . org.clojure/core.async 1.7.701
+  . gcv2/todo-processor-v2 /Users/obneyai/.gitlibs/libs/obneyai/grain-core-v2/dbf5b5229aad09785e40f71e96adf65c90f971d5/components/todo-processor-v2
+    . danlentz/clj-uuid 0.2.0
+    . integrant/integrant 0.13.1
+  . gcv2/query-request-handler /Users/obneyai/.gitlibs/libs/obneyai/grain-core-v2/dbf5b5229aad09785e40f71e96adf65c90f971d5/components/query-request-handler
+    . com.brunobonacci/mulog 0.9.0
+    . com.cognitect/anomalies 0.1.12
+    . org.clojure/core.async 1.7.701
+    . io.pedestal/pedestal.service 0.7.2
+    . com.cognitect/transit-clj 1.0.333
+      . com.cognitect/transit-java 1.0.371
+        X com.fasterxml.jackson.core/jackson-core 2.14.2 :older-version
+        . org.msgpack/msgpack 0.6.12
+          . com.googlecode.json-simple/json-simple 1.1.1
+          . org.javassist/javassist 3.18.1-GA
+        . javax.xml.bind/jaxb-api 2.4.0-b180830.0359
+          . javax.activation/javax.activation-api 1.2.0
+  . gcv2/periodic-task /Users/obneyai/.gitlibs/libs/obneyai/grain-core-v2/dbf5b5229aad09785e40f71e96adf65c90f971d5/components/periodic-task
+    . jarohen/chime 0.3.3
+      . org.clojure/tools.logging 1.0.0
+    . com.cronutils/cron-utils 9.2.1
+      X org.slf4j/slf4j-api 2.0.7 :superseded
+  . gcv2/command-request-handler-v2 /Users/obneyai/.gitlibs/libs/obneyai/grain-core-v2/dbf5b5229aad09785e40f71e96adf65c90f971d5/components/command-request-handler-v2
+    . com.brunobonacci/mulog 0.9.0
+    . com.cognitect/anomalies 0.1.12
+    . org.clojure/core.async 1.7.701
+    . io.pedestal/pedestal.service 0.7.2
+    . com.cognitect/transit-clj 1.0.333
+  . gcv2/query-schema /Users/obneyai/.gitlibs/libs/obneyai/grain-core-v2/dbf5b5229aad09785e40f71e96adf65c90f971d5/components/query-schema
+  . gcv2/core-async-thread-pool /Users/obneyai/.gitlibs/libs/obneyai/grain-core-v2/dbf5b5229aad09785e40f71e96adf65c90f971d5/components/core-async-thread-pool
+    . org.clojure/core.async 1.7.701
+  . gcv2/anomalies /Users/obneyai/.gitlibs/libs/obneyai/grain-core-v2/dbf5b5229aad09785e40f71e96adf65c90f971d5/components/anomalies
+    . com.cognitect/anomalies 0.1.12

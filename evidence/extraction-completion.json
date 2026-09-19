@@ -1,0 +1,12 @@
+{
+  "standalone_tests": 20,
+  "standalone_assertions": 123,
+  "orc_tests": 156,
+  "orc_assertions": 836,
+  "orc_test_namespaces_loaded": 76,
+  "applied_files": 41,
+  "destination": "/Users/obneyai/Developer/code2/orc",
+  "applied_hashes_match": true,
+  "live_model_calls_executed": false,
+  "compatibility_migration_included": false
+}

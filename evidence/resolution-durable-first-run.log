@@ -1,0 +1,81 @@
+
+Testing ai.obney.ontology.resolution-test
+
+FAIL in (canonical-selection-is-stable-for-permuted-candidates) (resolution_test.clj:36)
+expected: (apply = snapshots)
+  actual: (not (apply #object[clojure.core$_EQ_ 0x1e544543 "clojure.core$_EQ_@1e544543"] ({:ttl-output "<urn:ontology:a82770a2-e0a7-49e0-93ae-60d34f0abd05> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Ontology> .\n<urn:tree> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#Concept> .\n<urn:tree> <http://www.w3.org/2004/02/skos/core#altLabel> \"Tree\"@en .\n<urn:tree> <http://www.w3.org/2004/02/skos/core#definition> \"Description urn:alias:b\"@en .\n<urn:tree> <http://www.w3.org/2004/02/skos/core#prefLabel> \"Alias B\"@en .\n<urn:tree> <urn:ontology:a82770a2-e0a7-49e0-93ae-60d34f0abd05entityType> \":domain\" .", :checksum "a0f79ed588badc6b03a92b81032ac3f2065300fa1f69682bb9612b2f037ac903", :triple-count 6} {:ttl-output "<urn:ontology:925479be-30c2-4fd7-a8f0-0c35f558b5d9> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Ontology> .\n<urn:tree> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#Concept> .\n<urn:tree> <http://www.w3.org/2004/02/skos/core#altLabel> \"Tree\"@en .\n<urn:tree> <http://www.w3.org/2004/02/skos/core#definition> \"Description urn:alias:a\"@en .\n<urn:tree> <http://www.w3.org/2004/02/skos/core#prefLabel> \"Alias A\"@en .\n<urn:tree> <urn:ontology:925479be-30c2-4fd7-a8f0-0c35f558b5d9entityType> \":domain\" .", :checksum "f463318b7a90df1709c32ef529a3e699b04f6945f39d2fde165ef7b89e52d35d", :triple-count 6})))
+
+FAIL in (aliases-normalization-types-and-thresholds) (resolution_test.clj:22)
+[{:label "Tree", :entity-type "Animal"} {:label "Tree", :entity-type "Plant"} 0.9]
+expected: (= (if expected 1 2) (count (o/get-concepts ctx {:ontology-id oid})))
+  actual: (not (= 2 1))
+
+FAIL in (imported-entities-retain-creation-and-update-times) (resolution_test.clj:65)
+expected: (string? (:created-at first-concept))
+  actual: (not (string? nil))
+
+FAIL in (imported-entities-retain-creation-and-update-times) (resolution_test.clj:66)
+expected: (string? (:registered-at source))
+  actual: (not (string? nil))
+
+FAIL in (imported-entities-retain-creation-and-update-times) (resolution_test.clj:70)
+expected: (string? (:updated-at updated))
+  actual: (not (string? nil))
+
+Testing ai.obney.ontology.durable-test
+SLF4J(W): No SLF4J providers were found.
+SLF4J(W): Defaulting to no-operation (NOP) logger implementation
+SLF4J(W): See https://www.slf4j.org/codes.html#noProviders for further details.
+
+ERROR in (actual-sqlite-rejection-leaves-no-graph-or-retry-record) (DB.java:1179)
+expected: (h/rejected? (fn* [] (o/import-contribution! ctx input)))
+  actual: org.sqlite.SQLiteException: [SQLITE_CONSTRAINT_TRIGGER] A RAISE function within a trigger fired, causing the SQL statement to abort (deliberate-write-failure)
+ at org.sqlite.core.DB.newSQLException (DB.java:1179)
+    org.sqlite.core.DB.newSQLException (DB.java:1190)
+    org.sqlite.core.DB.throwex (DB.java:1150)
+    org.sqlite.core.DB.executeBatch (DB.java:951)
+    org.sqlite.core.DB.lambda$executeBatch$0 (DB.java:916)
+    org.sqlite.core.SafeStmtPtr.safeRun (SafeStmtPtr.java:128)
+    org.sqlite.core.DB.executeBatch (DB.java:916)
+    org.sqlite.core.CorePreparedStatement.lambda$executeLargeBatch$1 (CorePreparedStatement.java:76)
+    org.sqlite.jdbc3.JDBC3Statement.withConnectionTimeout (JDBC3Statement.java:454)
+    org.sqlite.core.CorePreparedStatement.executeLargeBatch (CorePreparedStatement.java:72)
+    org.sqlite.core.CorePreparedStatement.executeBatch (CorePreparedStatement.java:58)
+    com.zaxxer.hikari.pool.ProxyStatement.executeBatch (ProxyStatement.java:128)
+    com.zaxxer.hikari.pool.HikariProxyPreparedStatement.executeBatch (HikariProxyPreparedStatement.java:-1)
+    next.jdbc$execute_batch_BANG_$fn__25306.invoke (jdbc.clj:330)
+    clojure.core$map$fn__5950$fn__5951.invoke (core.clj:2759)
+    clojure.core.protocols$fn__8275.invokeStatic (protocols.clj:167)
+    clojure.core.protocols/fn (protocols.clj:123)
+    clojure.core.protocols$fn__8229$G__8224__8238.invoke (protocols.clj:19)
+    clojure.core.protocols$seq_reduce.invokeStatic (protocols.clj:31)
+    clojure.core.protocols$fn__8262.invokeStatic (protocols.clj:74)
+    clojure.core.protocols/fn (protocols.clj:74)
+    clojure.core.protocols$fn__8203$G__8198__8216.invoke (protocols.clj:13)
+    clojure.core$transduce.invokeStatic (core.clj:7026)
+    clojure.core$into.invokeStatic (core.clj:7042)
+    clojure.core$into.invoke (core.clj:7029)
+    next.jdbc$execute_batch_BANG_.invokeStatic (jdbc.clj:325)
+    next.jdbc$execute_batch_BANG_.invoke (jdbc.clj:279)
+    next.jdbc$execute_batch_BANG_.invokeStatic (jdbc.clj:342)
+    next.jdbc$execute_batch_BANG_.invoke (jdbc.clj:279)
+    ai.obney.grain.event_store_sqlite_v3.core$insert_events_BANG_.invokeStatic (core.clj:333)
+    ai.obney.grain.event_store_sqlite_v3.core$insert_events_BANG_.invoke (core.clj:330)
+    ai.obney.grain.event_store_sqlite_v3.core$append_direct$fn__26416$persist_BANG___26417.invoke (core.clj:449)
+    ai.obney.grain.event_store_sqlite_v3.core$append_direct$fn__26416.invoke (core.clj:455)
+    ai.obney.grain.event_store_sqlite_v3.core$with_immediate_tx.invokeStatic (core.clj:383)
+    ai.obney.grain.event_store_sqlite_v3.core$with_immediate_tx.invoke (core.clj:369)
+    ai.obney.grain.event_store_sqlite_v3.core$append_direct.invokeStatic (core.clj:440)
+    ai.obney.grain.event_store_sqlite_v3.core$append_direct.invoke (core.clj:436)
+    ai.obney.grain.event_store_sqlite_v3.core$append_with_busy_retry$fn__26427$fn__26428.invoke (core.clj:474)
+    ai.obney.grain.event_store_sqlite_v3.core$append_with_busy_retry$fn__26427.invoke (core.clj:470)
+    ai.obney.grain.event_store_sqlite_v3.core$append_with_busy_retry.invokeStatic (core.clj:469)
+    ai.obney.grain.event_store_sqlite_v3.core$append_with_busy_retry.invoke (core.clj:463)
+    ai.obney.grain.event_store_sqlite_v3.core$append$reify__26452.call (core.clj:523)
+    java.util.concurrent.FutureTask.run (FutureTask.java:317)
+    java.util.concurrent.ThreadPoolExecutor.runWorker (ThreadPoolExecutor.java:1144)
+    java.util.concurrent.ThreadPoolExecutor$Worker.run (ThreadPoolExecutor.java:642)
+    java.lang.Thread.run (Thread.java:1583)
+
+Ran 7 tests containing 48 assertions.
+5 failures, 1 errors.

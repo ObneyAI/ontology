@@ -1,0 +1,14 @@
+{
+  "source_files": 10,
+  "commands": [
+    "create-ontology",
+    "create-concept",
+    "update-concept",
+    "create-relationship",
+    "register-predicate",
+    "import-contribution"
+  ],
+  "forbidden_dependencies_or_processors": [],
+  "dependency_tree": "standalone-dependencies.txt",
+  "standalone_test_log": "standalone-test.log"
+}

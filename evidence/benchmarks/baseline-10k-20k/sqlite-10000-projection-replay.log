@@ -1,0 +1,6 @@
+Populating sqlite 10000 concepts; history 0
+SLF4J(W): No SLF4J providers were found.
+SLF4J(W): Defaulting to no-operation (NOP) logger implementation
+SLF4J(W): See https://www.slf4j.org/codes.html#noProviders for further details.
+Measuring sqlite 10000 projection-replay
+Results: /Users/obneyai/Developer/code2/ontology-exp/target/benchmarks/baseline-10k-20k/sqlite-10000-projection-replay

@@ -1,0 +1,1 @@
+{"control": "pass", "cases": [{"regression": "missing-obligation", "detected": true}, {"regression": "obsolete-obligation", "detected": true}, {"regression": "missing-test", "detected": true}, {"regression": "empty-review", "detected": true}, {"regression": "stale-spec", "detected": true}]}

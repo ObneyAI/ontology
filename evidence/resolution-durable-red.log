@@ -1,0 +1,5 @@
+Syntax error compiling at (ai/obney/ontology/core/state.clj:162:15).
+Unable to resolve symbol: c in this context
+
+Full report at:
+/var/folders/nb/r64lcbbn0fd6d1vqc3m_0wpr0000gq/T/clojure-10592443598701180063.edn

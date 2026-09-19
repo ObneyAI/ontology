@@ -1,0 +1,177 @@
+{
+  "command": "check",
+  "diagnostics": [
+    {
+      "code": "allium.externalEntity.missingSourceHint",
+      "location": {
+        "col": 17,
+        "file": "specs/ontology.allium",
+        "line": 4
+      },
+      "message": "External entity 'OntologyConsumer' has no obvious governing specification import in this module.",
+      "severity": "warning"
+    },
+    {
+      "code": "allium.field.unused",
+      "location": {
+        "col": 5,
+        "file": "specs/ontology.allium",
+        "line": 115
+      },
+      "message": "Field 'Ontology.ontology_id' is declared but not referenced elsewhere.",
+      "severity": "info"
+    },
+    {
+      "code": "allium.field.unused",
+      "location": {
+        "col": 5,
+        "file": "specs/ontology.allium",
+        "line": 116
+      },
+      "message": "Field 'Ontology.name' is declared but not referenced elsewhere.",
+      "severity": "info"
+    },
+    {
+      "code": "allium.field.unused",
+      "location": {
+        "col": 5,
+        "file": "specs/ontology.allium",
+        "line": 119
+      },
+      "message": "Field 'Ontology.base_uri' is declared but not referenced elsewhere.",
+      "severity": "info"
+    },
+    {
+      "code": "allium.field.unused",
+      "location": {
+        "col": 5,
+        "file": "specs/ontology.allium",
+        "line": 121
+      },
+      "message": "Field 'Ontology.created_at' is declared but not referenced elsewhere.",
+      "severity": "info"
+    },
+    {
+      "code": "allium.field.unused",
+      "location": {
+        "col": 5,
+        "file": "specs/ontology.allium",
+        "line": 134
+      },
+      "message": "Field 'Concept.embedding' is declared but not referenced elsewhere.",
+      "severity": "info"
+    },
+    {
+      "code": "allium.field.unused",
+      "location": {
+        "col": 5,
+        "file": "specs/ontology.allium",
+        "line": 135
+      },
+      "message": "Field 'Concept.created_at' is declared but not referenced elsewhere.",
+      "severity": "info"
+    },
+    {
+      "code": "allium.field.unused",
+      "location": {
+        "col": 5,
+        "file": "specs/ontology.allium",
+        "line": 139
+      },
+      "message": "Field 'Concept.incoming' is declared but not referenced elsewhere.",
+      "severity": "info"
+    },
+    {
+      "code": "allium.field.unused",
+      "location": {
+        "col": 5,
+        "file": "specs/ontology.allium",
+        "line": 146
+      },
+      "message": "Field 'ConceptRelationship.metadata' is declared but not referenced elsewhere.",
+      "severity": "info"
+    },
+    {
+      "code": "allium.field.unused",
+      "location": {
+        "col": 5,
+        "file": "specs/ontology.allium",
+        "line": 147
+      },
+      "message": "Field 'ConceptRelationship.created_at' is declared but not referenced elsewhere.",
+      "severity": "info"
+    },
+    {
+      "code": "allium.field.unused",
+      "location": {
+        "col": 5,
+        "file": "specs/ontology.allium",
+        "line": 152
+      },
+      "message": "Field 'CanonicalMapping.source_uri' is declared but not referenced elsewhere.",
+      "severity": "info"
+    },
+    {
+      "code": "allium.field.unused",
+      "location": {
+        "col": 5,
+        "file": "specs/ontology.allium",
+        "line": 153
+      },
+      "message": "Field 'CanonicalMapping.canonical_uri' is declared but not referenced elsewhere.",
+      "severity": "info"
+    },
+    {
+      "code": "allium.field.unused",
+      "location": {
+        "col": 5,
+        "file": "specs/ontology.allium",
+        "line": 154
+      },
+      "message": "Field 'CanonicalMapping.match_type' is declared but not referenced elsewhere.",
+      "severity": "info"
+    },
+    {
+      "code": "allium.field.unused",
+      "location": {
+        "col": 5,
+        "file": "specs/ontology.allium",
+        "line": 162
+      },
+      "message": "Field 'PredicatePolicy.inverse' is declared but not referenced elsewhere.",
+      "severity": "info"
+    },
+    {
+      "code": "allium.field.unused",
+      "location": {
+        "col": 5,
+        "file": "specs/ontology.allium",
+        "line": 163
+      },
+      "message": "Field 'PredicatePolicy.acyclic' is declared but not referenced elsewhere.",
+      "severity": "info"
+    },
+    {
+      "code": "allium.field.unused",
+      "location": {
+        "col": 5,
+        "file": "specs/ontology.allium",
+        "line": 170
+      },
+      "message": "Field 'RegisteredSource.registered_at' is declared but not referenced elsewhere.",
+      "severity": "info"
+    },
+    {
+      "code": "allium.field.unused",
+      "location": {
+        "col": 5,
+        "file": "specs/ontology.allium",
+        "line": 179
+      },
+      "message": "Field 'Contribution.result' is declared but not referenced elsewhere.",
+      "severity": "info"
+    }
+  ],
+  "findings": [],
+  "spec_file": "specs/ontology.allium"
+}

@@ -1,0 +1,889 @@
+{
+  "spec_sha256": "6b1db51950207b4323797254e00e6848c1fecdcbb1b10ffedbae51faed444698",
+  "obligations": {
+    "entity-fields.OntologyConsumer": {
+      "tests": [
+        "ai.obney.ontology.mutation-test/every-mutation-requires-tenant-context",
+        "ai.obney.ontology.mutation-test/required-identities-never-broaden-queries"
+      ],
+      "review": "Host supplies tenant context. UUIDs or strings identify tenants; authentication belongs to the host. Missing context rejects, foreign tenant reads remain isolated."
+    },
+    "value-equality.ConceptDefinition": {
+      "tests": [
+        "ai.obney.ontology.mutation-test/lifecycle-fields-and-query-filters",
+        "ai.obney.ontology.mutation-test/optional-fields-and-independent-attribute-embedding-updates",
+        "ai.obney.ontology.mutation-test/typed-mutation-fields-are-validated"
+      ],
+      "review": "Language-level mapping: immutable Clojure maps have structural equality; original request retention, metadata replay and request-digest retry tests exercise equality at the boundary. Public creation maps snake_case broader_uris to :broader; optional scope accepts a domain keyword/string. Supplied attributes/provenance/embedding survive creation; omitted nullable values read nil. UUID concept identity is distinct from URI."
+    },
+    "entity-fields.ConceptDefinition": {
+      "tests": [
+        "ai.obney.ontology.mutation-test/lifecycle-fields-and-query-filters",
+        "ai.obney.ontology.mutation-test/optional-fields-and-independent-attribute-embedding-updates",
+        "ai.obney.ontology.mutation-test/typed-mutation-fields-are-validated"
+      ],
+      "review": "Public creation maps snake_case broader_uris to :broader; optional scope accepts a domain keyword/string. Supplied attributes/provenance/embedding survive creation; omitted nullable values read nil. UUID concept identity is distinct from URI."
+    },
+    "value-equality.ConceptChanges": {
+      "tests": [
+        "ai.obney.ontology.mutation-test/lifecycle-fields-and-query-filters",
+        "ai.obney.ontology.mutation-test/optional-fields-and-independent-attribute-embedding-updates",
+        "ai.obney.ontology.mutation-test/invalid-manual-mutations-are-atomic"
+      ],
+      "review": "Language-level mapping: immutable Clojure maps have structural equality; original request retention, metadata replay and request-digest retry tests exercise equality at the boundary. Updates preserve omitted fields and identity, replace specified fields, stamp update time and increment revision. Attribute, embedding and model changes independently count as mutable changes. Explicit nil clears embeddings; absent keys mean unchanged."
+    },
+    "entity-fields.ConceptChanges": {
+      "tests": [
+        "ai.obney.ontology.mutation-test/lifecycle-fields-and-query-filters",
+        "ai.obney.ontology.mutation-test/optional-fields-and-independent-attribute-embedding-updates",
+        "ai.obney.ontology.mutation-test/invalid-manual-mutations-are-atomic"
+      ],
+      "review": "Updates preserve omitted fields and identity, replace specified fields, stamp update time and increment revision. Attribute, embedding and model changes independently count as mutable changes. Explicit nil clears embeddings; absent keys mean unchanged."
+    },
+    "value-equality.RelationshipMetadata": {
+      "tests": [
+        "ai.obney.ontology.mutation-test/cross-ontology-links-and-replay-retain-qualified-identities"
+      ],
+      "review": "Language-level mapping: immutable Clojure maps have structural equality; original request retention, metadata replay and request-digest retry tests exercise equality at the boundary. Opaque metadata is a Clojure map; source_reference maps to :source-reference and survives both edge views and replay."
+    },
+    "entity-fields.RelationshipMetadata": {
+      "tests": [
+        "ai.obney.ontology.mutation-test/cross-ontology-links-and-replay-retain-qualified-identities"
+      ],
+      "review": "Opaque metadata is a Clojure map; source_reference maps to :source-reference and survives both edge views and replay."
+    },
+    "value-equality.ContributionRequest": {
+      "tests": [
+        "ai.obney.ontology.boundary-test/incremental-import-preserves-identities-schema-and-instances",
+        "ai.obney.ontology.boundary-test/contribution-history-retains-original-input",
+        "ai.obney.ontology.mutation-test/invalid-contribution-envelopes-are-atomic"
+      ],
+      "review": "Language-level mapping: immutable Clojure maps have structural equality; original request retention, metadata replay and request-digest retry tests exercise equality at the boundary. Public envelope uses source.source-id/content-hash, contribution-id, expected-revision, concepts, relationships, tbox, abox, source.producer and resolution-policy. Optional collections default empty. Original request is retained separately from the canonical graph."
+    },
+    "entity-fields.ContributionRequest": {
+      "tests": [
+        "ai.obney.ontology.boundary-test/incremental-import-preserves-identities-schema-and-instances",
+        "ai.obney.ontology.boundary-test/contribution-history-retains-original-input",
+        "ai.obney.ontology.mutation-test/invalid-contribution-envelopes-are-atomic"
+      ],
+      "review": "Public envelope uses source.source-id/content-hash, contribution-id, expected-revision, concepts, relationships, tbox, abox, source.producer and resolution-policy. Optional collections default empty. Original request is retained separately from the canonical graph."
+    },
+    "contract-signature.CustomOntologyMutation.create_concept": {
+      "tests": [
+        "ai.obney.ontology.mutation-test/lifecycle-fields-and-query-filters",
+        "ai.obney.ontology.mutation-test/optional-fields-and-independent-attribute-embedding-updates",
+        "ai.obney.ontology.mutation-test/invalid-manual-mutations-are-atomic",
+        "ai.obney.ontology.boundary-test/manual-hierarchy-maintains-inverses-and-rejects-cycles"
+      ],
+      "review": "Creation persists definition and increments revision. Rejection table independently exercises blank URI/label/description, duplicate URI, missing parent and invalid self hierarchy."
+    },
+    "contract-signature.CustomOntologyMutation.update_concept": {
+      "tests": [
+        "ai.obney.ontology.mutation-test/lifecycle-fields-and-query-filters",
+        "ai.obney.ontology.mutation-test/optional-fields-and-independent-attribute-embedding-updates",
+        "ai.obney.ontology.mutation-test/invalid-manual-mutations-are-atomic",
+        "ai.obney.ontology.boundary-test/manual-hierarchy-maintains-inverses-and-rejects-cycles"
+      ],
+      "review": "Valid updates persist only supplied mutable fields, preserve creation identity/time and increment revision. Reject wrong ontology/concept, no mutable fields, invalid strings, absent parents and cycles; retain all state."
+    },
+    "contract-signature.CustomOntologyMutation.create_relationship": {
+      "tests": [
+        "ai.obney.ontology.mutation-test/every-relationship-precondition-is-enforced",
+        "ai.obney.ontology.mutation-test/cross-ontology-links-and-replay-retain-qualified-identities",
+        "ai.obney.ontology.mutation-test/relationship-fields-and-imported-inverse-deduplication"
+      ],
+      "review": "Valid links retain qualified endpoints, metadata and timestamp, and increment each affected graph once. Table rejects self, unknown predicate, foreign tenant, disallowed cross-graph, duplicate and cycle edges atomically."
+    },
+    "contract-signature.ScopedConceptLookup.get_ontology": {
+      "tests": [
+        "ai.obney.ontology.mutation-test/lifecycle-fields-and-query-filters",
+        "ai.obney.ontology.mutation-test/optional-fields-and-independent-attribute-embedding-updates"
+      ],
+      "review": "Public ontology map exposes UUID ontology-id, name, optional domain scope/description/base-uri, integer revision and ISO timestamp. Tenant is supplied by the read context rather than repeated on the returned map."
+    },
+    "contract-signature.ScopedConceptLookup.list_ontologies": {
+      "tests": [
+        "ai.obney.ontology.mutation-test/lifecycle-fields-and-query-filters",
+        "ai.obney.ontology.mutation-test/optional-fields-and-independent-attribute-embedding-updates"
+      ],
+      "review": "Public ontology map exposes UUID ontology-id, name, optional domain scope/description/base-uri, integer revision and ISO timestamp. Tenant is supplied by the read context rather than repeated on the returned map."
+    },
+    "contract-signature.ScopedConceptLookup.ontology_exists": {
+      "tests": [
+        "ai.obney.ontology.mutation-test/lifecycle-fields-and-query-filters",
+        "ai.obney.ontology.mutation-test/optional-fields-and-independent-attribute-embedding-updates"
+      ],
+      "review": "Public ontology map exposes UUID ontology-id, name, optional domain scope/description/base-uri, integer revision and ISO timestamp. Tenant is supplied by the read context rather than repeated on the returned map."
+    },
+    "contract-signature.ScopedConceptLookup.get_concept": {
+      "tests": [
+        "ai.obney.ontology.mutation-test/lifecycle-fields-and-query-filters",
+        "ai.obney.ontology.mutation-test/optional-fields-and-independent-attribute-embedding-updates"
+      ],
+      "review": "Read map exposes ontology-id and URI, strings label/description, optional scope/provenance/indicators/attributes/embedding/model and ISO timestamps. :broader is a set of parent URIs, not a stored ordered list."
+    },
+    "contract-signature.ScopedConceptLookup.list_concepts": {
+      "tests": [
+        "ai.obney.ontology.mutation-test/lifecycle-fields-and-query-filters",
+        "ai.obney.ontology.mutation-test/optional-fields-and-independent-attribute-embedding-updates"
+      ],
+      "review": "Read map exposes ontology-id and URI, strings label/description, optional scope/provenance/indicators/attributes/embedding/model and ISO timestamps. :broader is a set of parent URIs, not a stored ordered list."
+    },
+    "contract-signature.ScopedConceptLookup.search": {
+      "tests": [
+        "ai.obney.ontology.boundary-test/model-free-search-stays-scoped",
+        "ai.obney.ontology.search-test/lexical-search-is-case-insensitive-and-stable-on-ties",
+        "ai.obney.ontology.search-test/invalid-search-arguments-are-rejected"
+      ],
+      "review": "Search returns only qualified graph identities and respects positive integer limit. Invalid limits reject."
+    },
+    "contract-signature.ScopedConceptLookup.export_snapshot": {
+      "tests": [
+        "ai.obney.ontology.boundary-test/rdf-roundtrip-retains-literals-and-historical-revisions",
+        "ai.obney.ontology.rdf-test/export-rejects-nonexistent-revisions",
+        "ai.obney.ontology.property-test/generated-mutation-sequences-match-independent-model-and-replay"
+      ],
+      "review": "Each valid current or historical revision returns its graph, schema, instances and deterministic RDF. Reject noninteger, zero, negative or future revisions."
+    },
+    "contract-signature.GraphContributions.import_contribution": {
+      "tests": [
+        "ai.obney.ontology.boundary-test/incremental-import-preserves-identities-schema-and-instances",
+        "ai.obney.ontology.boundary-test/contribution-history-retains-original-input",
+        "ai.obney.ontology.boundary-test/stale-revisions-and-invalid-imports-are-atomic",
+        "ai.obney.ontology.boundary-test/retry-identity-is-independent-of-source-content",
+        "ai.obney.ontology.mutation-test/invalid-contribution-envelopes-are-atomic"
+      ],
+      "review": "New valid key commits source version and canonical graph once. Existing key dispatches retry/conflict; new stale revision and malformed graph/envelope reject atomically."
+    },
+    "contract-signature.GraphContributions.import_rdf": {
+      "tests": [
+        "ai.obney.ontology.rdf-test/literals-survive-unicode-escapes-and-control-characters",
+        "ai.obney.ontology.rdf-test/exported-schema-and-individuals-can-be-imported-again",
+        "ai.obney.ontology.rdf-test/malformed-or-unsupported-rdf-is-rejected-atomically"
+      ],
+      "review": "Public import-rdf accepts contribution envelope and supported N-Triples, commits exact statements and rejects unsupported/malformed input atomically."
+    },
+    "contract-signature.GraphContributions.register_predicate": {
+      "tests": [
+        "ai.obney.ontology.mutation-test/predicates-register-and-redefinition-is-atomic",
+        "ai.obney.ontology.mutation-test/cross-ontology-links-and-replay-retain-qualified-identities"
+      ],
+      "review": "Policies reside under ontology :predicate-policies keyed by predicate. Optional :cross-ontology? and :hierarchical? mean false when absent; :inverse is optional. :hierarchical? implements acyclic policy; symmetric policies add reverse views."
+    },
+    "entity-fields.Ontology": {
+      "tests": [
+        "ai.obney.ontology.mutation-test/lifecycle-fields-and-query-filters",
+        "ai.obney.ontology.mutation-test/optional-fields-and-independent-attribute-embedding-updates"
+      ],
+      "review": "Public ontology map exposes UUID ontology-id, name, optional domain scope/description/base-uri, integer revision and ISO timestamp. Tenant is supplied by the read context rather than repeated on the returned map."
+    },
+    "entity-optional.Ontology.scope": {
+      "tests": [
+        "ai.obney.ontology.mutation-test/lifecycle-fields-and-query-filters",
+        "ai.obney.ontology.mutation-test/optional-fields-and-independent-attribute-embedding-updates"
+      ],
+      "review": "Public ontology map exposes UUID ontology-id, name, optional domain scope/description/base-uri, integer revision and ISO timestamp. Tenant is supplied by the read context rather than repeated on the returned map."
+    },
+    "entity-optional.Ontology.description": {
+      "tests": [
+        "ai.obney.ontology.mutation-test/lifecycle-fields-and-query-filters",
+        "ai.obney.ontology.mutation-test/optional-fields-and-independent-attribute-embedding-updates"
+      ],
+      "review": "Public ontology map exposes UUID ontology-id, name, optional domain scope/description/base-uri, integer revision and ISO timestamp. Tenant is supplied by the read context rather than repeated on the returned map."
+    },
+    "entity-optional.Ontology.base_uri": {
+      "tests": [
+        "ai.obney.ontology.mutation-test/lifecycle-fields-and-query-filters",
+        "ai.obney.ontology.mutation-test/optional-fields-and-independent-attribute-embedding-updates"
+      ],
+      "review": "Public ontology map exposes UUID ontology-id, name, optional domain scope/description/base-uri, integer revision and ISO timestamp. Tenant is supplied by the read context rather than repeated on the returned map."
+    },
+    "entity-relationship.Ontology.concepts": {
+      "tests": [
+        "ai.obney.ontology.mutation-test/lifecycle-fields-and-query-filters",
+        "ai.obney.ontology.mutation-test/optional-fields-and-independent-attribute-embedding-updates"
+      ],
+      "review": "Public ontology map exposes UUID ontology-id, name, optional domain scope/description/base-uri, integer revision and ISO timestamp. Tenant is supplied by the read context rather than repeated on the returned map."
+    },
+    "entity-fields.Concept": {
+      "tests": [
+        "ai.obney.ontology.mutation-test/lifecycle-fields-and-query-filters",
+        "ai.obney.ontology.mutation-test/optional-fields-and-independent-attribute-embedding-updates"
+      ],
+      "review": "Read map exposes ontology-id and URI, strings label/description, optional scope/provenance/indicators/attributes/embedding/model and ISO timestamps. :broader is a set of parent URIs, not a stored ordered list."
+    },
+    "entity-optional.Concept.scope": {
+      "tests": [
+        "ai.obney.ontology.mutation-test/lifecycle-fields-and-query-filters",
+        "ai.obney.ontology.mutation-test/optional-fields-and-independent-attribute-embedding-updates"
+      ],
+      "review": "Read map exposes ontology-id and URI, strings label/description, optional scope/provenance/indicators/attributes/embedding/model and ISO timestamps. :broader is a set of parent URIs, not a stored ordered list."
+    },
+    "entity-optional.Concept.provenance": {
+      "tests": [
+        "ai.obney.ontology.mutation-test/lifecycle-fields-and-query-filters",
+        "ai.obney.ontology.mutation-test/optional-fields-and-independent-attribute-embedding-updates"
+      ],
+      "review": "Read map exposes ontology-id and URI, strings label/description, optional scope/provenance/indicators/attributes/embedding/model and ISO timestamps. :broader is a set of parent URIs, not a stored ordered list."
+    },
+    "entity-optional.Concept.indicators": {
+      "tests": [
+        "ai.obney.ontology.mutation-test/lifecycle-fields-and-query-filters",
+        "ai.obney.ontology.mutation-test/optional-fields-and-independent-attribute-embedding-updates"
+      ],
+      "review": "Read map exposes ontology-id and URI, strings label/description, optional scope/provenance/indicators/attributes/embedding/model and ISO timestamps. :broader is a set of parent URIs, not a stored ordered list."
+    },
+    "entity-optional.Concept.attributes": {
+      "tests": [
+        "ai.obney.ontology.mutation-test/lifecycle-fields-and-query-filters",
+        "ai.obney.ontology.mutation-test/optional-fields-and-independent-attribute-embedding-updates"
+      ],
+      "review": "Read map exposes ontology-id and URI, strings label/description, optional scope/provenance/indicators/attributes/embedding/model and ISO timestamps. :broader is a set of parent URIs, not a stored ordered list."
+    },
+    "entity-optional.Concept.embedding": {
+      "tests": [
+        "ai.obney.ontology.mutation-test/lifecycle-fields-and-query-filters",
+        "ai.obney.ontology.mutation-test/optional-fields-and-independent-attribute-embedding-updates"
+      ],
+      "review": "Read map exposes ontology-id and URI, strings label/description, optional scope/provenance/indicators/attributes/embedding/model and ISO timestamps. :broader is a set of parent URIs, not a stored ordered list."
+    },
+    "entity-optional.Concept.embedding_model": {
+      "tests": [
+        "ai.obney.ontology.mutation-test/lifecycle-fields-and-query-filters",
+        "ai.obney.ontology.mutation-test/optional-fields-and-independent-attribute-embedding-updates"
+      ],
+      "review": "Read map exposes ontology-id and URI, strings label/description, optional scope/provenance/indicators/attributes/embedding/model and ISO timestamps. :broader is a set of parent URIs, not a stored ordered list."
+    },
+    "entity-optional.Concept.updated_at": {
+      "tests": [
+        "ai.obney.ontology.mutation-test/lifecycle-fields-and-query-filters",
+        "ai.obney.ontology.mutation-test/optional-fields-and-independent-attribute-embedding-updates"
+      ],
+      "review": "Read map exposes ontology-id and URI, strings label/description, optional scope/provenance/indicators/attributes/embedding/model and ISO timestamps. :broader is a set of parent URIs, not a stored ordered list."
+    },
+    "entity-relationship.Concept.outgoing": {
+      "tests": [
+        "ai.obney.ontology.mutation-test/lifecycle-fields-and-query-filters",
+        "ai.obney.ontology.mutation-test/optional-fields-and-independent-attribute-embedding-updates"
+      ],
+      "review": "Read map exposes ontology-id and URI, strings label/description, optional scope/provenance/indicators/attributes/embedding/model and ISO timestamps. :broader is a set of parent URIs, not a stored ordered list."
+    },
+    "entity-relationship.Concept.incoming": {
+      "tests": [
+        "ai.obney.ontology.mutation-test/lifecycle-fields-and-query-filters",
+        "ai.obney.ontology.mutation-test/optional-fields-and-independent-attribute-embedding-updates"
+      ],
+      "review": "Read map exposes ontology-id and URI, strings label/description, optional scope/provenance/indicators/attributes/embedding/model and ISO timestamps. :broader is a set of parent URIs, not a stored ordered list."
+    },
+    "entity-fields.ConceptRelationship": {
+      "tests": [
+        "ai.obney.ontology.mutation-test/relationship-fields-and-imported-inverse-deduplication",
+        "ai.obney.ontology.mutation-test/cross-ontology-links-and-replay-retain-qualified-identities",
+        "ai.obney.ontology.mutation-test/every-relationship-precondition-is-enforced"
+      ],
+      "review": "Edges expose qualified ontology/URI endpoints and predicate, optional opaque metadata and creation timestamp. Endpoint identity is the qualified pair; inverse views are derived."
+    },
+    "entity-optional.ConceptRelationship.metadata": {
+      "tests": [
+        "ai.obney.ontology.mutation-test/relationship-fields-and-imported-inverse-deduplication",
+        "ai.obney.ontology.mutation-test/cross-ontology-links-and-replay-retain-qualified-identities",
+        "ai.obney.ontology.mutation-test/every-relationship-precondition-is-enforced"
+      ],
+      "review": "Edges expose qualified ontology/URI endpoints and predicate, optional opaque metadata and creation timestamp. Endpoint identity is the qualified pair; inverse views are derived."
+    },
+    "entity-fields.CanonicalMapping": {
+      "tests": [
+        "ai.obney.ontology.resolution-test/aliases-normalization-types-and-thresholds",
+        "ai.obney.ontology.boundary-test/canonical-resolution-rewrites-schema-instance-and-rdf-references"
+      ],
+      "review": "get-canonical-mappings provides URI mapping; contribution :resolution/:matches holds match type and bounded similarity-score. The spec entity is represented by these joined views, not a separate persisted record."
+    },
+    "entity-fields.PredicatePolicy": {
+      "tests": [
+        "ai.obney.ontology.mutation-test/predicates-register-and-redefinition-is-atomic",
+        "ai.obney.ontology.mutation-test/cross-ontology-links-and-replay-retain-qualified-identities"
+      ],
+      "review": "Policies reside under ontology :predicate-policies keyed by predicate. Optional :cross-ontology? and :hierarchical? mean false when absent; :inverse is optional. :hierarchical? implements acyclic policy; symmetric policies add reverse views."
+    },
+    "entity-optional.PredicatePolicy.inverse": {
+      "tests": [
+        "ai.obney.ontology.mutation-test/predicates-register-and-redefinition-is-atomic",
+        "ai.obney.ontology.mutation-test/cross-ontology-links-and-replay-retain-qualified-identities"
+      ],
+      "review": "Policies reside under ontology :predicate-policies keyed by predicate. Optional :cross-ontology? and :hierarchical? mean false when absent; :inverse is optional. :hierarchical? implements acyclic policy; symmetric policies add reverse views."
+    },
+    "entity-fields.RegisteredSource": {
+      "tests": [
+        "ai.obney.ontology.resolution-test/imported-entities-retain-creation-and-update-times",
+        "ai.obney.ontology.boundary-test/source-content-versions-remain-queryable",
+        "ai.obney.ontology.resolution-test/source-identity-is-qualified-across-tenants-and-graphs",
+        "ai.obney.ontology.resolution-test/contribution-records-retain-digest-result-and-source-time"
+      ],
+      "review": "Source read maps contain UUID source-id, content-hash and registered-at. Ontology/tenant qualification is supplied to get-sources. Same source/hash is one version; new hash remains separately queryable."
+    },
+    "entity-fields.Contribution": {
+      "tests": [
+        "ai.obney.ontology.boundary-test/incremental-import-preserves-identities-schema-and-instances",
+        "ai.obney.ontology.boundary-test/contribution-history-retains-original-input",
+        "ai.obney.ontology.boundary-test/retry-identity-is-independent-of-source-content",
+        "ai.obney.ontology.resolution-test/contribution-records-retain-digest-result-and-source-time"
+      ],
+      "review": "Contribution read map has ontology-id, source, contribution-id, request-hash and result; revision is in :result. Stored original input and canonical decision metadata make the result auditable."
+    },
+    "rule-success.InitializeOntology": {
+      "tests": [
+        "ai.obney.ontology.mutation-test/lifecycle-fields-and-query-filters",
+        "ai.obney.ontology.mutation-test/optional-fields-and-independent-attribute-embedding-updates",
+        "ai.obney.ontology.mutation-test/invalid-manual-mutations-are-atomic"
+      ],
+      "review": "Valid creation establishes revision one and identity/time. Blank name is rejected without graph events."
+    },
+    "rule-failure.InitializeOntology.1": {
+      "tests": [
+        "ai.obney.ontology.mutation-test/lifecycle-fields-and-query-filters",
+        "ai.obney.ontology.mutation-test/optional-fields-and-independent-attribute-embedding-updates",
+        "ai.obney.ontology.mutation-test/invalid-manual-mutations-are-atomic"
+      ],
+      "review": "Valid creation establishes revision one and identity/time. Blank name is rejected without graph events."
+    },
+    "rule-entity-creation.InitializeOntology.1": {
+      "tests": [
+        "ai.obney.ontology.mutation-test/lifecycle-fields-and-query-filters",
+        "ai.obney.ontology.mutation-test/optional-fields-and-independent-attribute-embedding-updates",
+        "ai.obney.ontology.mutation-test/invalid-manual-mutations-are-atomic"
+      ],
+      "review": "Valid creation establishes revision one and identity/time. Blank name is rejected without graph events."
+    },
+    "rule-success.AddConcept": {
+      "tests": [
+        "ai.obney.ontology.mutation-test/lifecycle-fields-and-query-filters",
+        "ai.obney.ontology.mutation-test/optional-fields-and-independent-attribute-embedding-updates",
+        "ai.obney.ontology.mutation-test/invalid-manual-mutations-are-atomic",
+        "ai.obney.ontology.boundary-test/manual-hierarchy-maintains-inverses-and-rejects-cycles"
+      ],
+      "review": "Creation persists definition and increments revision. Rejection table independently exercises blank URI/label/description, duplicate URI, missing parent and invalid self hierarchy."
+    },
+    "rule-failure.AddConcept.1": {
+      "tests": [
+        "ai.obney.ontology.mutation-test/lifecycle-fields-and-query-filters",
+        "ai.obney.ontology.mutation-test/optional-fields-and-independent-attribute-embedding-updates",
+        "ai.obney.ontology.mutation-test/invalid-manual-mutations-are-atomic",
+        "ai.obney.ontology.boundary-test/manual-hierarchy-maintains-inverses-and-rejects-cycles"
+      ],
+      "review": "Creation persists definition and increments revision. Rejection table independently exercises blank URI/label/description, duplicate URI, missing parent and invalid self hierarchy."
+    },
+    "rule-failure.AddConcept.2": {
+      "tests": [
+        "ai.obney.ontology.mutation-test/lifecycle-fields-and-query-filters",
+        "ai.obney.ontology.mutation-test/optional-fields-and-independent-attribute-embedding-updates",
+        "ai.obney.ontology.mutation-test/invalid-manual-mutations-are-atomic",
+        "ai.obney.ontology.boundary-test/manual-hierarchy-maintains-inverses-and-rejects-cycles"
+      ],
+      "review": "Creation persists definition and increments revision. Rejection table independently exercises blank URI/label/description, duplicate URI, missing parent and invalid self hierarchy."
+    },
+    "rule-failure.AddConcept.3": {
+      "tests": [
+        "ai.obney.ontology.mutation-test/lifecycle-fields-and-query-filters",
+        "ai.obney.ontology.mutation-test/optional-fields-and-independent-attribute-embedding-updates",
+        "ai.obney.ontology.mutation-test/invalid-manual-mutations-are-atomic",
+        "ai.obney.ontology.boundary-test/manual-hierarchy-maintains-inverses-and-rejects-cycles"
+      ],
+      "review": "Creation persists definition and increments revision. Rejection table independently exercises blank URI/label/description, duplicate URI, missing parent and invalid self hierarchy."
+    },
+    "rule-failure.AddConcept.4": {
+      "tests": [
+        "ai.obney.ontology.mutation-test/lifecycle-fields-and-query-filters",
+        "ai.obney.ontology.mutation-test/optional-fields-and-independent-attribute-embedding-updates",
+        "ai.obney.ontology.mutation-test/invalid-manual-mutations-are-atomic",
+        "ai.obney.ontology.boundary-test/manual-hierarchy-maintains-inverses-and-rejects-cycles"
+      ],
+      "review": "Creation persists definition and increments revision. Rejection table independently exercises blank URI/label/description, duplicate URI, missing parent and invalid self hierarchy."
+    },
+    "rule-failure.AddConcept.5": {
+      "tests": [
+        "ai.obney.ontology.mutation-test/lifecycle-fields-and-query-filters",
+        "ai.obney.ontology.mutation-test/optional-fields-and-independent-attribute-embedding-updates",
+        "ai.obney.ontology.mutation-test/invalid-manual-mutations-are-atomic",
+        "ai.obney.ontology.boundary-test/manual-hierarchy-maintains-inverses-and-rejects-cycles"
+      ],
+      "review": "Creation persists definition and increments revision. Rejection table independently exercises blank URI/label/description, duplicate URI, missing parent and invalid self hierarchy."
+    },
+    "rule-failure.AddConcept.6": {
+      "tests": [
+        "ai.obney.ontology.mutation-test/lifecycle-fields-and-query-filters",
+        "ai.obney.ontology.mutation-test/optional-fields-and-independent-attribute-embedding-updates",
+        "ai.obney.ontology.mutation-test/invalid-manual-mutations-are-atomic",
+        "ai.obney.ontology.boundary-test/manual-hierarchy-maintains-inverses-and-rejects-cycles"
+      ],
+      "review": "Creation persists definition and increments revision. Rejection table independently exercises blank URI/label/description, duplicate URI, missing parent and invalid self hierarchy."
+    },
+    "rule-entity-creation.AddConcept.1": {
+      "tests": [
+        "ai.obney.ontology.mutation-test/lifecycle-fields-and-query-filters",
+        "ai.obney.ontology.mutation-test/optional-fields-and-independent-attribute-embedding-updates",
+        "ai.obney.ontology.mutation-test/invalid-manual-mutations-are-atomic",
+        "ai.obney.ontology.boundary-test/manual-hierarchy-maintains-inverses-and-rejects-cycles"
+      ],
+      "review": "Creation persists definition and increments revision. Rejection table independently exercises blank URI/label/description, duplicate URI, missing parent and invalid self hierarchy."
+    },
+    "rule-success.UpdateConcept": {
+      "tests": [
+        "ai.obney.ontology.mutation-test/lifecycle-fields-and-query-filters",
+        "ai.obney.ontology.mutation-test/optional-fields-and-independent-attribute-embedding-updates",
+        "ai.obney.ontology.mutation-test/invalid-manual-mutations-are-atomic",
+        "ai.obney.ontology.boundary-test/manual-hierarchy-maintains-inverses-and-rejects-cycles"
+      ],
+      "review": "Valid updates persist only supplied mutable fields, preserve creation identity/time and increment revision. Reject wrong ontology/concept, no mutable fields, invalid strings, absent parents and cycles; retain all state."
+    },
+    "rule-failure.UpdateConcept.1": {
+      "tests": [
+        "ai.obney.ontology.mutation-test/lifecycle-fields-and-query-filters",
+        "ai.obney.ontology.mutation-test/optional-fields-and-independent-attribute-embedding-updates",
+        "ai.obney.ontology.mutation-test/invalid-manual-mutations-are-atomic",
+        "ai.obney.ontology.boundary-test/manual-hierarchy-maintains-inverses-and-rejects-cycles"
+      ],
+      "review": "Valid updates persist only supplied mutable fields, preserve creation identity/time and increment revision. Reject wrong ontology/concept, no mutable fields, invalid strings, absent parents and cycles; retain all state."
+    },
+    "rule-failure.UpdateConcept.2": {
+      "tests": [
+        "ai.obney.ontology.mutation-test/lifecycle-fields-and-query-filters",
+        "ai.obney.ontology.mutation-test/optional-fields-and-independent-attribute-embedding-updates",
+        "ai.obney.ontology.mutation-test/invalid-manual-mutations-are-atomic",
+        "ai.obney.ontology.boundary-test/manual-hierarchy-maintains-inverses-and-rejects-cycles"
+      ],
+      "review": "Valid updates persist only supplied mutable fields, preserve creation identity/time and increment revision. Reject wrong ontology/concept, no mutable fields, invalid strings, absent parents and cycles; retain all state."
+    },
+    "rule-failure.UpdateConcept.3": {
+      "tests": [
+        "ai.obney.ontology.mutation-test/lifecycle-fields-and-query-filters",
+        "ai.obney.ontology.mutation-test/optional-fields-and-independent-attribute-embedding-updates",
+        "ai.obney.ontology.mutation-test/invalid-manual-mutations-are-atomic",
+        "ai.obney.ontology.boundary-test/manual-hierarchy-maintains-inverses-and-rejects-cycles"
+      ],
+      "review": "Valid updates persist only supplied mutable fields, preserve creation identity/time and increment revision. Reject wrong ontology/concept, no mutable fields, invalid strings, absent parents and cycles; retain all state."
+    },
+    "rule-failure.UpdateConcept.4": {
+      "tests": [
+        "ai.obney.ontology.mutation-test/lifecycle-fields-and-query-filters",
+        "ai.obney.ontology.mutation-test/optional-fields-and-independent-attribute-embedding-updates",
+        "ai.obney.ontology.mutation-test/invalid-manual-mutations-are-atomic",
+        "ai.obney.ontology.boundary-test/manual-hierarchy-maintains-inverses-and-rejects-cycles"
+      ],
+      "review": "Valid updates persist only supplied mutable fields, preserve creation identity/time and increment revision. Reject wrong ontology/concept, no mutable fields, invalid strings, absent parents and cycles; retain all state."
+    },
+    "rule-failure.UpdateConcept.5": {
+      "tests": [
+        "ai.obney.ontology.mutation-test/lifecycle-fields-and-query-filters",
+        "ai.obney.ontology.mutation-test/optional-fields-and-independent-attribute-embedding-updates",
+        "ai.obney.ontology.mutation-test/invalid-manual-mutations-are-atomic",
+        "ai.obney.ontology.boundary-test/manual-hierarchy-maintains-inverses-and-rejects-cycles"
+      ],
+      "review": "Valid updates persist only supplied mutable fields, preserve creation identity/time and increment revision. Reject wrong ontology/concept, no mutable fields, invalid strings, absent parents and cycles; retain all state."
+    },
+    "rule-failure.UpdateConcept.6": {
+      "tests": [
+        "ai.obney.ontology.mutation-test/lifecycle-fields-and-query-filters",
+        "ai.obney.ontology.mutation-test/optional-fields-and-independent-attribute-embedding-updates",
+        "ai.obney.ontology.mutation-test/invalid-manual-mutations-are-atomic",
+        "ai.obney.ontology.boundary-test/manual-hierarchy-maintains-inverses-and-rejects-cycles"
+      ],
+      "review": "Valid updates persist only supplied mutable fields, preserve creation identity/time and increment revision. Reject wrong ontology/concept, no mutable fields, invalid strings, absent parents and cycles; retain all state."
+    },
+    "rule-success.RegisterPredicate": {
+      "tests": [
+        "ai.obney.ontology.mutation-test/predicates-register-and-redefinition-is-atomic",
+        "ai.obney.ontology.mutation-test/cross-ontology-links-and-replay-retain-qualified-identities"
+      ],
+      "review": "Policies reside under ontology :predicate-policies keyed by predicate. Optional :cross-ontology? and :hierarchical? mean false when absent; :inverse is optional. :hierarchical? implements acyclic policy; symmetric policies add reverse views."
+    },
+    "rule-failure.RegisterPredicate.1": {
+      "tests": [
+        "ai.obney.ontology.mutation-test/predicates-register-and-redefinition-is-atomic",
+        "ai.obney.ontology.mutation-test/cross-ontology-links-and-replay-retain-qualified-identities"
+      ],
+      "review": "Policies reside under ontology :predicate-policies keyed by predicate. Optional :cross-ontology? and :hierarchical? mean false when absent; :inverse is optional. :hierarchical? implements acyclic policy; symmetric policies add reverse views."
+    },
+    "rule-failure.RegisterPredicate.2": {
+      "tests": [
+        "ai.obney.ontology.mutation-test/predicates-register-and-redefinition-is-atomic",
+        "ai.obney.ontology.mutation-test/cross-ontology-links-and-replay-retain-qualified-identities"
+      ],
+      "review": "Policies reside under ontology :predicate-policies keyed by predicate. Optional :cross-ontology? and :hierarchical? mean false when absent; :inverse is optional. :hierarchical? implements acyclic policy; symmetric policies add reverse views."
+    },
+    "rule-entity-creation.RegisterPredicate.1": {
+      "tests": [
+        "ai.obney.ontology.mutation-test/predicates-register-and-redefinition-is-atomic",
+        "ai.obney.ontology.mutation-test/cross-ontology-links-and-replay-retain-qualified-identities"
+      ],
+      "review": "Policies reside under ontology :predicate-policies keyed by predicate. Optional :cross-ontology? and :hierarchical? mean false when absent; :inverse is optional. :hierarchical? implements acyclic policy; symmetric policies add reverse views."
+    },
+    "rule-success.LinkConcepts": {
+      "tests": [
+        "ai.obney.ontology.mutation-test/every-relationship-precondition-is-enforced",
+        "ai.obney.ontology.mutation-test/cross-ontology-links-and-replay-retain-qualified-identities",
+        "ai.obney.ontology.mutation-test/relationship-fields-and-imported-inverse-deduplication"
+      ],
+      "review": "Valid links retain qualified endpoints, metadata and timestamp, and increment each affected graph once. Table rejects self, unknown predicate, foreign tenant, disallowed cross-graph, duplicate and cycle edges atomically."
+    },
+    "rule-failure.LinkConcepts.1": {
+      "tests": [
+        "ai.obney.ontology.mutation-test/every-relationship-precondition-is-enforced",
+        "ai.obney.ontology.mutation-test/cross-ontology-links-and-replay-retain-qualified-identities",
+        "ai.obney.ontology.mutation-test/relationship-fields-and-imported-inverse-deduplication"
+      ],
+      "review": "Valid links retain qualified endpoints, metadata and timestamp, and increment each affected graph once. Table rejects self, unknown predicate, foreign tenant, disallowed cross-graph, duplicate and cycle edges atomically."
+    },
+    "rule-failure.LinkConcepts.2": {
+      "tests": [
+        "ai.obney.ontology.mutation-test/every-relationship-precondition-is-enforced",
+        "ai.obney.ontology.mutation-test/cross-ontology-links-and-replay-retain-qualified-identities",
+        "ai.obney.ontology.mutation-test/relationship-fields-and-imported-inverse-deduplication"
+      ],
+      "review": "Valid links retain qualified endpoints, metadata and timestamp, and increment each affected graph once. Table rejects self, unknown predicate, foreign tenant, disallowed cross-graph, duplicate and cycle edges atomically."
+    },
+    "rule-failure.LinkConcepts.3": {
+      "tests": [
+        "ai.obney.ontology.mutation-test/every-relationship-precondition-is-enforced",
+        "ai.obney.ontology.mutation-test/cross-ontology-links-and-replay-retain-qualified-identities",
+        "ai.obney.ontology.mutation-test/relationship-fields-and-imported-inverse-deduplication"
+      ],
+      "review": "Valid links retain qualified endpoints, metadata and timestamp, and increment each affected graph once. Table rejects self, unknown predicate, foreign tenant, disallowed cross-graph, duplicate and cycle edges atomically."
+    },
+    "rule-failure.LinkConcepts.4": {
+      "tests": [
+        "ai.obney.ontology.mutation-test/every-relationship-precondition-is-enforced",
+        "ai.obney.ontology.mutation-test/cross-ontology-links-and-replay-retain-qualified-identities",
+        "ai.obney.ontology.mutation-test/relationship-fields-and-imported-inverse-deduplication"
+      ],
+      "review": "Valid links retain qualified endpoints, metadata and timestamp, and increment each affected graph once. Table rejects self, unknown predicate, foreign tenant, disallowed cross-graph, duplicate and cycle edges atomically."
+    },
+    "rule-failure.LinkConcepts.5": {
+      "tests": [
+        "ai.obney.ontology.mutation-test/every-relationship-precondition-is-enforced",
+        "ai.obney.ontology.mutation-test/cross-ontology-links-and-replay-retain-qualified-identities",
+        "ai.obney.ontology.mutation-test/relationship-fields-and-imported-inverse-deduplication"
+      ],
+      "review": "Valid links retain qualified endpoints, metadata and timestamp, and increment each affected graph once. Table rejects self, unknown predicate, foreign tenant, disallowed cross-graph, duplicate and cycle edges atomically."
+    },
+    "rule-failure.LinkConcepts.6": {
+      "tests": [
+        "ai.obney.ontology.mutation-test/every-relationship-precondition-is-enforced",
+        "ai.obney.ontology.mutation-test/cross-ontology-links-and-replay-retain-qualified-identities",
+        "ai.obney.ontology.mutation-test/relationship-fields-and-imported-inverse-deduplication"
+      ],
+      "review": "Valid links retain qualified endpoints, metadata and timestamp, and increment each affected graph once. Table rejects self, unknown predicate, foreign tenant, disallowed cross-graph, duplicate and cycle edges atomically."
+    },
+    "rule-entity-creation.LinkConcepts.1": {
+      "tests": [
+        "ai.obney.ontology.mutation-test/every-relationship-precondition-is-enforced",
+        "ai.obney.ontology.mutation-test/cross-ontology-links-and-replay-retain-qualified-identities",
+        "ai.obney.ontology.mutation-test/relationship-fields-and-imported-inverse-deduplication"
+      ],
+      "review": "Valid links retain qualified endpoints, metadata and timestamp, and increment each affected graph once. Table rejects self, unknown predicate, foreign tenant, disallowed cross-graph, duplicate and cycle edges atomically."
+    },
+    "rule-success.ImportContribution": {
+      "tests": [
+        "ai.obney.ontology.boundary-test/incremental-import-preserves-identities-schema-and-instances",
+        "ai.obney.ontology.boundary-test/contribution-history-retains-original-input",
+        "ai.obney.ontology.boundary-test/stale-revisions-and-invalid-imports-are-atomic",
+        "ai.obney.ontology.boundary-test/retry-identity-is-independent-of-source-content",
+        "ai.obney.ontology.mutation-test/invalid-contribution-envelopes-are-atomic"
+      ],
+      "review": "New valid key commits source version and canonical graph once. Existing key dispatches retry/conflict; new stale revision and malformed graph/envelope reject atomically."
+    },
+    "rule-failure.ImportContribution.1": {
+      "tests": [
+        "ai.obney.ontology.boundary-test/incremental-import-preserves-identities-schema-and-instances",
+        "ai.obney.ontology.boundary-test/contribution-history-retains-original-input",
+        "ai.obney.ontology.boundary-test/stale-revisions-and-invalid-imports-are-atomic",
+        "ai.obney.ontology.boundary-test/retry-identity-is-independent-of-source-content",
+        "ai.obney.ontology.mutation-test/invalid-contribution-envelopes-are-atomic"
+      ],
+      "review": "New valid key commits source version and canonical graph once. Existing key dispatches retry/conflict; new stale revision and malformed graph/envelope reject atomically."
+    },
+    "rule-failure.ImportContribution.2": {
+      "tests": [
+        "ai.obney.ontology.boundary-test/incremental-import-preserves-identities-schema-and-instances",
+        "ai.obney.ontology.boundary-test/contribution-history-retains-original-input",
+        "ai.obney.ontology.boundary-test/stale-revisions-and-invalid-imports-are-atomic",
+        "ai.obney.ontology.boundary-test/retry-identity-is-independent-of-source-content",
+        "ai.obney.ontology.mutation-test/invalid-contribution-envelopes-are-atomic"
+      ],
+      "review": "New valid key commits source version and canonical graph once. Existing key dispatches retry/conflict; new stale revision and malformed graph/envelope reject atomically."
+    },
+    "rule-failure.ImportContribution.3": {
+      "tests": [
+        "ai.obney.ontology.boundary-test/incremental-import-preserves-identities-schema-and-instances",
+        "ai.obney.ontology.boundary-test/contribution-history-retains-original-input",
+        "ai.obney.ontology.boundary-test/stale-revisions-and-invalid-imports-are-atomic",
+        "ai.obney.ontology.boundary-test/retry-identity-is-independent-of-source-content",
+        "ai.obney.ontology.mutation-test/invalid-contribution-envelopes-are-atomic"
+      ],
+      "review": "New valid key commits source version and canonical graph once. Existing key dispatches retry/conflict; new stale revision and malformed graph/envelope reject atomically."
+    },
+    "rule-entity-creation.ImportContribution.1": {
+      "tests": [
+        "ai.obney.ontology.boundary-test/incremental-import-preserves-identities-schema-and-instances",
+        "ai.obney.ontology.boundary-test/contribution-history-retains-original-input",
+        "ai.obney.ontology.boundary-test/stale-revisions-and-invalid-imports-are-atomic",
+        "ai.obney.ontology.boundary-test/retry-identity-is-independent-of-source-content",
+        "ai.obney.ontology.mutation-test/invalid-contribution-envelopes-are-atomic",
+        "ai.obney.ontology.resolution-test/contribution-records-retain-digest-result-and-source-time"
+      ],
+      "review": "New valid key commits source version and canonical graph once. Existing key dispatches retry/conflict; new stale revision and malformed graph/envelope reject atomically."
+    },
+    "rule-success.RetryContribution": {
+      "tests": [
+        "ai.obney.ontology.mutation-test/every-mutation-retries-original-result-after-graph-advances",
+        "ai.obney.ontology.boundary-test/retry-identity-is-independent-of-source-content",
+        "ai.obney.ontology.property-test/generated-mutation-sequences-match-independent-model-and-replay"
+      ],
+      "review": "Identical key/request returns prior result even after later operations without events. With no prior key, the ImportContribution rule commits instead; changed payload conflicts."
+    },
+    "rule-failure.RetryContribution.1": {
+      "tests": [
+        "ai.obney.ontology.mutation-test/every-mutation-retries-original-result-after-graph-advances",
+        "ai.obney.ontology.boundary-test/retry-identity-is-independent-of-source-content",
+        "ai.obney.ontology.property-test/generated-mutation-sequences-match-independent-model-and-replay"
+      ],
+      "review": "Identical key/request returns prior result even after later operations without events. With no prior key, the ImportContribution rule commits instead; changed payload conflicts."
+    },
+    "rule-failure.RetryContribution.2": {
+      "tests": [
+        "ai.obney.ontology.mutation-test/every-mutation-retries-original-result-after-graph-advances",
+        "ai.obney.ontology.boundary-test/retry-identity-is-independent-of-source-content",
+        "ai.obney.ontology.property-test/generated-mutation-sequences-match-independent-model-and-replay"
+      ],
+      "review": "Identical key/request returns prior result even after later operations without events. With no prior key, the ImportContribution rule commits instead; changed payload conflicts."
+    },
+    "rule-success.RejectContribution": {
+      "tests": [
+        "ai.obney.ontology.boundary-test/stale-revisions-and-invalid-imports-are-atomic",
+        "ai.obney.ontology.boundary-test/incremental-import-preserves-identities-schema-and-instances",
+        "ai.obney.ontology.boundary-test/contribution-history-retains-original-input"
+      ],
+      "review": "Invalid/conflicting requests return rejection and preserve state/history. Valid requests do not take this rejection path; they commit and are queryable."
+    },
+    "rule-failure.RejectContribution.1": {
+      "tests": [
+        "ai.obney.ontology.boundary-test/stale-revisions-and-invalid-imports-are-atomic",
+        "ai.obney.ontology.boundary-test/incremental-import-preserves-identities-schema-and-instances",
+        "ai.obney.ontology.boundary-test/contribution-history-retains-original-input"
+      ],
+      "review": "Invalid/conflicting requests return rejection and preserve state/history. Valid requests do not take this rejection path; they commit and are queryable."
+    },
+    "rule-success.SearchGraph": {
+      "tests": [
+        "ai.obney.ontology.boundary-test/model-free-search-stays-scoped",
+        "ai.obney.ontology.search-test/lexical-search-is-case-insensitive-and-stable-on-ties",
+        "ai.obney.ontology.search-test/invalid-search-arguments-are-rejected"
+      ],
+      "review": "Search returns only qualified graph identities and respects positive integer limit. Invalid limits reject."
+    },
+    "rule-failure.SearchGraph.1": {
+      "tests": [
+        "ai.obney.ontology.boundary-test/model-free-search-stays-scoped",
+        "ai.obney.ontology.search-test/lexical-search-is-case-insensitive-and-stable-on-ties",
+        "ai.obney.ontology.search-test/invalid-search-arguments-are-rejected"
+      ],
+      "review": "Search returns only qualified graph identities and respects positive integer limit. Invalid limits reject."
+    },
+    "rule-success.ExportGraph": {
+      "tests": [
+        "ai.obney.ontology.boundary-test/rdf-roundtrip-retains-literals-and-historical-revisions",
+        "ai.obney.ontology.rdf-test/export-rejects-nonexistent-revisions",
+        "ai.obney.ontology.property-test/generated-mutation-sequences-match-independent-model-and-replay"
+      ],
+      "review": "Each valid current or historical revision returns its graph, schema, instances and deterministic RDF. Reject noninteger, zero, negative or future revisions."
+    },
+    "rule-failure.ExportGraph.1": {
+      "tests": [
+        "ai.obney.ontology.boundary-test/rdf-roundtrip-retains-literals-and-historical-revisions",
+        "ai.obney.ontology.rdf-test/export-rejects-nonexistent-revisions",
+        "ai.obney.ontology.property-test/generated-mutation-sequences-match-independent-model-and-replay"
+      ],
+      "review": "Each valid current or historical revision returns its graph, schema, instances and deterministic RDF. Reject noninteger, zero, negative or future revisions."
+    },
+    "invariant.ConceptUrisAreUniqueWithinOntology": {
+      "tests": [
+        "ai.obney.ontology.boundary-test/tenant-and-qualified-identity-isolation",
+        "ai.obney.ontology.property-test/generated-mutation-sequences-match-independent-model-and-replay",
+        "ai.obney.ontology.boundary-test/resolution-does-not-collapse-established-identities"
+      ],
+      "review": "Independent map model checks unique qualified URI after generated adds/updates/imports/retries/rejections. Equal URI across graphs/tenants is allowed; established canonical identities cannot collapse."
+    },
+    "invariant.RelationshipEdgesAreUnique": {
+      "tests": [
+        "ai.obney.ontology.mutation-test/symmetric-and-inverse-edges-cannot-be-added-twice",
+        "ai.obney.ontology.mutation-test/relationship-fields-and-imported-inverse-deduplication",
+        "ai.obney.ontology.property-test/generated-mutation-sequences-match-independent-model-and-replay"
+      ],
+      "review": "Manual duplicates reject; imported forward/reverse duplicate statements yield exactly two distinct logical views. Generated parent updates check inverse sets after every operation."
+    },
+    "invariant.ResolutionScoresAreBounded": {
+      "tests": [
+        "ai.obney.ontology.resolution-test/aliases-normalization-types-and-thresholds",
+        "ai.obney.ontology.resolution-test/invalid-resolution-thresholds-are-atomic",
+        "ai.obney.ontology.property-test/generated-resolution-scores-are-bounded"
+      ],
+      "review": "Nonempty exact and semantic match evidence is checked finite in [0,1], including huge/tiny vectors. Negative, excessive, nonnumeric and nonfinite thresholds reject atomically."
+    },
+    "invariant.TenantQualifiedRelationships": {
+      "tests": [
+        "ai.obney.ontology.mutation-test/every-relationship-precondition-is-enforced",
+        "ai.obney.ontology.mutation-test/cross-ontology-links-and-replay-retain-qualified-identities",
+        "ai.obney.ontology.resolution-test/imported-qualified-endpoints-are-not-silently-retargeted",
+        "ai.obney.ontology.property-test/generated-mutation-sequences-match-independent-model-and-replay"
+      ],
+      "review": "Cross-tenant endpoints reject. Allowed same-tenant cross-graph endpoints retain qualification through replay. Imports cannot silently retarget explicitly qualified foreign endpoints."
+    },
+    "invariant.SourceVersionsAreScoped": {
+      "tests": [
+        "ai.obney.ontology.resolution-test/imported-entities-retain-creation-and-update-times",
+        "ai.obney.ontology.boundary-test/source-content-versions-remain-queryable",
+        "ai.obney.ontology.resolution-test/source-identity-is-qualified-across-tenants-and-graphs",
+        "ai.obney.ontology.property-test/generated-source-versions-stay-unique-and-tenant-scoped"
+      ],
+      "review": "Source read maps contain UUID source-id, content-hash and registered-at. Ontology/tenant qualification is supplied to get-sources. Same source/hash is one version; new hash remains separately queryable."
+    },
+    "surface-actor.OntologyGraph": {
+      "tests": [
+        "ai.obney.ontology.mutation-test/every-mutation-requires-tenant-context",
+        "ai.obney.ontology.mutation-test/required-identities-never-broaden-queries",
+        "ai.obney.ontology.mutation-test/lifecycle-fields-and-query-filters",
+        "ai.obney.ontology.mutation-test/predicates-register-and-redefinition-is-atomic",
+        "ai.obney.ontology.boundary-test/contribution-history-retains-original-input",
+        "ai.obney.ontology.boundary-test/canonical-resolution-rewrites-schema-instance-and-rdf-references"
+      ],
+      "review": "Library surface is callable functions, not a UI with hidden controls. Actor restriction is tenant context. Rule guards reject unavailable operations. Queries expose entities via qualified maps, edge views and contribution metadata."
+    },
+    "surface-provides.OntologyGraph": {
+      "tests": [
+        "ai.obney.ontology.mutation-test/every-mutation-requires-tenant-context",
+        "ai.obney.ontology.mutation-test/required-identities-never-broaden-queries",
+        "ai.obney.ontology.mutation-test/lifecycle-fields-and-query-filters",
+        "ai.obney.ontology.mutation-test/predicates-register-and-redefinition-is-atomic",
+        "ai.obney.ontology.boundary-test/contribution-history-retains-original-input",
+        "ai.obney.ontology.boundary-test/canonical-resolution-rewrites-schema-instance-and-rdf-references"
+      ],
+      "review": "Library surface is callable functions, not a UI with hidden controls. Actor restriction is tenant context. Rule guards reject unavailable operations. Queries expose entities via qualified maps, edge views and contribution metadata."
+    },
+    "surface-exposure.OntologyGraph": {
+      "tests": [
+        "ai.obney.ontology.mutation-test/every-mutation-requires-tenant-context",
+        "ai.obney.ontology.mutation-test/required-identities-never-broaden-queries",
+        "ai.obney.ontology.mutation-test/lifecycle-fields-and-query-filters",
+        "ai.obney.ontology.mutation-test/predicates-register-and-redefinition-is-atomic",
+        "ai.obney.ontology.boundary-test/contribution-history-retains-original-input",
+        "ai.obney.ontology.boundary-test/canonical-resolution-rewrites-schema-instance-and-rdf-references"
+      ],
+      "review": "Library surface is callable functions, not a UI with hidden controls. Actor restriction is tenant context. Rule guards reject unavailable operations. Queries expose entities via qualified maps, edge views and contribution metadata."
+    },
+    "prose.AtomicValidatedMutation": {
+      "tests": [
+        "ai.obney.ontology.mutation-test/every-mutation-retries-original-result-after-graph-advances",
+        "ai.obney.ontology.boundary-test/retry-identity-is-independent-of-source-content",
+        "ai.obney.ontology.mutation-test/invalid-manual-mutations-are-atomic",
+        "ai.obney.ontology.durable-test/actual-sqlite-rejection-leaves-no-graph-or-retry-record",
+        "ai.obney.ontology.durable-test/sqlite-competing-writes-have-one-revision-winner"
+      ],
+      "review": "Validation, retry, stale revision and actual storage failure leave graph/history unchanged; SQLite compare-and-append gives one winner for competing writes."
+    },
+    "prose.HierarchyConsistency": {
+      "tests": [
+        "ai.obney.ontology.boundary-test/manual-hierarchy-maintains-inverses-and-rejects-cycles",
+        "ai.obney.ontology.boundary-test/imported-hierarchy-cycles-are-rejected-without-changing-graph",
+        "ai.obney.ontology.property-test/generated-mutation-sequences-match-independent-model-and-replay"
+      ],
+      "review": "Manual and imported hierarchy changes share validation; generated model checks inverse parent/child sets and rejects reachable cycles at each step."
+    },
+    "prose.QualifiedIdentityRequired": {
+      "tests": [
+        "ai.obney.ontology.mutation-test/required-identities-never-broaden-queries",
+        "ai.obney.ontology.boundary-test/tenant-and-qualified-identity-isolation"
+      ],
+      "review": "URI lookup requires graph and tenant; explicit tenant-wide administrative enumeration is a separate API. No global URI identity API exists."
+    },
+    "prose.SearchValidityAndDeterminism": {
+      "tests": [
+        "ai.obney.ontology.search-test/graph-search-obeys-depth-and-scoped-seeds",
+        "ai.obney.ontology.search-test/lexical-search-is-case-insensitive-and-stable-on-ties",
+        "ai.obney.ontology.search-test/weighted-fusion-controls-ranking",
+        "ai.obney.ontology.search-test/invalid-search-arguments-are-rejected",
+        "ai.obney.ontology.search-test/unusable-vectors-do-not-participate-in-ranking",
+        "ai.obney.ontology.search-test/finite-large-vectors-cannot-produce-nan-scores",
+        "ai.obney.ontology.boundary-test/absent-vector-models-are-not-comparable"
+      ],
+      "review": "Tests exercise each ranking signal, graph depths, weights, ties, case, limits, dimensions, model identity and numerical validity."
+    },
+    "prose.ScopedSearchAndExport": {
+      "tests": [
+        "ai.obney.ontology.boundary-test/model-free-search-stays-scoped",
+        "ai.obney.ontology.mutation-test/required-identities-never-broaden-queries",
+        "ai.obney.ontology.property-test/generated-mutation-sequences-match-independent-model-and-replay",
+        "ai.obney.ontology.durable-test/a-fresh-jvm-reconstructs-the-durable-graph"
+      ],
+      "review": "Qualified reads/search plus all generated historical snapshots and fresh-store/process replay preserve graph/provenance without optional model services."
+    },
+    "prose.ContributionIdentity": {
+      "tests": [
+        "ai.obney.ontology.mutation-test/every-mutation-retries-original-result-after-graph-advances",
+        "ai.obney.ontology.boundary-test/retry-identity-is-independent-of-source-content",
+        "ai.obney.ontology.resolution-test/source-identity-is-qualified-across-tenants-and-graphs",
+        "ai.obney.ontology.durable-test/sqlite-close-reopen-replays-revisions-and-retries",
+        "ai.obney.ontology.boundary-test/incremental-import-preserves-identities-schema-and-instances",
+        "ai.obney.ontology.boundary-test/contribution-history-retains-original-input",
+        "ai.obney.ontology.resolution-test/contribution-records-retain-digest-result-and-source-time"
+      ],
+      "review": "Scoped retry, changed payload, new interpretations of same bytes, later writes, durable reopen and additive upserts are exercised separately."
+    },
+    "prose.DeterministicResolutionAndMerge": {
+      "tests": [
+        "ai.obney.ontology.resolution-test/aliases-normalization-types-and-thresholds",
+        "ai.obney.ontology.resolution-test/canonical-selection-is-stable-for-permuted-candidates",
+        "ai.obney.ontology.boundary-test/resolution-does-not-collapse-established-identities",
+        "ai.obney.ontology.boundary-test/canonical-resolution-rewrites-schema-instance-and-rdf-references",
+        "ai.obney.ontology.resolution-test/imported-entities-retain-creation-and-update-times",
+        "ai.obney.ontology.resolution-test/invalid-resolution-thresholds-are-atomic",
+        "ai.obney.ontology.property-test/generated-resolution-scores-are-bounded",
+        "ai.obney.ontology.resolution-test/duplicate-uri-candidate-order-is-deterministic"
+      ],
+      "review": "Exact/semantic type compatibility, canonical identity retention, reference rewriting, permutation, bounded scores and timestamp retention are checked against observable graph/provenance."
+    },
+    "prose.DeterministicRdfImport": {
+      "tests": [
+        "ai.obney.ontology.rdf-test/malformed-or-unsupported-rdf-is-rejected-atomically",
+        "ai.obney.ontology.rdf-test/raw-triple-contributions-are-validated-before-commit",
+        "ai.obney.ontology.rdf-test/complete-schema-and-instance-statements-survive-export",
+        "ai.obney.ontology.rdf-test/exported-schema-and-individuals-can-be-imported-again",
+        "ai.obney.ontology.property-test/literal-export-roundtrip-has-exact-statements-and-checksum"
+      ],
+      "review": "Supported N-Triples are parsed without a model; malformed syntax/Unicode, unsupported nodes and raw triples reject atomically. Schema/instance/literal round trips retain statements."
+    },
+    "prose.OpaqueProducerProvenance": {
+      "tests": [
+        "ai.obney.ontology.boundary-test/contribution-history-retains-original-input",
+        "ai.obney.ontology.resolution-test/source-identity-is-qualified-across-tenants-and-graphs"
+      ],
+      "review": "Original input and opaque producer evidence remain independent of canonical graph rewriting; no producer execution system is loaded."
+    },
+    "prose.TenantBoundary": {
+      "tests": [
+        "ai.obney.ontology.boundary-test/tenant-and-qualified-identity-isolation",
+        "ai.obney.ontology.mutation-test/every-mutation-requires-tenant-context",
+        "ai.obney.ontology.mutation-test/required-identities-never-broaden-queries",
+        "ai.obney.ontology.mutation-test/every-relationship-precondition-is-enforced",
+        "ai.obney.ontology.resolution-test/source-identity-is-qualified-across-tenants-and-graphs",
+        "ai.obney.ontology.property-test/generated-source-versions-stay-unique-and-tenant-scoped"
+      ],
+      "review": "Authorization and deduplication use tenant context; equal URIs/source hashes/keys in separate tenants do not share graph state."
+    },
+    "prose.GraphOnly": {
+      "tests": [
+        "ai.obney.ontology.boundary-test/declarative-predicate-policy-has-no-agent-vocabulary",
+        "ai.obney.ontology.boundary-test/model-free-search-stays-scoped"
+      ],
+      "review": "Tests run with standalone deps and real Grain store, without ORC/model workflow/provider; loaded namespaces are checked for orchestration components."
+    }
+  }
+}

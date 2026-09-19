@@ -1,0 +1,19 @@
+{:paths ["src" "resources"]
+ :deps {org.clojure/clojure {:mvn/version "1.12.0"}
+        obneyai/grain-core-v2
+        {:git/url "https://github.com/ObneyAI/grain.git"
+         :git/sha "dbf5b5229aad09785e40f71e96adf65c90f971d5"
+         :deps/root "projects/grain-core-v2"}}
+ :aliases {:bench {:extra-paths ["bench"]
+                   :extra-deps {obneyai/grain-event-store-sqlite-v3
+                                {:git/url "https://github.com/ObneyAI/grain.git"
+                                 :git/sha "dbf5b5229aad09785e40f71e96adf65c90f971d5"
+                                 :deps/root "projects/grain-event-store-sqlite-v3"}}
+                   :main-opts ["-m" "ai.obney.ontology.benchmark"]}
+           :test {:extra-paths ["test"]
+                  :extra-deps {org.clojure/test.check {:mvn/version "1.1.3"}
+                               obneyai/grain-event-store-sqlite-v3
+                               {:git/url "https://github.com/ObneyAI/grain.git"
+                                :git/sha "dbf5b5229aad09785e40f71e96adf65c90f971d5"
+                                :deps/root "projects/grain-event-store-sqlite-v3"}}
+                  :main-opts ["-m" "ai.obney.ontology.test-runner"]}}}

@@ -1,0 +1,17 @@
+{
+  "harness_tests": 3,
+  "harness_assertions": 16,
+  "harness_failures": 0,
+  "smoke_workloads": 24,
+  "large_graph_and_control_cases": 16,
+  "case_statuses": {
+    "complete": 9,
+    "timeout": 7
+  },
+  "source_hash_checks": 192,
+  "launcher_invalid_inputs_rejected": [
+    "duplicate-cases",
+    "unknown-operation",
+    "nonpositive-time-budget"
+  ]
+}

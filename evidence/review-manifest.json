@@ -1,0 +1,21 @@
+{
+  "source_repository": "/Users/obneyai/Developer/code2/orc",
+  "source_commit": "d1f9ae76109f5274bf21dd8e35c41a3e2c0ea0ad",
+  "review_date": "2026-09-18",
+  "scope": "Static architecture review and Allium structural/process checks; no runtime tests executed",
+  "report_sha256": "2014f880dff53dd862cb1fc1e62610b81fb92902426a7344246a250e3f6f05c0",
+  "source_links_checked": 42,
+  "diagrams": 3,
+  "evidence_files": {
+    "ontology-analyse.json": "31969565ceb96b4aa8c8fd20a2a42b7fccb2527e63a14207777508547879afb9",
+    "all-specs-analyse.jsonl": "88aafcd7314429d1f081a65324f6c1b7eab5dab63f78ad43cc6521985c6b0b74",
+    "all-specs-check.jsonl": "a9068bb641cd524d795a7933b709e1bde500c95b662cc300ed7132e284826fb5",
+    "ontology-check.json": "79bcdc1b4e711079b0b3544162ff7cf68e321becd0885409302bdb1e2e5e7b86"
+  },
+  "extraction_boundary": {
+    "file": "ontology-extraction-boundary.md",
+    "sha256": "c482a15fe18c78ae92a490733b4a9755223587be6a2442a940276181084236ea",
+    "core_files_mapped": 27,
+    "verification": "Source ownership and dependency review; document links checked; no code extraction or runtime tests performed"
+  }
+}

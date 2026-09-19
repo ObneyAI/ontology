@@ -1,0 +1,93 @@
+WARNING: sequence already refers to: #'clojure.core/sequence in namespace: ai.obney.orc.orc-service.core.dsl, being replaced by: #'ai.obney.orc.orc-service.core.dsl/sequence
+WARNING: sequence already refers to: #'clojure.core/sequence in namespace: ai.obney.orc.orc-service.interface, being replaced by: #'ai.obney.orc.orc-service.interface/sequence
+
+Testing ai.obney.orc.ontology.core-test
+
+Testing ai.obney.orc.ontology.ontology-id-scoping-test
+
+Testing ai.obney.orc.ontology.integration-verification-test
+
+Testing ai.obney.orc.ontology.custom-ontology-lifecycle-test
+18:37:53.655 [main] INFO ai.djl.util.Platform -- Found matching platform from: jar:file:/Users/obneyai/.m2/repository/ai/djl/huggingface/tokenizers/0.31.1/tokenizers-0.31.1.jar!/native/lib/tokenizers.properties
+18:37:53.658 [main] DEBUG ai.djl.huggingface.tokenizers.jni.LibUtils -- Using cache dir: /Users/obneyai/.djl.ai/tokenizers/0.20.3-0.31.1-cpu-osx-aarch64
+18:37:53.658 [main] DEBUG ai.djl.huggingface.tokenizers.jni.LibUtils -- Loading huggingface library from: /Users/obneyai/.djl.ai/tokenizers/0.20.3-0.31.1-cpu-osx-aarch64
+18:37:53.658 [main] DEBUG ai.djl.huggingface.tokenizers.jni.LibUtils -- Loading native library: /Users/obneyai/.djl.ai/tokenizers/0.20.3-0.31.1-cpu-osx-aarch64/libtokenizers.dylib
+18:37:53.778 [main] DEBUG ai.djl.repository.zoo.DefaultModelZoo -- Scanning models in repo: class ai.djl.repository.SimpleRepository, file:/Users/obneyai/.cache/orc/colbert/answerai-colbert-small-v1/model.onnx
+18:37:53.779 [main] DEBUG ai.djl.repository.zoo.ModelZoo -- Loading model with Criteria:
+	Application: UNDEFINED
+	Input: class ai.djl.ndarray.NDList
+	Output: class ai.djl.ndarray.NDList
+	Engine: OnnxRuntime
+	ModelZoo: ai.djl.localmodelzoo
+	No translator supplied
+
+18:37:53.779 [main] DEBUG ai.djl.repository.zoo.ModelZoo -- Searching model in specified model zoo: ai.djl.localmodelzoo
+18:37:53.780 [main] DEBUG ai.djl.engine.Engine -- Registering EngineProvider: Rust
+18:37:53.781 [main] DEBUG ai.djl.engine.Engine -- Registering EngineProvider: OnnxRuntime
+18:37:53.781 [main] DEBUG ai.djl.engine.Engine -- Registering EngineProvider: PyTorch
+18:37:53.781 [main] DEBUG ai.djl.engine.Engine -- Found default engine: PyTorch
+18:37:53.782 [main] DEBUG ai.djl.repository.zoo.ModelZoo -- Checking ModelLoader: ai.djl.localmodelzoo:model.onnx UNDEFINED [
+	ai.djl.localmodelzoo/model.onnx/model.onnx {}
+]
+18:37:53.783 [main] DEBUG ai.djl.repository.MRL -- Preparing artifact: file:/Users/obneyai/.cache/orc/colbert/answerai-colbert-small-v1/model.onnx, ai.djl.localmodelzoo/model.onnx/model.onnx {}
+18:37:53.783 [main] DEBUG ai.djl.repository.SimpleRepository -- Skip prepare for local repository.
+18:37:54.509 [main] WARN ai.djl.onnxruntime.engine.OrtEngine -- CUDA is not supported OnnxRuntime engine: Error code - ORT_EP_FAIL - message: Failed to find CUDA shared provider
+18:37:54.515 [main] DEBUG ai.djl.pytorch.jni.LibUtils -- Using cache dir: /Users/obneyai/.djl.ai/pytorch/2.5.1-cpu-osx-aarch64
+18:37:54.521 [main] DEBUG ai.djl.pytorch.jni.LibUtils -- Loading native library: /Users/obneyai/.djl.ai/pytorch/2.5.1-cpu-osx-aarch64/libomp.dylib
+18:37:54.522 [main] DEBUG ai.djl.pytorch.jni.LibUtils -- Loading native library: /Users/obneyai/.djl.ai/pytorch/2.5.1-cpu-osx-aarch64/libc10.dylib
+18:37:54.524 [main] DEBUG ai.djl.pytorch.jni.LibUtils -- Loading native library: /Users/obneyai/.djl.ai/pytorch/2.5.1-cpu-osx-aarch64/libtorch_cpu.dylib
+18:37:54.712 [main] DEBUG ai.djl.pytorch.jni.LibUtils -- Loading native library: /Users/obneyai/.djl.ai/pytorch/2.5.1-cpu-osx-aarch64/libtorch.dylib
+18:37:54.713 [main] DEBUG ai.djl.pytorch.jni.LibUtils -- Loading native library: /Users/obneyai/.djl.ai/pytorch/2.5.1-cpu-osx-aarch64/0.31.1-libdjl_torch.dylib
+18:37:54.724 [main] INFO ai.djl.pytorch.engine.PtEngine -- PyTorch graph executor optimizer is enabled, this may impact your inference latency and throughput. See: https://docs.djl.ai/master/docs/development/inference_performance_optimization.html#graph-executor-optimization
+18:37:54.726 [main] INFO ai.djl.pytorch.engine.PtEngine -- Number of inter-op threads is 12
+18:37:54.726 [main] INFO ai.djl.pytorch.engine.PtEngine -- Number of intra-op threads is 8
+18:37:54.731 [main] INFO ai.djl.onnxruntime.engine.OrtModel -- Onnx extension not found in classpath.
+[DJL] Generating embeddings for 2 texts
+[DJL] Loading embedding model: sentence-transformers/all-MiniLM-L6-v2
+18:37:55.201 [main] DEBUG ai.djl.repository.zoo.DefaultModelZoo -- Scanning models in repo: class ai.djl.repository.RemoteRepository, djl://ai.djl.huggingface.pytorch/sentence-transformers/all-MiniLM-L6-v2
+18:37:55.203 [main] DEBUG ai.djl.repository.zoo.ModelZoo -- Loading model with Criteria:
+	Application: UNDEFINED
+	Input: class java.lang.String
+	Output: class [F
+	Engine: PyTorch
+	ModelZoo: ai.djl.localmodelzoo
+
+18:37:55.203 [main] DEBUG ai.djl.repository.zoo.ModelZoo -- Searching model in specified model zoo: ai.djl.localmodelzoo
+18:37:55.203 [main] DEBUG ai.djl.repository.zoo.ModelZoo -- Checking ModelLoader: ai.djl.huggingface.pytorch:sentence-transformers/all-MiniLM-L6-v2 NLP.TEXT_EMBEDDING [
+	ai.djl.huggingface.pytorch/sentence-transformers/all-MiniLM-L6-v2/0.0.1/all-MiniLM-L6-v2 {"en":"true"}
+]
+18:37:55.211 [main] DEBUG ai.djl.repository.MRL -- Preparing artifact: djl://ai.djl.huggingface.pytorch/sentence-transformers/all-MiniLM-L6-v2, ai.djl.huggingface.pytorch/sentence-transformers/all-MiniLM-L6-v2/0.0.1/all-MiniLM-L6-v2 {"en":"true"}
+18:37:55.212 [main] DEBUG ai.djl.repository.AbstractRepository -- Files have been downloaded already: /Users/obneyai/.djl.ai/cache/repo/model/nlp/text_embedding/ai/djl/huggingface/pytorch/sentence-transformers/all-MiniLM-L6-v2/0.0.1/all-MiniLM-L6-v2
+18:37:55.213 [main] DEBUG ai.djl.pytorch.jni.JniUtils -- mapLocation: true
+18:37:55.213 [main] DEBUG ai.djl.pytorch.jni.JniUtils -- extraFileKeys: []
+[DJL] Model loaded successfully: sentence-transformers/all-MiniLM-L6-v2
+
+Testing ai.obney.orc.ontology.contribution-integration-test
+
+Testing ai.obney.orc.ontology.embedding-contribution-integration-test
+
+Testing ai.obney.orc.ontology.evolutionary-builder-test
+
+Testing ai.obney.orc.ontology.evolutionary-tenant-isolation-test
+
+Testing ai.obney.orc.ontology.evolutionary-resolution-regression-test
+
+Testing ai.obney.orc.ontology.tree-class-hierarchy-test
+
+Testing ai.obney.orc.ontology.r05a-behavioral-subtree-foundation-test
+
+Testing ai.obney.orc.ontology.r05c-minting-affordance-test
+
+Testing ai.obney.orc.ontology.r05d-consolidator-behavioral-inference-test
+
+Testing ai.obney.orc.ontology.r07-investigation-behavioral-seed-test
+
+Testing ai.obney.orc.ontology.cc1-claim-store-test
+
+Testing ai.obney.orc.ontology.el4-harvest-test
+  [cc26 no-op sweep] N = 106 single-judge values; 30 promote under the OLD mean; 30 under the NEW per-dimension rule; 0 disagreements
+  [cc26 real-stream no-op] N = 7 single-judge classes: [{:score 1.0, :projected 1.0, :old true, :new true} {:score 0.9, :projected 0.9000000000000002, :old true, :new true} {:score 0.85, :projected 0.8499999999999998, :old true, :new true} {:score 0.8, :projected 0.7999999999999999, :old true, :new true} {:score 0.75, :projected 0.75, :old true, :new true} {:score 0.6, :projected 0.5999999999999999, :old false, :new false} {:score 0.0, :projected 0.0, :old false, :new false}]
+  [cc29 sweep] N = 16440 band-multiset means per floor; at 0.75 : 0 drift below the floor literal, 0 disagreements; at 0.8 : 7 drift, 0 disagreements
+
+Ran 156 tests containing 836 assertions.
+0 failures, 0 errors.

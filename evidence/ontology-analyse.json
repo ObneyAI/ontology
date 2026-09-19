@@ -1,0 +1,697 @@
+{
+  "command": "analyse",
+  "diagnostics": [
+    {
+      "code": "allium.externalEntity.missingSourceHint",
+      "location": {
+        "col": 17,
+        "file": "specs/ontology.allium",
+        "line": 7
+      },
+      "message": "External entity 'OntologyConsumer' has no obvious governing specification import in this module.",
+      "severity": "warning"
+    },
+    {
+      "code": "allium.externalEntity.missingSourceHint",
+      "location": {
+        "col": 17,
+        "file": "specs/ontology.allium",
+        "line": 8
+      },
+      "message": "External entity 'EvaluationTrace' has no obvious governing specification import in this module.",
+      "severity": "warning"
+    },
+    {
+      "code": "allium.rule.unreachableTrigger",
+      "location": {
+        "col": 11,
+        "file": "specs/ontology.allium",
+        "line": 800
+      },
+      "message": "Rule 'RequestThresholdConsolidation' listens for trigger 'RelevantLearningEventRecorded' but no local surface provides or rule emits it.",
+      "severity": "info"
+    },
+    {
+      "code": "allium.rule.unreachableTrigger",
+      "location": {
+        "col": 11,
+        "file": "specs/ontology.allium",
+        "line": 842
+      },
+      "message": "Rule 'RecordClaimDeltas' listens for trigger 'DescriptionConsolidationCompleted' but no local surface provides or rule emits it.",
+      "severity": "info"
+    },
+    {
+      "code": "allium.rule.unreachableTrigger",
+      "location": {
+        "col": 11,
+        "file": "specs/ontology.allium",
+        "line": 864
+      },
+      "message": "Rule 'ExcludeUngroundedDelta' listens for trigger 'DescriptionConsolidationCompleted' but no local surface provides or rule emits it.",
+      "severity": "info"
+    },
+    {
+      "code": "allium.rule.unreachableTrigger",
+      "location": {
+        "col": 11,
+        "file": "specs/ontology.allium",
+        "line": 879
+      },
+      "message": "Rule 'RecordNothingWhenAllDeltasExcluded' listens for trigger 'DescriptionConsolidationCompleted' but no local surface provides or rule emits it.",
+      "severity": "info"
+    },
+    {
+      "code": "allium.rule.unreachableTrigger",
+      "location": {
+        "col": 11,
+        "file": "specs/ontology.allium",
+        "line": 896
+      },
+      "message": "Rule 'RefuseStaleClaimDeltas' listens for trigger 'DescriptionConsolidationCompleted' but no local surface provides or rule emits it.",
+      "severity": "info"
+    },
+    {
+      "code": "allium.rule.unreachableTrigger",
+      "location": {
+        "col": 11,
+        "file": "specs/ontology.allium",
+        "line": 912
+      },
+      "message": "Rule 'ApplyAddClaim' listens for trigger 'ClaimDeltaApplied' but no local surface provides or rule emits it.",
+      "severity": "info"
+    },
+    {
+      "code": "allium.rule.unreachableTrigger",
+      "location": {
+        "col": 11,
+        "file": "specs/ontology.allium",
+        "line": 940
+      },
+      "message": "Rule 'ReinforceClaim' listens for trigger 'ClaimDeltaApplied' but no local surface provides or rule emits it.",
+      "severity": "info"
+    },
+    {
+      "code": "allium.rule.unreachableTrigger",
+      "location": {
+        "col": 11,
+        "file": "specs/ontology.allium",
+        "line": 968
+      },
+      "message": "Rule 'ContradictClaim' listens for trigger 'ClaimDeltaApplied' but no local surface provides or rule emits it.",
+      "severity": "info"
+    },
+    {
+      "code": "allium.rule.unreachableTrigger",
+      "location": {
+        "col": 11,
+        "file": "specs/ontology.allium",
+        "line": 988
+      },
+      "message": "Rule 'RetireExhaustedClaim' listens for trigger 'ClaimDeltaApplied' but no local surface provides or rule emits it.",
+      "severity": "info"
+    },
+    {
+      "code": "allium.rule.unreachableTrigger",
+      "location": {
+        "col": 11,
+        "file": "specs/ontology.allium",
+        "line": 1007
+      },
+      "message": "Rule 'DemoteUnderSupportedClaim' listens for trigger 'ClaimSupportChanged' but no local surface provides or rule emits it.",
+      "severity": "info"
+    },
+    {
+      "code": "allium.rule.unreachableTrigger",
+      "location": {
+        "col": 11,
+        "file": "specs/ontology.allium",
+        "line": 1019
+      },
+      "message": "Rule 'ValidateAuthoredClaimAtCreation' listens for trigger 'ClaimRecorded' but no local surface provides or rule emits it.",
+      "severity": "info"
+    },
+    {
+      "code": "allium.rule.unreachableTrigger",
+      "location": {
+        "col": 11,
+        "file": "specs/ontology.allium",
+        "line": 1026
+      },
+      "message": "Rule 'ValidateWellSupportedClaim' listens for trigger 'ClaimSupportChanged' but no local surface provides or rule emits it.",
+      "severity": "info"
+    },
+    {
+      "code": "allium.rule.unreachableTrigger",
+      "location": {
+        "col": 11,
+        "file": "specs/ontology.allium",
+        "line": 1044
+      },
+      "message": "Rule 'AssembleDescriptionFromClaims' listens for trigger 'ClaimSetChanged' but no local surface provides or rule emits it.",
+      "severity": "info"
+    },
+    {
+      "code": "allium.rule.unreachableTrigger",
+      "location": {
+        "col": 11,
+        "file": "specs/ontology.allium",
+        "line": 1084
+      },
+      "message": "Rule 'DescribeRecurringClass' listens for trigger 'TreeClassOccurrenceRecorded' but no local surface provides or rule emits it.",
+      "severity": "info"
+    },
+    {
+      "code": "allium.rule.unreachableTrigger",
+      "location": {
+        "col": 11,
+        "file": "specs/ontology.allium",
+        "line": 1095
+      },
+      "message": "Rule 'PromoteWellScoredClass' listens for trigger 'TreeClassOccurrenceRecorded' but no local surface provides or rule emits it.",
+      "severity": "info"
+    },
+    {
+      "code": "allium.rule.unreachableTrigger",
+      "location": {
+        "col": 11,
+        "file": "specs/ontology.allium",
+        "line": 1140
+      },
+      "message": "Rule 'ReportSuccessfulShapeCoherence' listens for trigger 'TreeClassOccurrenceRecorded' but no local surface provides or rule emits it.",
+      "severity": "info"
+    },
+    {
+      "code": "allium.rule.unreachableTrigger",
+      "location": {
+        "col": 11,
+        "file": "specs/ontology.allium",
+        "line": 1173
+      },
+      "message": "Rule 'ExcludeAbstainedEvaluations' listens for trigger 'EvaluationAbstained' but no local surface provides or rule emits it.",
+      "severity": "info"
+    },
+    {
+      "code": "allium.rule.unreachableTrigger",
+      "location": {
+        "col": 11,
+        "file": "specs/ontology.allium",
+        "line": 1179
+      },
+      "message": "Rule 'MintNovelBehavior' listens for trigger 'NovelBehaviorConfirmed' but no local surface provides or rule emits it.",
+      "severity": "info"
+    },
+    {
+      "code": "allium.rule.unreachableTrigger",
+      "location": {
+        "col": 11,
+        "file": "specs/ontology.allium",
+        "line": 1254
+      },
+      "message": "Rule 'RegisterUniqueSource' listens for trigger 'SourceRegistrationRequested' but no local surface provides or rule emits it.",
+      "severity": "info"
+    },
+    {
+      "code": "allium.rule.unreachableTrigger",
+      "location": {
+        "col": 11,
+        "file": "specs/ontology.allium",
+        "line": 1269
+      },
+      "message": "Rule 'SkipDuplicateSource' listens for trigger 'SourceRegistrationRequested' but no local surface provides or rule emits it.",
+      "severity": "info"
+    },
+    {
+      "code": "allium.rule.unreachableTrigger",
+      "location": {
+        "col": 11,
+        "file": "specs/ontology.allium",
+        "line": 1276
+      },
+      "message": "Rule 'RecordSourceExtraction' listens for trigger 'SourceExtractionCompleted' but no local surface provides or rule emits it.",
+      "severity": "info"
+    },
+    {
+      "code": "allium.rule.unreachableTrigger",
+      "location": {
+        "col": 11,
+        "file": "specs/ontology.allium",
+        "line": 1296
+      },
+      "message": "Rule 'ResolveAndMergeBuild' listens for trigger 'AllBuildSourcesExtracted' but no local surface provides or rule emits it.",
+      "severity": "info"
+    },
+    {
+      "code": "allium.rule.unreachableTrigger",
+      "location": {
+        "col": 11,
+        "file": "specs/ontology.allium",
+        "line": 1306
+      },
+      "message": "Rule 'CompleteBuild' listens for trigger 'TurtleSnapshotCreated' but no local surface provides or rule emits it.",
+      "severity": "info"
+    },
+    {
+      "code": "allium.rule.unreachableTrigger",
+      "location": {
+        "col": 11,
+        "file": "specs/ontology.allium",
+        "line": 1319
+      },
+      "message": "Rule 'FailBuild' listens for trigger 'OntologyBuildCannotContinue' but no local surface provides or rule emits it.",
+      "severity": "info"
+    },
+    {
+      "code": "allium.field.unused",
+      "location": {
+        "col": 5,
+        "file": "specs/ontology.allium",
+        "line": 520
+      },
+      "message": "Field 'Ontology.name' is declared but not referenced elsewhere.",
+      "severity": "info"
+    },
+    {
+      "code": "allium.field.unused",
+      "location": {
+        "col": 5,
+        "file": "specs/ontology.allium",
+        "line": 524
+      },
+      "message": "Field 'Ontology.created_at' is declared but not referenced elsewhere.",
+      "severity": "info"
+    },
+    {
+      "code": "allium.field.unused",
+      "location": {
+        "col": 5,
+        "file": "specs/ontology.allium",
+        "line": 527
+      },
+      "message": "Field 'Ontology.builds' is declared but not referenced elsewhere.",
+      "severity": "info"
+    },
+    {
+      "code": "allium.field.unused",
+      "location": {
+        "col": 5,
+        "file": "specs/ontology.allium",
+        "line": 539
+      },
+      "message": "Field 'Concept.embedding' is declared but not referenced elsewhere.",
+      "severity": "info"
+    },
+    {
+      "code": "allium.field.unused",
+      "location": {
+        "col": 5,
+        "file": "specs/ontology.allium",
+        "line": 540
+      },
+      "message": "Field 'Concept.created_at' is declared but not referenced elsewhere.",
+      "severity": "info"
+    },
+    {
+      "code": "allium.field.unused",
+      "location": {
+        "col": 5,
+        "file": "specs/ontology.allium",
+        "line": 544
+      },
+      "message": "Field 'Concept.incoming' is declared but not referenced elsewhere.",
+      "severity": "info"
+    },
+    {
+      "code": "allium.field.unused",
+      "location": {
+        "col": 5,
+        "file": "specs/ontology.allium",
+        "line": 551
+      },
+      "message": "Field 'ConceptRelationship.metadata' is declared but not referenced elsewhere.",
+      "severity": "info"
+    },
+    {
+      "code": "allium.field.unused",
+      "location": {
+        "col": 5,
+        "file": "specs/ontology.allium",
+        "line": 552
+      },
+      "message": "Field 'ConceptRelationship.created_at' is declared but not referenced elsewhere.",
+      "severity": "info"
+    },
+    {
+      "code": "allium.field.unused",
+      "location": {
+        "col": 5,
+        "file": "specs/ontology.allium",
+        "line": 559
+      },
+      "message": "Field 'TreeProfile.problem_mappings' is declared but not referenced elsewhere.",
+      "severity": "info"
+    },
+    {
+      "code": "allium.field.unused",
+      "location": {
+        "col": 5,
+        "file": "specs/ontology.allium",
+        "line": 560
+      },
+      "message": "Field 'TreeProfile.learned_rules' is declared but not referenced elsewhere.",
+      "severity": "info"
+    },
+    {
+      "code": "allium.field.unused",
+      "location": {
+        "col": 5,
+        "file": "specs/ontology.allium",
+        "line": 561
+      },
+      "message": "Field 'TreeProfile.embedding' is declared but not referenced elsewhere.",
+      "severity": "info"
+    },
+    {
+      "code": "allium.field.unused",
+      "location": {
+        "col": 5,
+        "file": "specs/ontology.allium",
+        "line": 565
+      },
+      "message": "Field 'LivingDescription.granularity' is declared but not referenced elsewhere.",
+      "severity": "info"
+    },
+    {
+      "code": "allium.field.unused",
+      "location": {
+        "col": 5,
+        "file": "specs/ontology.allium",
+        "line": 566
+      },
+      "message": "Field 'LivingDescription.target_identifier' is declared but not referenced elsewhere.",
+      "severity": "info"
+    },
+    {
+      "code": "allium.field.unused",
+      "location": {
+        "col": 5,
+        "file": "specs/ontology.allium",
+        "line": 574
+      },
+      "message": "Field 'LivingDescription.retrieval_description' is declared but not referenced elsewhere.",
+      "severity": "info"
+    },
+    {
+      "code": "allium.field.unused",
+      "location": {
+        "col": 5,
+        "file": "specs/ontology.allium",
+        "line": 581
+      },
+      "message": "Field 'LivingDescription.claim_set_version' is declared but not referenced elsewhere.",
+      "severity": "info"
+    },
+    {
+      "code": "allium.field.unused",
+      "location": {
+        "col": 5,
+        "file": "specs/ontology.allium",
+        "line": 584
+      },
+      "message": "Field 'LivingDescription.versions' is declared but not referenced elsewhere.",
+      "severity": "info"
+    },
+    {
+      "code": "allium.field.unused",
+      "location": {
+        "col": 5,
+        "file": "specs/ontology.allium",
+        "line": 593
+      },
+      "message": "Field 'Claim.claim_id' is declared but not referenced elsewhere.",
+      "severity": "info"
+    },
+    {
+      "code": "allium.field.unused",
+      "location": {
+        "col": 5,
+        "file": "specs/ontology.allium",
+        "line": 617
+      },
+      "message": "Field 'Claim.legacy_provenance' is declared but not referenced elsewhere.",
+      "severity": "info"
+    },
+    {
+      "code": "allium.field.unused",
+      "location": {
+        "col": 5,
+        "file": "specs/ontology.allium",
+        "line": 622
+      },
+      "message": "Field 'Claim.created_at' is declared but not referenced elsewhere.",
+      "severity": "info"
+    },
+    {
+      "code": "allium.field.unused",
+      "location": {
+        "col": 5,
+        "file": "specs/ontology.allium",
+        "line": 633
+      },
+      "message": "Field 'DescriptionVersion.body' is declared but not referenced elsewhere.",
+      "severity": "info"
+    },
+    {
+      "code": "allium.field.unused",
+      "location": {
+        "col": 5,
+        "file": "specs/ontology.allium",
+        "line": 635
+      },
+      "message": "Field 'DescriptionVersion.evidence_event_count' is declared but not referenced elsewhere.",
+      "severity": "info"
+    },
+    {
+      "code": "allium.field.unused",
+      "location": {
+        "col": 5,
+        "file": "specs/ontology.allium",
+        "line": 636
+      },
+      "message": "Field 'DescriptionVersion.model_provenance' is declared but not referenced elsewhere.",
+      "severity": "info"
+    },
+    {
+      "code": "allium.field.unused",
+      "location": {
+        "col": 5,
+        "file": "specs/ontology.allium",
+        "line": 640
+      },
+      "message": "Field 'ConsolidationPolicy.target_type' is declared but not referenced elsewhere.",
+      "severity": "info"
+    },
+    {
+      "code": "allium.field.unused",
+      "location": {
+        "col": 5,
+        "file": "specs/ontology.allium",
+        "line": 648
+      },
+      "message": "Field 'ConsolidationPolicy.evidence_token_budget' is declared but not referenced elsewhere.",
+      "severity": "info"
+    },
+    {
+      "code": "allium.field.unused",
+      "location": {
+        "col": 5,
+        "file": "specs/ontology.allium",
+        "line": 652
+      },
+      "message": "Field 'RegisteredSource.source_identifier' is declared but not referenced elsewhere.",
+      "severity": "info"
+    },
+    {
+      "code": "allium.field.unused",
+      "location": {
+        "col": 5,
+        "file": "specs/ontology.allium",
+        "line": 657
+      },
+      "message": "Field 'RegisteredSource.registered_at' is declared but not referenced elsewhere.",
+      "severity": "info"
+    },
+    {
+      "code": "allium.field.unused",
+      "location": {
+        "col": 5,
+        "file": "specs/ontology.allium",
+        "line": 659
+      },
+      "message": "Field 'RegisteredSource.extractions' is declared but not referenced elsewhere.",
+      "severity": "info"
+    },
+    {
+      "code": "allium.field.unused",
+      "location": {
+        "col": 5,
+        "file": "specs/ontology.allium",
+        "line": 664
+      },
+      "message": "Field 'OntologyBuild.mode' is declared but not referenced elsewhere.",
+      "severity": "info"
+    },
+    {
+      "code": "allium.field.unused",
+      "location": {
+        "col": 5,
+        "file": "specs/ontology.allium",
+        "line": 666
+      },
+      "message": "Field 'OntologyBuild.configuration' is declared but not referenced elsewhere.",
+      "severity": "info"
+    },
+    {
+      "code": "allium.field.unused",
+      "location": {
+        "col": 5,
+        "file": "specs/ontology.allium",
+        "line": 667
+      },
+      "message": "Field 'OntologyBuild.started_at' is declared but not referenced elsewhere.",
+      "severity": "info"
+    },
+    {
+      "code": "allium.field.unused",
+      "location": {
+        "col": 5,
+        "file": "specs/ontology.allium",
+        "line": 681
+      },
+      "message": "Field 'OntologyBuild.source_extractions' is declared but not referenced elsewhere.",
+      "severity": "info"
+    },
+    {
+      "code": "allium.field.unused",
+      "location": {
+        "col": 5,
+        "file": "specs/ontology.allium",
+        "line": 685
+      },
+      "message": "Field 'SourceExtraction.build' is declared but not referenced elsewhere.",
+      "severity": "info"
+    },
+    {
+      "code": "allium.field.unused",
+      "location": {
+        "col": 5,
+        "file": "specs/ontology.allium",
+        "line": 687
+      },
+      "message": "Field 'SourceExtraction.extracted_concept_count' is declared but not referenced elsewhere.",
+      "severity": "info"
+    },
+    {
+      "code": "allium.field.unused",
+      "location": {
+        "col": 5,
+        "file": "specs/ontology.allium",
+        "line": 688
+      },
+      "message": "Field 'SourceExtraction.extracted_relationship_count' is declared but not referenced elsewhere.",
+      "severity": "info"
+    },
+    {
+      "code": "allium.field.unused",
+      "location": {
+        "col": 5,
+        "file": "specs/ontology.allium",
+        "line": 689
+      },
+      "message": "Field 'SourceExtraction.extracted_schema' is declared but not referenced elsewhere.",
+      "severity": "info"
+    },
+    {
+      "code": "allium.field.unused",
+      "location": {
+        "col": 5,
+        "file": "specs/ontology.allium",
+        "line": 690
+      },
+      "message": "Field 'SourceExtraction.model_provenance' is declared but not referenced elsewhere.",
+      "severity": "info"
+    },
+    {
+      "code": "allium.field.unused",
+      "location": {
+        "col": 5,
+        "file": "specs/ontology.allium",
+        "line": 696
+      },
+      "message": "Field 'CanonicalMapping.canonical_uri' is declared but not referenced elsewhere.",
+      "severity": "info"
+    },
+    {
+      "code": "allium.field.unused",
+      "location": {
+        "col": 5,
+        "file": "specs/ontology.allium",
+        "line": 697
+      },
+      "message": "Field 'CanonicalMapping.match_type' is declared but not referenced elsewhere.",
+      "severity": "info"
+    },
+    {
+      "code": "allium.entity.unused",
+      "location": {
+        "col": 17,
+        "file": "specs/ontology.allium",
+        "line": 8
+      },
+      "message": "Entity 'EvaluationTrace' is declared but not referenced elsewhere in this specification.",
+      "severity": "warning"
+    },
+    {
+      "code": "allium.entity.unused",
+      "location": {
+        "col": 8,
+        "file": "specs/ontology.allium",
+        "line": 639
+      },
+      "message": "Entity 'ConsolidationPolicy' is declared but not referenced elsewhere in this specification.",
+      "severity": "warning"
+    },
+    {
+      "code": "allium.definition.unused",
+      "location": {
+        "col": 7,
+        "file": "specs/ontology.allium",
+        "line": 70
+      },
+      "message": "Value 'ClaimDelta' is declared but not referenced elsewhere.",
+      "severity": "warning"
+    },
+    {
+      "code": "allium.definition.unused",
+      "location": {
+        "col": 6,
+        "file": "specs/ontology.allium",
+        "line": 357
+      },
+      "message": "Value 'ClassificationOutcome' is declared but not referenced elsewhere.",
+      "severity": "warning"
+    },
+    {
+      "code": "allium.definition.unused",
+      "location": {
+        "col": 6,
+        "file": "specs/ontology.allium",
+        "line": 408
+      },
+      "message": "Value 'EvidenceExclusionReason' is declared but not referenced elsewhere.",
+      "severity": "warning"
+    }
+  ],
+  "findings": [],
+  "spec_file": "specs/ontology.allium"
+}
