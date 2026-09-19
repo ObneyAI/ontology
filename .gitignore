@@ -3,6 +3,7 @@
 .allium-loop/
 target/
 .clj-kondo/.cache/
+.clj-kondo/imports/
 .lsp/.cache/
 .nrepl-port
 *.class
@@ -22,4 +23,12 @@ replay_pid*.log
 *.swo
 *~
 
-# Keep curated evidence/ logs, CSV, EDN and JSON reports versionable.
+# Keep compact campaign summaries and consolidated results versionable.
+# Per-case benchmark output belongs under target/.
+/evidence/benchmarks/*/*/
+/evidence/benchmarks/*/*.log
+/evidence/benchmarks/*/manifest.json
+/evidence/profiles/*/memory-*.edn
+/evidence/profiles/*/memory-*.md
+/evidence/profiles/*/sqlite-*.edn
+/evidence/profiles/*/sqlite-*.md

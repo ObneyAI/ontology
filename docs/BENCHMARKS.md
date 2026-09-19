@@ -124,3 +124,11 @@ handling independently of performance measurements:
 ```sh
 clojure -Sdeps '{:paths ["src" "bench"]}' -M bench/check_harness.clj
 ```
+
+## Evidence kept in Git
+
+Run benchmarks under ignored `target/`. For new archived campaigns, keep one
+`report.md` summary and one consolidated `results.edn` containing the campaign
+manifest and each case's metadata, raw results and status. Per-case logs, CSVs
+and duplicate reports are local artifacts. Existing older baseline archives
+retain their original layout.

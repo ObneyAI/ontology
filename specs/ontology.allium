@@ -70,6 +70,17 @@ contract ScopedConceptLookup {
         -- Every concept lookup requires both tenant and ontology identity.
         -- URI-only global lookup is not part of the public graph contract.
 
+    @invariant ScopedIncrementalReads
+        -- Point lookup reads events affecting the qualified concept and the
+        -- policies needed to interpret its relationships. Changes identify both
+        -- removed and added relationship endpoints. Unchanged records do not make
+        -- those concepts affected.
+        -- Repeated reads reuse prior projection progress and consume only new
+        -- relevant events. Committed updates are visible on the next read.
+        -- Projection progress is isolated by store, tenant and query scope;
+        -- historical reads never advance beyond the requested revision.
+        -- A committed retry reads its request stream without rebuilding the graph.
+
     @invariant SearchValidityAndDeterminism
         -- Traversal depth is a nonnegative integer and the result limit is a
         -- positive integer. Signal weights are finite and nonnegative.
@@ -100,6 +111,19 @@ contract GraphContributions {
         -- Content hash identifies source bytes, not every interpretation of them:
         -- a new key may re-extract unchanged content under another producer.
         -- Imports are additive upserts, not implicit deletion of older knowledge.
+
+    @invariant ResolvedContributionChanges
+        -- Each accepted contribution records only changed resolved records and
+        -- explicit removals, together with its input, source and resolution evidence.
+        -- Unchanged graph records are not repeated in the accepted changes.
+        -- Applying those changes to the prior graph reproduces the validated
+        -- candidate graph, including schema, instances and RDF triples.
+        -- Changed records replace their prior values; relationship changes are
+        -- authoritative, including removals when parents are replaced.
+        -- Replay does not repeat identity resolution. Scoped projections and
+        -- historical exports agree with a complete replay of accepted changes.
+        -- A new contribution with no graph changes still records acceptance,
+        -- provenance and a new revision; an identical retry adds no event.
 
     @invariant DeterministicResolutionAndMerge
         -- Explicit resolution policy combines exact identity, normalized labels

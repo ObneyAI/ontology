@@ -245,8 +245,8 @@
       "id": "contract-signature.GraphContributions.import_contribution",
       "source_construct": "GraphContributions.import_contribution",
       "source_span": {
-        "end": 3705,
-        "start": 3618
+        "end": 4410,
+        "start": 4323
       }
     },
     {
@@ -255,8 +255,8 @@
       "id": "contract-signature.GraphContributions.import_rdf",
       "source_construct": "GraphContributions.import_rdf",
       "source_span": {
-        "end": 3806,
-        "start": 3710
+        "end": 4511,
+        "start": 4415
       }
     },
     {
@@ -265,8 +265,8 @@
       "id": "contract-signature.GraphContributions.register_predicate",
       "source_construct": "GraphContributions.register_predicate",
       "source_span": {
-        "end": 3895,
-        "start": 3811
+        "end": 4600,
+        "start": 4516
       }
     },
     {
@@ -288,8 +288,8 @@
       "id": "entity-fields.Ontology",
       "source_construct": "Ontology",
       "source_span": {
-        "end": 6532,
-        "start": 6296
+        "end": 8140,
+        "start": 7904
       }
     },
     {
@@ -298,8 +298,8 @@
       "id": "entity-optional.Ontology.scope",
       "source_construct": "Ontology.scope",
       "source_span": {
-        "end": 6532,
-        "start": 6296
+        "end": 8140,
+        "start": 7904
       }
     },
     {
@@ -308,8 +308,8 @@
       "id": "entity-optional.Ontology.description",
       "source_construct": "Ontology.description",
       "source_span": {
-        "end": 6532,
-        "start": 6296
+        "end": 8140,
+        "start": 7904
       }
     },
     {
@@ -318,8 +318,8 @@
       "id": "entity-optional.Ontology.base_uri",
       "source_construct": "Ontology.base_uri",
       "source_span": {
-        "end": 6532,
-        "start": 6296
+        "end": 8140,
+        "start": 7904
       }
     },
     {
@@ -328,8 +328,8 @@
       "id": "entity-relationship.Ontology.concepts",
       "source_construct": "Ontology.concepts",
       "source_span": {
-        "end": 6532,
-        "start": 6296
+        "end": 8140,
+        "start": 7904
       }
     },
     {
@@ -357,8 +357,8 @@
       "id": "entity-fields.Concept",
       "source_construct": "Concept",
       "source_span": {
-        "end": 6958,
-        "start": 6534
+        "end": 8566,
+        "start": 8142
       }
     },
     {
@@ -367,8 +367,8 @@
       "id": "entity-optional.Concept.scope",
       "source_construct": "Concept.scope",
       "source_span": {
-        "end": 6958,
-        "start": 6534
+        "end": 8566,
+        "start": 8142
       }
     },
     {
@@ -377,8 +377,8 @@
       "id": "entity-optional.Concept.provenance",
       "source_construct": "Concept.provenance",
       "source_span": {
-        "end": 6958,
-        "start": 6534
+        "end": 8566,
+        "start": 8142
       }
     },
     {
@@ -387,8 +387,8 @@
       "id": "entity-optional.Concept.indicators",
       "source_construct": "Concept.indicators",
       "source_span": {
-        "end": 6958,
-        "start": 6534
+        "end": 8566,
+        "start": 8142
       }
     },
     {
@@ -397,8 +397,8 @@
       "id": "entity-optional.Concept.attributes",
       "source_construct": "Concept.attributes",
       "source_span": {
-        "end": 6958,
-        "start": 6534
+        "end": 8566,
+        "start": 8142
       }
     },
     {
@@ -407,8 +407,8 @@
       "id": "entity-optional.Concept.embedding",
       "source_construct": "Concept.embedding",
       "source_span": {
-        "end": 6958,
-        "start": 6534
+        "end": 8566,
+        "start": 8142
       }
     },
     {
@@ -417,8 +417,8 @@
       "id": "entity-optional.Concept.embedding_model",
       "source_construct": "Concept.embedding_model",
       "source_span": {
-        "end": 6958,
-        "start": 6534
+        "end": 8566,
+        "start": 8142
       }
     },
     {
@@ -427,8 +427,8 @@
       "id": "entity-optional.Concept.updated_at",
       "source_construct": "Concept.updated_at",
       "source_span": {
-        "end": 6958,
-        "start": 6534
+        "end": 8566,
+        "start": 8142
       }
     },
     {
@@ -437,8 +437,8 @@
       "id": "entity-relationship.Concept.outgoing",
       "source_construct": "Concept.outgoing",
       "source_span": {
-        "end": 6958,
-        "start": 6534
+        "end": 8566,
+        "start": 8142
       }
     },
     {
@@ -447,8 +447,8 @@
       "id": "entity-relationship.Concept.incoming",
       "source_construct": "Concept.incoming",
       "source_span": {
-        "end": 6958,
-        "start": 6534
+        "end": 8566,
+        "start": 8142
       }
     },
     {
@@ -466,8 +466,8 @@
       "id": "entity-fields.ConceptRelationship",
       "source_construct": "ConceptRelationship",
       "source_span": {
-        "end": 7114,
-        "start": 6960
+        "end": 8722,
+        "start": 8568
       }
     },
     {
@@ -476,8 +476,8 @@
       "id": "entity-optional.ConceptRelationship.metadata",
       "source_construct": "ConceptRelationship.metadata",
       "source_span": {
-        "end": 7114,
-        "start": 6960
+        "end": 8722,
+        "start": 8568
       }
     },
     {
@@ -495,8 +495,8 @@
       "id": "entity-fields.CanonicalMapping",
       "source_construct": "CanonicalMapping",
       "source_span": {
-        "end": 7262,
-        "start": 7116
+        "end": 8870,
+        "start": 8724
       }
     },
     {
@@ -514,8 +514,8 @@
       "id": "entity-fields.PredicatePolicy",
       "source_construct": "PredicatePolicy",
       "source_span": {
-        "end": 7405,
-        "start": 7264
+        "end": 9013,
+        "start": 8872
       }
     },
     {
@@ -524,8 +524,8 @@
       "id": "entity-optional.PredicatePolicy.inverse",
       "source_construct": "PredicatePolicy.inverse",
       "source_span": {
-        "end": 7405,
-        "start": 7264
+        "end": 9013,
+        "start": 8872
       }
     },
     {
@@ -542,8 +542,8 @@
       "id": "entity-fields.RegisteredSource",
       "source_construct": "RegisteredSource",
       "source_span": {
-        "end": 7541,
-        "start": 7407
+        "end": 9149,
+        "start": 9015
       }
     },
     {
@@ -562,8 +562,8 @@
       "id": "entity-fields.Contribution",
       "source_construct": "Contribution",
       "source_span": {
-        "end": 7711,
-        "start": 7543
+        "end": 9319,
+        "start": 9151
       }
     },
     {
@@ -578,8 +578,8 @@
       "id": "rule-success.InitializeOntology",
       "source_construct": "InitializeOntology",
       "source_span": {
-        "end": 8151,
-        "start": 7713
+        "end": 9759,
+        "start": 9321
       }
     },
     {
@@ -594,8 +594,8 @@
       "id": "rule-failure.InitializeOntology.1",
       "source_construct": "InitializeOntology",
       "source_span": {
-        "end": 7851,
-        "start": 7827
+        "end": 9459,
+        "start": 9435
       }
     },
     {
@@ -610,8 +610,8 @@
       "id": "rule-entity-creation.InitializeOntology.1",
       "source_construct": "InitializeOntology",
       "source_span": {
-        "end": 8149,
-        "start": 7895
+        "end": 9757,
+        "start": 9503
       }
     },
     {
@@ -633,8 +633,8 @@
       "id": "rule-success.AddConcept",
       "source_construct": "AddConcept",
       "source_span": {
-        "end": 9182,
-        "start": 8153
+        "end": 10790,
+        "start": 9761
       }
     },
     {
@@ -656,8 +656,8 @@
       "id": "rule-failure.AddConcept.1",
       "source_construct": "AddConcept",
       "source_span": {
-        "end": 8266,
-        "start": 8232
+        "end": 9874,
+        "start": 9840
       }
     },
     {
@@ -679,8 +679,8 @@
       "id": "rule-failure.AddConcept.2",
       "source_construct": "AddConcept",
       "source_span": {
-        "end": 8307,
-        "start": 8271
+        "end": 9915,
+        "start": 9879
       }
     },
     {
@@ -702,8 +702,8 @@
       "id": "rule-failure.AddConcept.3",
       "source_construct": "AddConcept",
       "source_span": {
-        "end": 8354,
-        "start": 8312
+        "end": 9962,
+        "start": 9920
       }
     },
     {
@@ -725,8 +725,8 @@
       "id": "rule-failure.AddConcept.4",
       "source_construct": "AddConcept",
       "source_span": {
-        "end": 8432,
-        "start": 8359
+        "end": 10040,
+        "start": 9967
       }
     },
     {
@@ -748,8 +748,8 @@
       "id": "rule-failure.AddConcept.5",
       "source_construct": "AddConcept",
       "source_span": {
-        "end": 8534,
-        "start": 8437
+        "end": 10142,
+        "start": 10045
       }
     },
     {
@@ -771,8 +771,8 @@
       "id": "rule-failure.AddConcept.6",
       "source_construct": "AddConcept",
       "source_span": {
-        "end": 8600,
-        "start": 8539
+        "end": 10208,
+        "start": 10147
       }
     },
     {
@@ -794,8 +794,8 @@
       "id": "rule-entity-creation.AddConcept.1",
       "source_construct": "AddConcept",
       "source_span": {
-        "end": 9125,
-        "start": 8606
+        "end": 10733,
+        "start": 10214
       }
     },
     {
@@ -815,8 +815,8 @@
       "id": "rule-success.UpdateConcept",
       "source_construct": "UpdateConcept",
       "source_span": {
-        "end": 10453,
-        "start": 9184
+        "end": 12061,
+        "start": 10792
       }
     },
     {
@@ -836,8 +836,8 @@
       "id": "rule-failure.UpdateConcept.1",
       "source_construct": "UpdateConcept",
       "source_span": {
-        "end": 9307,
-        "start": 9270
+        "end": 10915,
+        "start": 10878
       }
     },
     {
@@ -857,8 +857,8 @@
       "id": "rule-failure.UpdateConcept.2",
       "source_construct": "UpdateConcept",
       "source_span": {
-        "end": 9350,
-        "start": 9312
+        "end": 10958,
+        "start": 10920
       }
     },
     {
@@ -878,8 +878,8 @@
       "id": "rule-failure.UpdateConcept.3",
       "source_construct": "UpdateConcept",
       "source_span": {
-        "end": 9412,
-        "start": 9355
+        "end": 11020,
+        "start": 10963
       }
     },
     {
@@ -899,8 +899,8 @@
       "id": "rule-failure.UpdateConcept.4",
       "source_construct": "UpdateConcept",
       "source_span": {
-        "end": 9486,
-        "start": 9417
+        "end": 11094,
+        "start": 11025
       }
     },
     {
@@ -920,8 +920,8 @@
       "id": "rule-failure.UpdateConcept.5",
       "source_construct": "UpdateConcept",
       "source_span": {
-        "end": 9620,
-        "start": 9491
+        "end": 11228,
+        "start": 11099
       }
     },
     {
@@ -941,8 +941,8 @@
       "id": "rule-failure.UpdateConcept.6",
       "source_construct": "UpdateConcept",
       "source_span": {
-        "end": 9689,
-        "start": 9625
+        "end": 11297,
+        "start": 11233
       }
     },
     {
@@ -960,8 +960,8 @@
       "id": "rule-success.RegisterPredicate",
       "source_construct": "RegisterPredicate",
       "source_span": {
-        "end": 10881,
-        "start": 10455
+        "end": 12489,
+        "start": 12063
       }
     },
     {
@@ -979,8 +979,8 @@
       "id": "rule-failure.RegisterPredicate.1",
       "source_construct": "RegisterPredicate",
       "source_span": {
-        "end": 10609,
-        "start": 10580
+        "end": 12217,
+        "start": 12188
       }
     },
     {
@@ -998,8 +998,8 @@
       "id": "rule-failure.RegisterPredicate.2",
       "source_construct": "RegisterPredicate",
       "source_span": {
-        "end": 10669,
-        "start": 10614
+        "end": 12277,
+        "start": 12222
       }
     },
     {
@@ -1017,8 +1017,8 @@
       "id": "rule-entity-creation.RegisterPredicate.1",
       "source_construct": "RegisterPredicate",
       "source_span": {
-        "end": 10824,
-        "start": 10674
+        "end": 12432,
+        "start": 12282
       }
     },
     {
@@ -1033,8 +1033,8 @@
       "id": "rule-success.LinkConcepts",
       "source_construct": "LinkConcepts",
       "source_span": {
-        "end": 11740,
-        "start": 10883
+        "end": 13348,
+        "start": 12491
       }
     },
     {
@@ -1049,8 +1049,8 @@
       "id": "rule-failure.LinkConcepts.1",
       "source_construct": "LinkConcepts",
       "source_span": {
-        "end": 11073,
-        "start": 11047
+        "end": 12681,
+        "start": 12655
       }
     },
     {
@@ -1065,8 +1065,8 @@
       "id": "rule-failure.LinkConcepts.2",
       "source_construct": "LinkConcepts",
       "source_span": {
-        "end": 11102,
-        "start": 11078
+        "end": 12710,
+        "start": 12686
       }
     },
     {
@@ -1081,8 +1081,8 @@
       "id": "rule-failure.LinkConcepts.3",
       "source_construct": "LinkConcepts",
       "source_span": {
-        "end": 11170,
-        "start": 11107
+        "end": 12778,
+        "start": 12715
       }
     },
     {
@@ -1097,8 +1097,8 @@
       "id": "rule-failure.LinkConcepts.4",
       "source_construct": "LinkConcepts",
       "source_span": {
-        "end": 11243,
-        "start": 11175
+        "end": 12851,
+        "start": 12783
       }
     },
     {
@@ -1113,8 +1113,8 @@
       "id": "rule-failure.LinkConcepts.5",
       "source_construct": "LinkConcepts",
       "source_span": {
-        "end": 11339,
-        "start": 11248
+        "end": 12947,
+        "start": 12856
       }
     },
     {
@@ -1129,8 +1129,8 @@
       "id": "rule-failure.LinkConcepts.6",
       "source_construct": "LinkConcepts",
       "source_span": {
-        "end": 11401,
-        "start": 11344
+        "end": 13009,
+        "start": 12952
       }
     },
     {
@@ -1145,8 +1145,8 @@
       "id": "rule-entity-creation.LinkConcepts.1",
       "source_construct": "LinkConcepts",
       "source_span": {
-        "end": 11541,
-        "start": 11406
+        "end": 13149,
+        "start": 13014
       }
     },
     {
@@ -1171,8 +1171,8 @@
       "id": "rule-success.ImportContribution",
       "source_construct": "ImportContribution",
       "source_span": {
-        "end": 12806,
-        "start": 11742
+        "end": 14414,
+        "start": 13350
       }
     },
     {
@@ -1197,8 +1197,8 @@
       "id": "rule-failure.ImportContribution.1",
       "source_construct": "ImportContribution",
       "source_span": {
-        "end": 11897,
-        "start": 11829
+        "end": 13505,
+        "start": 13437
       }
     },
     {
@@ -1223,8 +1223,8 @@
       "id": "rule-failure.ImportContribution.2",
       "source_construct": "ImportContribution",
       "source_span": {
-        "end": 11957,
-        "start": 11902
+        "end": 13565,
+        "start": 13510
       }
     },
     {
@@ -1249,8 +1249,8 @@
       "id": "rule-failure.ImportContribution.3",
       "source_construct": "ImportContribution",
       "source_span": {
-        "end": 12012,
-        "start": 11962
+        "end": 13620,
+        "start": 13570
       }
     },
     {
@@ -1275,8 +1275,8 @@
       "id": "rule-entity-creation.ImportContribution.1",
       "source_construct": "ImportContribution",
       "source_span": {
-        "end": 12676,
-        "start": 12375
+        "end": 14284,
+        "start": 13983
       }
     },
     {
@@ -1291,8 +1291,8 @@
       "id": "rule-success.RetryContribution",
       "source_construct": "RetryContribution",
       "source_span": {
-        "end": 13110,
-        "start": 12808
+        "end": 14718,
+        "start": 14416
       }
     },
     {
@@ -1307,8 +1307,8 @@
       "id": "rule-failure.RetryContribution.1",
       "source_construct": "RetryContribution",
       "source_span": {
-        "end": 12987,
-        "start": 12964
+        "end": 14595,
+        "start": 14572
       }
     },
     {
@@ -1323,8 +1323,8 @@
       "id": "rule-failure.RetryContribution.2",
       "source_construct": "RetryContribution",
       "source_span": {
-        "end": 13053,
-        "start": 12992
+        "end": 14661,
+        "start": 14600
       }
     },
     {
@@ -1339,8 +1339,8 @@
       "id": "rule-success.RejectContribution",
       "source_construct": "RejectContribution",
       "source_span": {
-        "end": 13362,
-        "start": 13112
+        "end": 14970,
+        "start": 14720
       }
     },
     {
@@ -1355,8 +1355,8 @@
       "id": "rule-failure.RejectContribution.1",
       "source_construct": "RejectContribution",
       "source_span": {
-        "end": 13261,
-        "start": 13199
+        "end": 14869,
+        "start": 14807
       }
     },
     {
@@ -1371,8 +1371,8 @@
       "id": "rule-success.SearchGraph",
       "source_construct": "SearchGraph",
       "source_span": {
-        "end": 13565,
-        "start": 13364
+        "end": 15173,
+        "start": 14972
       }
     },
     {
@@ -1387,8 +1387,8 @@
       "id": "rule-failure.SearchGraph.1",
       "source_construct": "SearchGraph",
       "source_span": {
-        "end": 13461,
-        "start": 13442
+        "end": 15069,
+        "start": 15050
       }
     },
     {
@@ -1406,8 +1406,8 @@
       "id": "rule-success.ExportGraph",
       "source_construct": "ExportGraph",
       "source_span": {
-        "end": 13832,
-        "start": 13567
+        "end": 15440,
+        "start": 15175
       }
     },
     {
@@ -1425,8 +1425,8 @@
       "id": "rule-failure.ExportGraph.1",
       "source_construct": "ExportGraph",
       "source_span": {
-        "end": 13698,
-        "start": 13641
+        "end": 15306,
+        "start": 15249
       }
     },
     {
@@ -1436,8 +1436,8 @@
       "id": "invariant.ConceptUrisAreUniqueWithinOntology",
       "source_construct": "ConceptUrisAreUniqueWithinOntology",
       "source_span": {
-        "end": 14002,
-        "start": 13834
+        "end": 15610,
+        "start": 15442
       }
     },
     {
@@ -1447,8 +1447,8 @@
       "id": "invariant.RelationshipEdgesAreUnique",
       "source_construct": "RelationshipEdgesAreUnique",
       "source_span": {
-        "end": 14220,
-        "start": 14004
+        "end": 15828,
+        "start": 15612
       }
     },
     {
@@ -1458,8 +1458,8 @@
       "id": "invariant.ResolutionScoresAreBounded",
       "source_construct": "ResolutionScoresAreBounded",
       "source_span": {
-        "end": 14360,
-        "start": 14222
+        "end": 15968,
+        "start": 15830
       }
     },
     {
@@ -1469,8 +1469,8 @@
       "id": "invariant.TenantQualifiedRelationships",
       "source_construct": "TenantQualifiedRelationships",
       "source_span": {
-        "end": 14514,
-        "start": 14362
+        "end": 16122,
+        "start": 15970
       }
     },
     {
@@ -1480,8 +1480,8 @@
       "id": "invariant.SourceVersionsAreScoped",
       "source_construct": "SourceVersionsAreScoped",
       "source_span": {
-        "end": 14771,
-        "start": 14516
+        "end": 16379,
+        "start": 16124
       }
     },
     {
@@ -1490,8 +1490,8 @@
       "id": "surface-actor.OntologyGraph",
       "source_construct": "OntologyGraph",
       "source_span": {
-        "end": 16045,
-        "start": 14773
+        "end": 17653,
+        "start": 16381
       }
     },
     {
@@ -1500,8 +1500,8 @@
       "id": "surface-provides.OntologyGraph",
       "source_construct": "OntologyGraph",
       "source_span": {
-        "end": 15370,
-        "start": 14839
+        "end": 16978,
+        "start": 16447
       }
     },
     {
@@ -1510,8 +1510,8 @@
       "id": "surface-exposure.OntologyGraph",
       "source_construct": "OntologyGraph",
       "source_span": {
-        "end": 15539,
-        "start": 15375
+        "end": 17147,
+        "start": 16983
       }
     }
   ],

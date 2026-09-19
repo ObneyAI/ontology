@@ -28,7 +28,7 @@ this expanded suite.
 
 | Gate | Current authoritative evidence |
 | --- | --- |
-| Generated and prose obligation mapping | `specs/test-coverage.json`, `docs/TEST-COVERAGE.md`, `evidence/obligation-review.json`: 96 generated + 11 prose, no missing/obsolete obligations or test references |
+| Generated and prose obligation mapping | `specs/test-coverage.json`, `docs/TEST-COVERAGE.md`, `evidence/obligation-review.json`: 96 generated + 13 prose, no missing/obsolete obligations or test references |
 | Mutation validity, retries and tenants | `mutation_test.clj`, `boundary_test.clj`: invalid inputs preserve snapshots, events and provenance; original results survive later writes |
 | Predicates, qualified edges and hierarchy | Mutation tables plus generated independent graph model; cross-graph revisions and inverse uniqueness checked through replay |
 | Queries and history | Lifecycle/filter and missing-identity tests; every generated revision compared with historical export |

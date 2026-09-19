@@ -46,53 +46,47 @@
 (def graph-event-types state/events)
 
 (defn get-ontology [ctx oid]
-  (let [oid (state/normalize-id oid) s (state/read-state ctx)]
+  (let [oid (state/normalize-id oid) s (state/metadata-state ctx oid)]
     (when-let [o (get-in s [:ontologies oid])] (assoc o :revision (state/revision s oid)))))
 (defn list-ontologies
-  ([ctx] (let [s (state/read-state ctx)]
+  ([ctx] (let [s (state/metadata-state ctx nil)]
            (mapv #(assoc % :revision (state/revision s (:ontology-id %)))
                  (sort-by (comp str :ontology-id) (vals (:ontologies s)))))))
 (defn ontology-exists? [ctx oid] (boolean (get-ontology ctx oid)))
-(defn get-revision [ctx oid] (state/revision (state/read-state ctx) (state/normalize-id oid)))
+(defn get-revision [ctx oid]
+  (let [oid (state/normalize-id oid)] (state/revision (state/metadata-state ctx oid) oid)))
 (defn get-concepts
   ([ctx] (get-concepts ctx {}))
   ([ctx {:keys [ontology-id ontology-ids scope broader-uri]}]
    (let [ids (cond ontology-ids (set (map state/normalize-id ontology-ids))
                    ontology-id #{(state/normalize-id ontology-id)})]
-     (cond->> (state/concepts (state/read-state ctx))
-       ids (filterv #(ids (:ontology-id %)))
-       scope (filterv #(= scope (:scope %)))
-       broader-uri (filterv #(contains? (:broader %) broader-uri))))))
+     (state/concepts (state/read-state (assoc ctx :ontology/ids ids))
+                     {:ids ids :scope scope :broader-uri broader-uri}))))
 (defn get-concept-by-uri [ctx oid uri]
   (when-not oid (throw (ex-info "Concept lookup requires ontology-id" {})))
-  (first (filter #(= uri (:uri %)) (get-concepts ctx {:ontology-id oid}))))
+  (let [oid (state/normalize-id oid)]
+    (state/concept-view (state/point-state ctx oid uri) [oid uri])))
 (defn get-concept-map [ctx]
   (into {} (map (fn [c] [[(:ontology-id c) (:uri c)] c])) (get-concepts ctx)))
 (defn get-relationships [ctx oid]
-  (state/relationships (state/read-state ctx) (state/normalize-id oid)))
+  (let [oid (state/normalize-id oid)] (state/relationships (state/relationship-state ctx oid) oid)))
 (defn get-contributions [ctx oid]
   (let [oid (state/normalize-id oid)]
-    (->> (:contributions (state/read-state ctx))
+    (->> (:contributions (state/history-state ctx oid))
          (keep (fn [[[id _] c]] (when (= id oid) c)))
          (sort-by (juxt :recorded-at (comp str :contribution-id))) vec)))
 (defn get-sources [ctx oid]
   (let [oid (state/normalize-id oid)]
-    (->> (:sources (state/read-state ctx))
+    (->> (:sources (state/history-state ctx oid))
          (keep (fn [[[id _ _] c]] (when (= id oid) c)))
          (sort-by (juxt (comp str :source-id) :content-hash)) vec)))
 (defn get-canonical-mappings [ctx oid]
-  (get-in (state/read-state ctx) [:mappings (state/normalize-id oid)] {}))
-
-(defn- state-at [ctx oid revision]
-  (if (nil? revision) (state/read-state ctx)
-      (reduce (fn [s e]
-                (if (= revision (state/revision s oid)) (reduced s) (state/apply-event s e)))
-              {} (state/read-events ctx))))
+  (let [oid (state/normalize-id oid)] (get-in (state/history-state ctx oid) [:mappings oid] {})))
 
 (defn export-snapshot
   ([ctx oid] (export-snapshot ctx oid nil))
   ([ctx oid revision]
-   (let [oid (state/normalize-id oid) s (state-at ctx oid revision)
+   (let [oid (state/normalize-id oid) s (state/state-at ctx oid revision)
          o (get-in s [:ontologies oid])]
      (when-not o (throw (ex-info "Ontology not found" {:ontology-id oid})))
      (when (and revision (not= revision (state/revision s oid)))

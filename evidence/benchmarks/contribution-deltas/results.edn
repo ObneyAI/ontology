@@ -1,0 +1,372 @@
+{:manifest {"started_unix" 1789794371.285395
+"config" {"sizes" "10000,20000"
+"backends" "in-memory,sqlite"
+"operations" "lookup-uri,import-delta"
+"samples" 3
+"warmup" 1
+"batch_size" 1000
+"history" 0
+"timeout" 180.0
+"heap" "2g"
+"output" "/Users/obneyai/Developer/code2/ontology-exp/target/benchmarks/contribution-deltas"}
+"cases" [{"case" "in-memory-10000-lookup-uri"
+"backend" "in-memory"
+"concepts" 10000
+"operation" "lookup-uri"
+"status" "complete"
+"returncode" 0
+"wall_seconds" 20.2351518329815
+"last_phase" "Measuring in-memory 10000 lookup-uri"
+"command" ["clojure" "-J-Djava.io.tmpdir=/var/folders/nb/r64lcbbn0fd6d1vqc3m_0wpr0000gq/T/ontology-benchmark-case-j1ju93u9" "-J-Xms256m" "-J-Xmx2g" "-M:bench" "--sizes" "10000" "--backends" "in-memory" "--operations" "lookup-uri" "--samples" "3" "--warmup" "1" "--batch-size" "1000" "--history" "0" "--output" "/Users/obneyai/Developer/code2/ontology-exp/target/benchmarks/contribution-deltas/in-memory-10000-lookup-uri"]
+"measurement" {"backend" "in-memory"
+"concepts" "10000"
+"history" "0"
+"operation" "lookup-uri"
+"kind" "read"
+"median-ms" "0.772"
+"min-ms" "0.62175"
+"max-ms" "1.234542"
+"mean-ms" "0.8760973333333334"
+"median-allocated-bytes" "329592"
+"gc-count" "1"
+"gc-ms" "8"
+"elapsed-ms" ""
+"start-revision" "11"
+"end-revision" "11"
+"storage-bytes" ""}
+"setup" {"backend" "in-memory"
+"concepts" "10000"
+"history" "0"
+"operation" "populate"
+"kind" "setup"
+"median-ms" ""
+"min-ms" ""
+"max-ms" ""
+"mean-ms" ""
+"median-allocated-bytes" ""
+"gc-count" "135"
+"gc-ms" "173"
+"elapsed-ms" "15365.703459"
+"start-revision" ""
+"end-revision" ""
+"storage-bytes" ""}} {"case" "in-memory-10000-import-delta"
+"backend" "in-memory"
+"concepts" 10000
+"operation" "import-delta"
+"status" "complete"
+"returncode" 0
+"wall_seconds" 21.03834770899266
+"last_phase" "Measuring in-memory 10000 import-delta"
+"command" ["clojure" "-J-Djava.io.tmpdir=/var/folders/nb/r64lcbbn0fd6d1vqc3m_0wpr0000gq/T/ontology-benchmark-case-3flergrf" "-J-Xms256m" "-J-Xmx2g" "-M:bench" "--sizes" "10000" "--backends" "in-memory" "--operations" "import-delta" "--samples" "3" "--warmup" "1" "--batch-size" "1000" "--history" "0" "--output" "/Users/obneyai/Developer/code2/ontology-exp/target/benchmarks/contribution-deltas/in-memory-10000-import-delta"]
+"measurement" {"backend" "in-memory"
+"concepts" "10000"
+"history" "0"
+"operation" "import-delta"
+"kind" "write"
+"median-ms" "254.335291"
+"min-ms" "253.630333"
+"max-ms" "260.090125"
+"mean-ms" "256.01858300000004"
+"median-allocated-bytes" "355629088"
+"gc-count" "13"
+"gc-ms" "20"
+"elapsed-ms" ""
+"start-revision" "11"
+"end-revision" "15"
+"storage-bytes" ""}
+"setup" {"backend" "in-memory"
+"concepts" "10000"
+"history" "0"
+"operation" "populate"
+"kind" "setup"
+"median-ms" ""
+"min-ms" ""
+"max-ms" ""
+"mean-ms" ""
+"median-allocated-bytes" ""
+"gc-count" "135"
+"gc-ms" "167"
+"elapsed-ms" "15323.598875"
+"start-revision" ""
+"end-revision" ""
+"storage-bytes" ""}} {"case" "in-memory-20000-lookup-uri"
+"backend" "in-memory"
+"concepts" 20000
+"operation" "lookup-uri"
+"status" "complete"
+"returncode" 0
+"wall_seconds" 74.53445695899427
+"last_phase" "Measuring in-memory 20000 lookup-uri"
+"command" ["clojure" "-J-Djava.io.tmpdir=/var/folders/nb/r64lcbbn0fd6d1vqc3m_0wpr0000gq/T/ontology-benchmark-case-iz_pxc81" "-J-Xms256m" "-J-Xmx2g" "-M:bench" "--sizes" "20000" "--backends" "in-memory" "--operations" "lookup-uri" "--samples" "3" "--warmup" "1" "--batch-size" "1000" "--history" "0" "--output" "/Users/obneyai/Developer/code2/ontology-exp/target/benchmarks/contribution-deltas/in-memory-20000-lookup-uri"]
+"measurement" {"backend" "in-memory"
+"concepts" "20000"
+"history" "0"
+"operation" "lookup-uri"
+"kind" "read"
+"median-ms" "0.569583"
+"min-ms" "0.547292"
+"max-ms" "0.711292"
+"mean-ms" "0.6093890000000001"
+"median-allocated-bytes" "336560"
+"gc-count" "0"
+"gc-ms" "0"
+"elapsed-ms" ""
+"start-revision" "21"
+"end-revision" "21"
+"storage-bytes" ""}
+"setup" {"backend" "in-memory"
+"concepts" "20000"
+"history" "0"
+"operation" "populate"
+"kind" "setup"
+"median-ms" ""
+"min-ms" ""
+"max-ms" ""
+"mean-ms" ""
+"median-allocated-bytes" ""
+"gc-count" "651"
+"gc-ms" "703"
+"elapsed-ms" "69708.004333"
+"start-revision" ""
+"end-revision" ""
+"storage-bytes" ""}} {"case" "in-memory-20000-import-delta"
+"backend" "in-memory"
+"concepts" 20000
+"operation" "import-delta"
+"status" "complete"
+"returncode" 0
+"wall_seconds" 70.36545620800462
+"last_phase" "Measuring in-memory 20000 import-delta"
+"command" ["clojure" "-J-Djava.io.tmpdir=/var/folders/nb/r64lcbbn0fd6d1vqc3m_0wpr0000gq/T/ontology-benchmark-case-wllk8cnp" "-J-Xms256m" "-J-Xmx2g" "-M:bench" "--sizes" "20000" "--backends" "in-memory" "--operations" "import-delta" "--samples" "3" "--warmup" "1" "--batch-size" "1000" "--history" "0" "--output" "/Users/obneyai/Developer/code2/ontology-exp/target/benchmarks/contribution-deltas/in-memory-20000-import-delta"]
+"measurement" {"backend" "in-memory"
+"concepts" "20000"
+"history" "0"
+"operation" "import-delta"
+"kind" "write"
+"median-ms" "560.137417"
+"min-ms" "554.300166"
+"max-ms" "588.231167"
+"mean-ms" "567.55625"
+"median-allocated-bytes" "769530640"
+"gc-count" "11"
+"gc-ms" "18"
+"elapsed-ms" ""
+"start-revision" "21"
+"end-revision" "25"
+"storage-bytes" ""}
+"setup" {"backend" "in-memory"
+"concepts" "20000"
+"history" "0"
+"operation" "populate"
+"kind" "setup"
+"median-ms" ""
+"min-ms" ""
+"max-ms" ""
+"mean-ms" ""
+"median-allocated-bytes" ""
+"gc-count" "551"
+"gc-ms" "612"
+"elapsed-ms" "63258.307792"
+"start-revision" ""
+"end-revision" ""
+"storage-bytes" ""}} {"case" "sqlite-10000-lookup-uri"
+"backend" "sqlite"
+"concepts" 10000
+"operation" "lookup-uri"
+"status" "complete"
+"returncode" 0
+"wall_seconds" 22.911320833023638
+"last_phase" "Measuring sqlite 10000 lookup-uri"
+"command" ["clojure" "-J-Djava.io.tmpdir=/var/folders/nb/r64lcbbn0fd6d1vqc3m_0wpr0000gq/T/ontology-benchmark-case-ecf3kogp" "-J-Xms256m" "-J-Xmx2g" "-M:bench" "--sizes" "10000" "--backends" "sqlite" "--operations" "lookup-uri" "--samples" "3" "--warmup" "1" "--batch-size" "1000" "--history" "0" "--output" "/Users/obneyai/Developer/code2/ontology-exp/target/benchmarks/contribution-deltas/sqlite-10000-lookup-uri"]
+"measurement" {"backend" "sqlite"
+"concepts" "10000"
+"history" "0"
+"operation" "lookup-uri"
+"kind" "read"
+"median-ms" "0.769417"
+"min-ms" "0.761959"
+"max-ms" "0.823541"
+"mean-ms" "0.7849723333333333"
+"median-allocated-bytes" "346624"
+"gc-count" "0"
+"gc-ms" "0"
+"elapsed-ms" ""
+"start-revision" "11"
+"end-revision" "11"
+"storage-bytes" "32265096"}
+"setup" {"backend" "sqlite"
+"concepts" "10000"
+"history" "0"
+"operation" "populate"
+"kind" "setup"
+"median-ms" ""
+"min-ms" ""
+"max-ms" ""
+"mean-ms" ""
+"median-allocated-bytes" ""
+"gc-count" "107"
+"gc-ms" "177"
+"elapsed-ms" "16755.4715"
+"start-revision" ""
+"end-revision" ""
+"storage-bytes" "32265096"}} {"case" "sqlite-10000-import-delta"
+"backend" "sqlite"
+"concepts" 10000
+"operation" "import-delta"
+"status" "complete"
+"returncode" 0
+"wall_seconds" 25.688113292038906
+"last_phase" "Measuring sqlite 10000 import-delta"
+"command" ["clojure" "-J-Djava.io.tmpdir=/var/folders/nb/r64lcbbn0fd6d1vqc3m_0wpr0000gq/T/ontology-benchmark-case-0maizcpk" "-J-Xms256m" "-J-Xmx2g" "-M:bench" "--sizes" "10000" "--backends" "sqlite" "--operations" "import-delta" "--samples" "3" "--warmup" "1" "--batch-size" "1000" "--history" "0" "--output" "/Users/obneyai/Developer/code2/ontology-exp/target/benchmarks/contribution-deltas/sqlite-10000-import-delta"]
+"measurement" {"backend" "sqlite"
+"concepts" "10000"
+"history" "0"
+"operation" "import-delta"
+"kind" "write"
+"median-ms" "289.460125"
+"min-ms" "278.839584"
+"max-ms" "293.657792"
+"mean-ms" "287.31916700000005"
+"median-allocated-bytes" "351945120"
+"gc-count" "8"
+"gc-ms" "10"
+"elapsed-ms" ""
+"start-revision" "11"
+"end-revision" "15"
+"storage-bytes" "32314320"}
+"setup" {"backend" "sqlite"
+"concepts" "10000"
+"history" "0"
+"operation" "populate"
+"kind" "setup"
+"median-ms" ""
+"min-ms" ""
+"max-ms" ""
+"mean-ms" ""
+"median-allocated-bytes" ""
+"gc-count" "131"
+"gc-ms" "208"
+"elapsed-ms" "18298.2265"
+"start-revision" ""
+"end-revision" ""
+"storage-bytes" "32314320"}} {"case" "sqlite-20000-lookup-uri"
+"backend" "sqlite"
+"concepts" 20000
+"operation" "lookup-uri"
+"status" "complete"
+"returncode" 0
+"wall_seconds" 75.92074749997118
+"last_phase" "Measuring sqlite 20000 lookup-uri"
+"command" ["clojure" "-J-Djava.io.tmpdir=/var/folders/nb/r64lcbbn0fd6d1vqc3m_0wpr0000gq/T/ontology-benchmark-case-72yhadk_" "-J-Xms256m" "-J-Xmx2g" "-M:bench" "--sizes" "20000" "--backends" "sqlite" "--operations" "lookup-uri" "--samples" "3" "--warmup" "1" "--batch-size" "1000" "--history" "0" "--output" "/Users/obneyai/Developer/code2/ontology-exp/target/benchmarks/contribution-deltas/sqlite-20000-lookup-uri"]
+"measurement" {"backend" "sqlite"
+"concepts" "20000"
+"history" "0"
+"operation" "lookup-uri"
+"kind" "read"
+"median-ms" "0.719084"
+"min-ms" "0.710125"
+"max-ms" "0.890542"
+"mean-ms" "0.7732503333333334"
+"median-allocated-bytes" "346432"
+"gc-count" "0"
+"gc-ms" "0"
+"elapsed-ms" ""
+"start-revision" "21"
+"end-revision" "21"
+"storage-bytes" "60695440"}
+"setup" {"backend" "sqlite"
+"concepts" "20000"
+"history" "0"
+"operation" "populate"
+"kind" "setup"
+"median-ms" ""
+"min-ms" ""
+"max-ms" ""
+"mean-ms" ""
+"median-allocated-bytes" ""
+"gc-count" "753"
+"gc-ms" "848"
+"elapsed-ms" "68772.31775"
+"start-revision" ""
+"end-revision" ""
+"storage-bytes" "60695440"}} {"case" "sqlite-20000-import-delta"
+"backend" "sqlite"
+"concepts" 20000
+"operation" "import-delta"
+"status" "complete"
+"returncode" 0
+"wall_seconds" 78.44684225000674
+"last_phase" "Measuring sqlite 20000 import-delta"
+"command" ["clojure" "-J-Djava.io.tmpdir=/var/folders/nb/r64lcbbn0fd6d1vqc3m_0wpr0000gq/T/ontology-benchmark-case-86di_47k" "-J-Xms256m" "-J-Xmx2g" "-M:bench" "--sizes" "20000" "--backends" "sqlite" "--operations" "import-delta" "--samples" "3" "--warmup" "1" "--batch-size" "1000" "--history" "0" "--output" "/Users/obneyai/Developer/code2/ontology-exp/target/benchmarks/contribution-deltas/sqlite-20000-import-delta"]
+"measurement" {"backend" "sqlite"
+"concepts" "20000"
+"history" "0"
+"operation" "import-delta"
+"kind" "write"
+"median-ms" "695.983917"
+"min-ms" "692.203458"
+"max-ms" "716.245958"
+"mean-ms" "701.4777776666666"
+"median-allocated-bytes" "760119736"
+"gc-count" "11"
+"gc-ms" "18"
+"elapsed-ms" ""
+"start-revision" "21"
+"end-revision" "25"
+"storage-bytes" "60432552"}
+"setup" {"backend" "sqlite"
+"concepts" "20000"
+"history" "0"
+"operation" "populate"
+"kind" "setup"
+"median-ms" ""
+"min-ms" ""
+"max-ms" ""
+"mean-ms" ""
+"median-allocated-bytes" ""
+"gc-count" "735"
+"gc-ms" "864"
+"elapsed-ms" "68467.331833"
+"start-revision" ""
+"end-revision" ""
+"storage-bytes" "60432552"}}]}
+:cases {"in-memory-10000-import-delta" {:metadata {:processors 12, :java-vm "OpenJDK 64-Bit Server VM", :jvm-arguments ["-XX:-OmitStackTraceInFastThrow" "-Djava.io.tmpdir=/var/folders/nb/r64lcbbn0fd6d1vqc3m_0wpr0000gq/T/ontology-benchmark-case-3flergrf" "-Xms256m" "-Xmx2g" "-Dclojure.basis=.cpcache/4286882845.basis"], :max-heap-bytes 2147483648, :started-at "2026-09-19T05:06:35.920330Z", :source-sha256 {"bench/ai/obney/ontology/benchmark.clj" "db4e36a9cf7db8ccf27e40b65e1abaeb5487c6eb68cdec1837542bfdd8040b9e", "deps.edn" "7e7b757a9ea36beb5beefe7b21c2162509f7b51d2d26f303ea7ca5c6a0610c40", "src/ai/obney/ontology/algorithms.clj" "dc243f9287c81d61586746359930f0a0b9c7dea74aecdcebae3055398ac9f75e", "src/ai/obney/ontology/core/commands.clj" "583b716c5291b1864162153127d14b29086535fcbc01bc16696861c8cf38f819", "src/ai/obney/ontology/core/delta.clj" "716a8e3f339c70cb3a0cdde5d2aab6b3ed20eae7b8f7a321afd6a5bb6ea20175", "src/ai/obney/ontology/core/entity_resolver.clj" "4c8cccbc65ac09072f15aa0fd8cfd81abd90d460b3e2e8706e36fcc2ed55544b", "src/ai/obney/ontology/core/graph.clj" "ad58e808dde7c7464e03dec9dc702f341fd1e891e2edd8acd24519819b484703", "src/ai/obney/ontology/core/graph_evolver.clj" "0dadc9413c4d52b8f0485008c327fd8afd7f98cee2a1b816584aadcf3617a8c9", "src/ai/obney/ontology/core/projection.clj" "c6405144d68c4777aabae31c57645123098d9030face60639ab7a2c85d75025d", "src/ai/obney/ontology/core/rdf.clj" "9bfb58c88effa81e73c9060fe404297e2621defb7b486a0a6df8a1d13231f477", "src/ai/obney/ontology/core/schemas.clj" "793d9009a654c9b86c23336a2585261cfcaa81c8c25f424e040584ebf19243bb", "src/ai/obney/ontology/core/source_registry.clj" "a521ea63c2602a16dd6660c7a0b94405db8b02cf40d52fa1a41c5d52a93c40a2", "src/ai/obney/ontology/core/state.clj" "3d7192fbd98b87d05d95021c665990438d0a0b511375011673e32eab1ea0df33", "src/ai/obney/ontology/core/streams.clj" "e4bebd13eb9ca290c5be3c0ce6655df643cb3f5c512145b5c92dd91dd4b42677", "src/ai/obney/ontology/interface.clj" "a262baa259a3433282181d38521e0cc94418e184f64170a82599295000d865cf"}, :arch "aarch64", :os-version "15.7.4", :java-version "21.0.7", :options {:samples 3, :sizes [10000], :history 0, :output "/Users/obneyai/Developer/code2/ontology-exp/target/benchmarks/contribution-deltas/in-memory-10000-import-delta", :dimensions 32, :delta-size 10, :operations #{:import-delta}, :warmup 1, :backends [:in-memory], :batch-size 1000}, :os "Mac OS X", :deps {:paths ["src" "resources"], :deps {org.clojure/clojure #:mvn{:version "1.12.0"}, obneyai/grain-core-v2 {:git/url "https://github.com/ObneyAI/grain.git", :git/sha "dbf5b5229aad09785e40f71e96adf65c90f971d5", :deps/root "projects/grain-core-v2"}}, :aliases {:bench {:extra-paths ["bench"], :extra-deps #:obneyai{grain-event-store-sqlite-v3 {:git/url "https://github.com/ObneyAI/grain.git", :git/sha "dbf5b5229aad09785e40f71e96adf65c90f971d5", :deps/root "projects/grain-event-store-sqlite-v3"}}, :main-opts ["-m" "ai.obney.ontology.benchmark"]}, :test {:extra-paths ["test"], :extra-deps {org.clojure/test.check #:mvn{:version "1.1.3"}, obneyai/grain-event-store-sqlite-v3 {:git/url "https://github.com/ObneyAI/grain.git", :git/sha "dbf5b5229aad09785e40f71e96adf65c90f971d5", :deps/root "projects/grain-event-store-sqlite-v3"}}, :main-opts ["-m" "ai.obney.ontology.test-runner"]}}}}
+:results [{:gc-ms 167, :event-count 11, :gc-count 135, :operation :populate, :history 0, :allocated-bytes 20884109056, :concepts 10000, :storage-bytes nil, :kind :setup, :elapsed-ms 15323.598875, :backend :in-memory}
+{:end-events 15, :samples [{:elapsed-ms 260.090125, :allocated-bytes 355230376, :gc-count 4, :gc-ms 10} {:elapsed-ms 254.335291, :allocated-bytes 355629088, :gc-count 5, :gc-ms 5} {:elapsed-ms 253.630333, :allocated-bytes 356024080, :gc-count 4, :gc-ms 5}], :median-allocated-bytes 355629088, :gc-ms 20, :start-events 11, :min-ms 253.630333, :gc-count 13, :operation :import-delta, :history 0, :max-ms 260.090125, :median-ms 254.335291, :mean-ms 256.01858300000004, :concepts 10000, :storage-bytes nil, :end-revision 15, :kind :write, :backend :in-memory, :start-revision 11}
+]
+:status {:status :complete, :finished-at "2026-09-19T05:06:52.541071Z", :rows 2}}
+"in-memory-10000-lookup-uri" {:metadata {:processors 12, :java-vm "OpenJDK 64-Bit Server VM", :jvm-arguments ["-XX:-OmitStackTraceInFastThrow" "-Djava.io.tmpdir=/var/folders/nb/r64lcbbn0fd6d1vqc3m_0wpr0000gq/T/ontology-benchmark-case-j1ju93u9" "-Xms256m" "-Xmx2g" "-Dclojure.basis=.cpcache/4286882845.basis"], :max-heap-bytes 2147483648, :started-at "2026-09-19T05:06:15.801901Z", :source-sha256 {"bench/ai/obney/ontology/benchmark.clj" "db4e36a9cf7db8ccf27e40b65e1abaeb5487c6eb68cdec1837542bfdd8040b9e", "deps.edn" "7e7b757a9ea36beb5beefe7b21c2162509f7b51d2d26f303ea7ca5c6a0610c40", "src/ai/obney/ontology/algorithms.clj" "dc243f9287c81d61586746359930f0a0b9c7dea74aecdcebae3055398ac9f75e", "src/ai/obney/ontology/core/commands.clj" "583b716c5291b1864162153127d14b29086535fcbc01bc16696861c8cf38f819", "src/ai/obney/ontology/core/delta.clj" "716a8e3f339c70cb3a0cdde5d2aab6b3ed20eae7b8f7a321afd6a5bb6ea20175", "src/ai/obney/ontology/core/entity_resolver.clj" "4c8cccbc65ac09072f15aa0fd8cfd81abd90d460b3e2e8706e36fcc2ed55544b", "src/ai/obney/ontology/core/graph.clj" "ad58e808dde7c7464e03dec9dc702f341fd1e891e2edd8acd24519819b484703", "src/ai/obney/ontology/core/graph_evolver.clj" "0dadc9413c4d52b8f0485008c327fd8afd7f98cee2a1b816584aadcf3617a8c9", "src/ai/obney/ontology/core/projection.clj" "c6405144d68c4777aabae31c57645123098d9030face60639ab7a2c85d75025d", "src/ai/obney/ontology/core/rdf.clj" "9bfb58c88effa81e73c9060fe404297e2621defb7b486a0a6df8a1d13231f477", "src/ai/obney/ontology/core/schemas.clj" "793d9009a654c9b86c23336a2585261cfcaa81c8c25f424e040584ebf19243bb", "src/ai/obney/ontology/core/source_registry.clj" "a521ea63c2602a16dd6660c7a0b94405db8b02cf40d52fa1a41c5d52a93c40a2", "src/ai/obney/ontology/core/state.clj" "3d7192fbd98b87d05d95021c665990438d0a0b511375011673e32eab1ea0df33", "src/ai/obney/ontology/core/streams.clj" "e4bebd13eb9ca290c5be3c0ce6655df643cb3f5c512145b5c92dd91dd4b42677", "src/ai/obney/ontology/interface.clj" "a262baa259a3433282181d38521e0cc94418e184f64170a82599295000d865cf"}, :arch "aarch64", :os-version "15.7.4", :java-version "21.0.7", :options {:samples 3, :sizes [10000], :history 0, :output "/Users/obneyai/Developer/code2/ontology-exp/target/benchmarks/contribution-deltas/in-memory-10000-lookup-uri", :dimensions 32, :delta-size 10, :operations #{:lookup-uri}, :warmup 1, :backends [:in-memory], :batch-size 1000}, :os "Mac OS X", :deps {:paths ["src" "resources"], :deps {org.clojure/clojure #:mvn{:version "1.12.0"}, obneyai/grain-core-v2 {:git/url "https://github.com/ObneyAI/grain.git", :git/sha "dbf5b5229aad09785e40f71e96adf65c90f971d5", :deps/root "projects/grain-core-v2"}}, :aliases {:bench {:extra-paths ["bench"], :extra-deps #:obneyai{grain-event-store-sqlite-v3 {:git/url "https://github.com/ObneyAI/grain.git", :git/sha "dbf5b5229aad09785e40f71e96adf65c90f971d5", :deps/root "projects/grain-event-store-sqlite-v3"}}, :main-opts ["-m" "ai.obney.ontology.benchmark"]}, :test {:extra-paths ["test"], :extra-deps {org.clojure/test.check #:mvn{:version "1.1.3"}, obneyai/grain-event-store-sqlite-v3 {:git/url "https://github.com/ObneyAI/grain.git", :git/sha "dbf5b5229aad09785e40f71e96adf65c90f971d5", :deps/root "projects/grain-event-store-sqlite-v3"}}, :main-opts ["-m" "ai.obney.ontology.test-runner"]}}}}
+:results [{:gc-ms 173, :event-count 11, :gc-count 135, :operation :populate, :history 0, :allocated-bytes 20853086096, :concepts 10000, :storage-bytes nil, :kind :setup, :elapsed-ms 15365.703459, :backend :in-memory}
+{:end-events 11, :samples [{:elapsed-ms 0.772, :allocated-bytes 329592, :gc-count 0, :gc-ms 0} {:elapsed-ms 0.62175, :allocated-bytes 329592, :gc-count 1, :gc-ms 8} {:elapsed-ms 1.234542, :allocated-bytes 329592, :gc-count 0, :gc-ms 0}], :median-allocated-bytes 329592, :gc-ms 8, :start-events 11, :min-ms 0.62175, :gc-count 1, :operation :lookup-uri, :history 0, :max-ms 1.234542, :median-ms 0.772, :mean-ms 0.8760973333333334, :concepts 10000, :storage-bytes nil, :end-revision 11, :kind :read, :backend :in-memory, :start-revision 11}
+]
+:status {:status :complete, :finished-at "2026-09-19T05:06:31.456608Z", :rows 2}}
+"in-memory-20000-import-delta" {:metadata {:processors 12, :java-vm "OpenJDK 64-Bit Server VM", :jvm-arguments ["-XX:-OmitStackTraceInFastThrow" "-Djava.io.tmpdir=/var/folders/nb/r64lcbbn0fd6d1vqc3m_0wpr0000gq/T/ontology-benchmark-case-wllk8cnp" "-Xms256m" "-Xmx2g" "-Dclojure.basis=.cpcache/4286882845.basis"], :max-heap-bytes 2147483648, :started-at "2026-09-19T05:08:11.480190Z", :source-sha256 {"bench/ai/obney/ontology/benchmark.clj" "db4e36a9cf7db8ccf27e40b65e1abaeb5487c6eb68cdec1837542bfdd8040b9e", "deps.edn" "7e7b757a9ea36beb5beefe7b21c2162509f7b51d2d26f303ea7ca5c6a0610c40", "src/ai/obney/ontology/algorithms.clj" "dc243f9287c81d61586746359930f0a0b9c7dea74aecdcebae3055398ac9f75e", "src/ai/obney/ontology/core/commands.clj" "583b716c5291b1864162153127d14b29086535fcbc01bc16696861c8cf38f819", "src/ai/obney/ontology/core/delta.clj" "716a8e3f339c70cb3a0cdde5d2aab6b3ed20eae7b8f7a321afd6a5bb6ea20175", "src/ai/obney/ontology/core/entity_resolver.clj" "4c8cccbc65ac09072f15aa0fd8cfd81abd90d460b3e2e8706e36fcc2ed55544b", "src/ai/obney/ontology/core/graph.clj" "ad58e808dde7c7464e03dec9dc702f341fd1e891e2edd8acd24519819b484703", "src/ai/obney/ontology/core/graph_evolver.clj" "0dadc9413c4d52b8f0485008c327fd8afd7f98cee2a1b816584aadcf3617a8c9", "src/ai/obney/ontology/core/projection.clj" "c6405144d68c4777aabae31c57645123098d9030face60639ab7a2c85d75025d", "src/ai/obney/ontology/core/rdf.clj" "9bfb58c88effa81e73c9060fe404297e2621defb7b486a0a6df8a1d13231f477", "src/ai/obney/ontology/core/schemas.clj" "793d9009a654c9b86c23336a2585261cfcaa81c8c25f424e040584ebf19243bb", "src/ai/obney/ontology/core/source_registry.clj" "a521ea63c2602a16dd6660c7a0b94405db8b02cf40d52fa1a41c5d52a93c40a2", "src/ai/obney/ontology/core/state.clj" "3d7192fbd98b87d05d95021c665990438d0a0b511375011673e32eab1ea0df33", "src/ai/obney/ontology/core/streams.clj" "e4bebd13eb9ca290c5be3c0ce6655df643cb3f5c512145b5c92dd91dd4b42677", "src/ai/obney/ontology/interface.clj" "a262baa259a3433282181d38521e0cc94418e184f64170a82599295000d865cf"}, :arch "aarch64", :os-version "15.7.4", :java-version "21.0.7", :options {:samples 3, :sizes [20000], :history 0, :output "/Users/obneyai/Developer/code2/ontology-exp/target/benchmarks/contribution-deltas/in-memory-20000-import-delta", :dimensions 32, :delta-size 10, :operations #{:import-delta}, :warmup 1, :backends [:in-memory], :batch-size 1000}, :os "Mac OS X", :deps {:paths ["src" "resources"], :deps {org.clojure/clojure #:mvn{:version "1.12.0"}, obneyai/grain-core-v2 {:git/url "https://github.com/ObneyAI/grain.git", :git/sha "dbf5b5229aad09785e40f71e96adf65c90f971d5", :deps/root "projects/grain-core-v2"}}, :aliases {:bench {:extra-paths ["bench"], :extra-deps #:obneyai{grain-event-store-sqlite-v3 {:git/url "https://github.com/ObneyAI/grain.git", :git/sha "dbf5b5229aad09785e40f71e96adf65c90f971d5", :deps/root "projects/grain-event-store-sqlite-v3"}}, :main-opts ["-m" "ai.obney.ontology.benchmark"]}, :test {:extra-paths ["test"], :extra-deps {org.clojure/test.check #:mvn{:version "1.1.3"}, obneyai/grain-event-store-sqlite-v3 {:git/url "https://github.com/ObneyAI/grain.git", :git/sha "dbf5b5229aad09785e40f71e96adf65c90f971d5", :deps/root "projects/grain-event-store-sqlite-v3"}}, :main-opts ["-m" "ai.obney.ontology.test-runner"]}}}}
+:results [{:gc-ms 612, :event-count 21, :gc-count 551, :operation :populate, :history 0, :allocated-bytes 81977307856, :concepts 20000, :storage-bytes nil, :kind :setup, :elapsed-ms 63258.307792, :backend :in-memory}
+{:end-events 25, :samples [{:elapsed-ms 560.137417, :allocated-bytes 769104816, :gc-count 3, :gc-ms 6} {:elapsed-ms 554.300166, :allocated-bytes 769530640, :gc-count 4, :gc-ms 6} {:elapsed-ms 588.231167, :allocated-bytes 769962040, :gc-count 4, :gc-ms 6}], :median-allocated-bytes 769530640, :gc-ms 18, :start-events 21, :min-ms 554.300166, :gc-count 11, :operation :import-delta, :history 0, :max-ms 588.231167, :median-ms 560.137417, :mean-ms 567.55625, :concepts 20000, :storage-bytes nil, :end-revision 25, :kind :write, :backend :in-memory, :start-revision 21}
+]
+:status {:status :complete, :finished-at "2026-09-19T05:09:17.425623Z", :rows 2}}
+"in-memory-20000-lookup-uri" {:metadata {:processors 12, :java-vm "OpenJDK 64-Bit Server VM", :jvm-arguments ["-XX:-OmitStackTraceInFastThrow" "-Djava.io.tmpdir=/var/folders/nb/r64lcbbn0fd6d1vqc3m_0wpr0000gq/T/ontology-benchmark-case-iz_pxc81" "-Xms256m" "-Xmx2g" "-Dclojure.basis=.cpcache/4286882845.basis"], :max-heap-bytes 2147483648, :started-at "2026-09-19T05:06:56.981072Z", :source-sha256 {"bench/ai/obney/ontology/benchmark.clj" "db4e36a9cf7db8ccf27e40b65e1abaeb5487c6eb68cdec1837542bfdd8040b9e", "deps.edn" "7e7b757a9ea36beb5beefe7b21c2162509f7b51d2d26f303ea7ca5c6a0610c40", "src/ai/obney/ontology/algorithms.clj" "dc243f9287c81d61586746359930f0a0b9c7dea74aecdcebae3055398ac9f75e", "src/ai/obney/ontology/core/commands.clj" "583b716c5291b1864162153127d14b29086535fcbc01bc16696861c8cf38f819", "src/ai/obney/ontology/core/delta.clj" "716a8e3f339c70cb3a0cdde5d2aab6b3ed20eae7b8f7a321afd6a5bb6ea20175", "src/ai/obney/ontology/core/entity_resolver.clj" "4c8cccbc65ac09072f15aa0fd8cfd81abd90d460b3e2e8706e36fcc2ed55544b", "src/ai/obney/ontology/core/graph.clj" "ad58e808dde7c7464e03dec9dc702f341fd1e891e2edd8acd24519819b484703", "src/ai/obney/ontology/core/graph_evolver.clj" "0dadc9413c4d52b8f0485008c327fd8afd7f98cee2a1b816584aadcf3617a8c9", "src/ai/obney/ontology/core/projection.clj" "c6405144d68c4777aabae31c57645123098d9030face60639ab7a2c85d75025d", "src/ai/obney/ontology/core/rdf.clj" "9bfb58c88effa81e73c9060fe404297e2621defb7b486a0a6df8a1d13231f477", "src/ai/obney/ontology/core/schemas.clj" "793d9009a654c9b86c23336a2585261cfcaa81c8c25f424e040584ebf19243bb", "src/ai/obney/ontology/core/source_registry.clj" "a521ea63c2602a16dd6660c7a0b94405db8b02cf40d52fa1a41c5d52a93c40a2", "src/ai/obney/ontology/core/state.clj" "3d7192fbd98b87d05d95021c665990438d0a0b511375011673e32eab1ea0df33", "src/ai/obney/ontology/core/streams.clj" "e4bebd13eb9ca290c5be3c0ce6655df643cb3f5c512145b5c92dd91dd4b42677", "src/ai/obney/ontology/interface.clj" "a262baa259a3433282181d38521e0cc94418e184f64170a82599295000d865cf"}, :arch "aarch64", :os-version "15.7.4", :java-version "21.0.7", :options {:samples 3, :sizes [20000], :history 0, :output "/Users/obneyai/Developer/code2/ontology-exp/target/benchmarks/contribution-deltas/in-memory-20000-lookup-uri", :dimensions 32, :delta-size 10, :operations #{:lookup-uri}, :warmup 1, :backends [:in-memory], :batch-size 1000}, :os "Mac OS X", :deps {:paths ["src" "resources"], :deps {org.clojure/clojure #:mvn{:version "1.12.0"}, obneyai/grain-core-v2 {:git/url "https://github.com/ObneyAI/grain.git", :git/sha "dbf5b5229aad09785e40f71e96adf65c90f971d5", :deps/root "projects/grain-core-v2"}}, :aliases {:bench {:extra-paths ["bench"], :extra-deps #:obneyai{grain-event-store-sqlite-v3 {:git/url "https://github.com/ObneyAI/grain.git", :git/sha "dbf5b5229aad09785e40f71e96adf65c90f971d5", :deps/root "projects/grain-event-store-sqlite-v3"}}, :main-opts ["-m" "ai.obney.ontology.benchmark"]}, :test {:extra-paths ["test"], :extra-deps {org.clojure/test.check #:mvn{:version "1.1.3"}, obneyai/grain-event-store-sqlite-v3 {:git/url "https://github.com/ObneyAI/grain.git", :git/sha "dbf5b5229aad09785e40f71e96adf65c90f971d5", :deps/root "projects/grain-event-store-sqlite-v3"}}, :main-opts ["-m" "ai.obney.ontology.test-runner"]}}}}
+:results [{:gc-ms 703, :event-count 21, :gc-count 651, :operation :populate, :history 0, :allocated-bytes 82133735904, :concepts 20000, :storage-bytes nil, :kind :setup, :elapsed-ms 69708.004333, :backend :in-memory}
+{:end-events 21, :samples [{:elapsed-ms 0.711292, :allocated-bytes 336560, :gc-count 0, :gc-ms 0} {:elapsed-ms 0.569583, :allocated-bytes 336560, :gc-count 0, :gc-ms 0} {:elapsed-ms 0.547292, :allocated-bytes 336560, :gc-count 0, :gc-ms 0}], :median-allocated-bytes 336560, :gc-ms 0, :start-events 21, :min-ms 0.547292, :gc-count 0, :operation :lookup-uri, :history 0, :max-ms 0.711292, :median-ms 0.569583, :mean-ms 0.6093890000000001, :concepts 20000, :storage-bytes nil, :end-revision 21, :kind :read, :backend :in-memory, :start-revision 21}
+]
+:status {:status :complete, :finished-at "2026-09-19T05:08:07.084958Z", :rows 2}}
+"sqlite-10000-import-delta" {:metadata {:processors 12, :java-vm "OpenJDK 64-Bit Server VM", :jvm-arguments ["-XX:-OmitStackTraceInFastThrow" "-Djava.io.tmpdir=/var/folders/nb/r64lcbbn0fd6d1vqc3m_0wpr0000gq/T/ontology-benchmark-case-0maizcpk" "-Xms256m" "-Xmx2g" "-Dclojure.basis=.cpcache/4286882845.basis"], :max-heap-bytes 2147483648, :started-at "2026-09-19T05:09:44.795929Z", :source-sha256 {"bench/ai/obney/ontology/benchmark.clj" "db4e36a9cf7db8ccf27e40b65e1abaeb5487c6eb68cdec1837542bfdd8040b9e", "deps.edn" "7e7b757a9ea36beb5beefe7b21c2162509f7b51d2d26f303ea7ca5c6a0610c40", "src/ai/obney/ontology/algorithms.clj" "dc243f9287c81d61586746359930f0a0b9c7dea74aecdcebae3055398ac9f75e", "src/ai/obney/ontology/core/commands.clj" "583b716c5291b1864162153127d14b29086535fcbc01bc16696861c8cf38f819", "src/ai/obney/ontology/core/delta.clj" "716a8e3f339c70cb3a0cdde5d2aab6b3ed20eae7b8f7a321afd6a5bb6ea20175", "src/ai/obney/ontology/core/entity_resolver.clj" "4c8cccbc65ac09072f15aa0fd8cfd81abd90d460b3e2e8706e36fcc2ed55544b", "src/ai/obney/ontology/core/graph.clj" "ad58e808dde7c7464e03dec9dc702f341fd1e891e2edd8acd24519819b484703", "src/ai/obney/ontology/core/graph_evolver.clj" "0dadc9413c4d52b8f0485008c327fd8afd7f98cee2a1b816584aadcf3617a8c9", "src/ai/obney/ontology/core/projection.clj" "c6405144d68c4777aabae31c57645123098d9030face60639ab7a2c85d75025d", "src/ai/obney/ontology/core/rdf.clj" "9bfb58c88effa81e73c9060fe404297e2621defb7b486a0a6df8a1d13231f477", "src/ai/obney/ontology/core/schemas.clj" "793d9009a654c9b86c23336a2585261cfcaa81c8c25f424e040584ebf19243bb", "src/ai/obney/ontology/core/source_registry.clj" "a521ea63c2602a16dd6660c7a0b94405db8b02cf40d52fa1a41c5d52a93c40a2", "src/ai/obney/ontology/core/state.clj" "3d7192fbd98b87d05d95021c665990438d0a0b511375011673e32eab1ea0df33", "src/ai/obney/ontology/core/streams.clj" "e4bebd13eb9ca290c5be3c0ce6655df643cb3f5c512145b5c92dd91dd4b42677", "src/ai/obney/ontology/interface.clj" "a262baa259a3433282181d38521e0cc94418e184f64170a82599295000d865cf"}, :arch "aarch64", :os-version "15.7.4", :java-version "21.0.7", :options {:samples 3, :sizes [10000], :history 0, :output "/Users/obneyai/Developer/code2/ontology-exp/target/benchmarks/contribution-deltas/sqlite-10000-import-delta", :dimensions 32, :delta-size 10, :operations #{:import-delta}, :warmup 1, :backends [:sqlite], :batch-size 1000}, :os "Mac OS X", :deps {:paths ["src" "resources"], :deps {org.clojure/clojure #:mvn{:version "1.12.0"}, obneyai/grain-core-v2 {:git/url "https://github.com/ObneyAI/grain.git", :git/sha "dbf5b5229aad09785e40f71e96adf65c90f971d5", :deps/root "projects/grain-core-v2"}}, :aliases {:bench {:extra-paths ["bench"], :extra-deps #:obneyai{grain-event-store-sqlite-v3 {:git/url "https://github.com/ObneyAI/grain.git", :git/sha "dbf5b5229aad09785e40f71e96adf65c90f971d5", :deps/root "projects/grain-event-store-sqlite-v3"}}, :main-opts ["-m" "ai.obney.ontology.benchmark"]}, :test {:extra-paths ["test"], :extra-deps {org.clojure/test.check #:mvn{:version "1.1.3"}, obneyai/grain-event-store-sqlite-v3 {:git/url "https://github.com/ObneyAI/grain.git", :git/sha "dbf5b5229aad09785e40f71e96adf65c90f971d5", :deps/root "projects/grain-event-store-sqlite-v3"}}, :main-opts ["-m" "ai.obney.ontology.test-runner"]}}}}
+:results [{:gc-ms 208, :event-count 11, :gc-count 131, :operation :populate, :history 0, :allocated-bytes 21260023848, :concepts 10000, :storage-bytes 32314320, :kind :setup, :elapsed-ms 18298.2265, :backend :sqlite}
+{:end-events 15, :samples [{:elapsed-ms 289.460125, :allocated-bytes 351556128, :gc-count 2, :gc-ms 2} {:elapsed-ms 293.657792, :allocated-bytes 351945120, :gc-count 4, :gc-ms 5} {:elapsed-ms 278.839584, :allocated-bytes 352336008, :gc-count 2, :gc-ms 3}], :median-allocated-bytes 351945120, :gc-ms 10, :start-events 11, :min-ms 278.839584, :gc-count 8, :operation :import-delta, :history 0, :max-ms 293.657792, :median-ms 289.460125, :mean-ms 287.31916700000005, :concepts 10000, :storage-bytes 32314320, :end-revision 15, :kind :write, :backend :sqlite, :start-revision 11}
+]
+:status {:status :complete, :finished-at "2026-09-19T05:10:06.045338Z", :rows 2}}
+"sqlite-10000-lookup-uri" {:metadata {:processors 12, :java-vm "OpenJDK 64-Bit Server VM", :jvm-arguments ["-XX:-OmitStackTraceInFastThrow" "-Djava.io.tmpdir=/var/folders/nb/r64lcbbn0fd6d1vqc3m_0wpr0000gq/T/ontology-benchmark-case-ecf3kogp" "-Xms256m" "-Xmx2g" "-Dclojure.basis=.cpcache/4286882845.basis"], :max-heap-bytes 2147483648, :started-at "2026-09-19T05:09:21.846896Z", :source-sha256 {"bench/ai/obney/ontology/benchmark.clj" "db4e36a9cf7db8ccf27e40b65e1abaeb5487c6eb68cdec1837542bfdd8040b9e", "deps.edn" "7e7b757a9ea36beb5beefe7b21c2162509f7b51d2d26f303ea7ca5c6a0610c40", "src/ai/obney/ontology/algorithms.clj" "dc243f9287c81d61586746359930f0a0b9c7dea74aecdcebae3055398ac9f75e", "src/ai/obney/ontology/core/commands.clj" "583b716c5291b1864162153127d14b29086535fcbc01bc16696861c8cf38f819", "src/ai/obney/ontology/core/delta.clj" "716a8e3f339c70cb3a0cdde5d2aab6b3ed20eae7b8f7a321afd6a5bb6ea20175", "src/ai/obney/ontology/core/entity_resolver.clj" "4c8cccbc65ac09072f15aa0fd8cfd81abd90d460b3e2e8706e36fcc2ed55544b", "src/ai/obney/ontology/core/graph.clj" "ad58e808dde7c7464e03dec9dc702f341fd1e891e2edd8acd24519819b484703", "src/ai/obney/ontology/core/graph_evolver.clj" "0dadc9413c4d52b8f0485008c327fd8afd7f98cee2a1b816584aadcf3617a8c9", "src/ai/obney/ontology/core/projection.clj" "c6405144d68c4777aabae31c57645123098d9030face60639ab7a2c85d75025d", "src/ai/obney/ontology/core/rdf.clj" "9bfb58c88effa81e73c9060fe404297e2621defb7b486a0a6df8a1d13231f477", "src/ai/obney/ontology/core/schemas.clj" "793d9009a654c9b86c23336a2585261cfcaa81c8c25f424e040584ebf19243bb", "src/ai/obney/ontology/core/source_registry.clj" "a521ea63c2602a16dd6660c7a0b94405db8b02cf40d52fa1a41c5d52a93c40a2", "src/ai/obney/ontology/core/state.clj" "3d7192fbd98b87d05d95021c665990438d0a0b511375011673e32eab1ea0df33", "src/ai/obney/ontology/core/streams.clj" "e4bebd13eb9ca290c5be3c0ce6655df643cb3f5c512145b5c92dd91dd4b42677", "src/ai/obney/ontology/interface.clj" "a262baa259a3433282181d38521e0cc94418e184f64170a82599295000d865cf"}, :arch "aarch64", :os-version "15.7.4", :java-version "21.0.7", :options {:samples 3, :sizes [10000], :history 0, :output "/Users/obneyai/Developer/code2/ontology-exp/target/benchmarks/contribution-deltas/sqlite-10000-lookup-uri", :dimensions 32, :delta-size 10, :operations #{:lookup-uri}, :warmup 1, :backends [:sqlite], :batch-size 1000}, :os "Mac OS X", :deps {:paths ["src" "resources"], :deps {org.clojure/clojure #:mvn{:version "1.12.0"}, obneyai/grain-core-v2 {:git/url "https://github.com/ObneyAI/grain.git", :git/sha "dbf5b5229aad09785e40f71e96adf65c90f971d5", :deps/root "projects/grain-core-v2"}}, :aliases {:bench {:extra-paths ["bench"], :extra-deps #:obneyai{grain-event-store-sqlite-v3 {:git/url "https://github.com/ObneyAI/grain.git", :git/sha "dbf5b5229aad09785e40f71e96adf65c90f971d5", :deps/root "projects/grain-event-store-sqlite-v3"}}, :main-opts ["-m" "ai.obney.ontology.benchmark"]}, :test {:extra-paths ["test"], :extra-deps {org.clojure/test.check #:mvn{:version "1.1.3"}, obneyai/grain-event-store-sqlite-v3 {:git/url "https://github.com/ObneyAI/grain.git", :git/sha "dbf5b5229aad09785e40f71e96adf65c90f971d5", :deps/root "projects/grain-event-store-sqlite-v3"}}, :main-opts ["-m" "ai.obney.ontology.test-runner"]}}}}
+:results [{:gc-ms 177, :event-count 11, :gc-count 107, :operation :populate, :history 0, :allocated-bytes 21179838024, :concepts 10000, :storage-bytes 32265096, :kind :setup, :elapsed-ms 16755.4715, :backend :sqlite}
+{:end-events 11, :samples [{:elapsed-ms 0.823541, :allocated-bytes 346624, :gc-count 0, :gc-ms 0} {:elapsed-ms 0.769417, :allocated-bytes 346624, :gc-count 0, :gc-ms 0} {:elapsed-ms 0.761959, :allocated-bytes 346624, :gc-count 0, :gc-ms 0}], :median-allocated-bytes 346624, :gc-ms 0, :start-events 11, :min-ms 0.761959, :gc-count 0, :operation :lookup-uri, :history 0, :max-ms 0.823541, :median-ms 0.769417, :mean-ms 0.7849723333333333, :concepts 10000, :storage-bytes 32265096, :end-revision 11, :kind :read, :backend :sqlite, :start-revision 11}
+]
+:status {:status :complete, :finished-at "2026-09-19T05:09:40.360440Z", :rows 2}}
+"sqlite-20000-import-delta" {:metadata {:processors 12, :java-vm "OpenJDK 64-Bit Server VM", :jvm-arguments ["-XX:-OmitStackTraceInFastThrow" "-Djava.io.tmpdir=/var/folders/nb/r64lcbbn0fd6d1vqc3m_0wpr0000gq/T/ontology-benchmark-case-86di_47k" "-Xms256m" "-Xmx2g" "-Dclojure.basis=.cpcache/4286882845.basis"], :max-heap-bytes 2147483648, :started-at "2026-09-19T05:11:26.398584Z", :source-sha256 {"bench/ai/obney/ontology/benchmark.clj" "db4e36a9cf7db8ccf27e40b65e1abaeb5487c6eb68cdec1837542bfdd8040b9e", "deps.edn" "7e7b757a9ea36beb5beefe7b21c2162509f7b51d2d26f303ea7ca5c6a0610c40", "src/ai/obney/ontology/algorithms.clj" "dc243f9287c81d61586746359930f0a0b9c7dea74aecdcebae3055398ac9f75e", "src/ai/obney/ontology/core/commands.clj" "583b716c5291b1864162153127d14b29086535fcbc01bc16696861c8cf38f819", "src/ai/obney/ontology/core/delta.clj" "716a8e3f339c70cb3a0cdde5d2aab6b3ed20eae7b8f7a321afd6a5bb6ea20175", "src/ai/obney/ontology/core/entity_resolver.clj" "4c8cccbc65ac09072f15aa0fd8cfd81abd90d460b3e2e8706e36fcc2ed55544b", "src/ai/obney/ontology/core/graph.clj" "ad58e808dde7c7464e03dec9dc702f341fd1e891e2edd8acd24519819b484703", "src/ai/obney/ontology/core/graph_evolver.clj" "0dadc9413c4d52b8f0485008c327fd8afd7f98cee2a1b816584aadcf3617a8c9", "src/ai/obney/ontology/core/projection.clj" "c6405144d68c4777aabae31c57645123098d9030face60639ab7a2c85d75025d", "src/ai/obney/ontology/core/rdf.clj" "9bfb58c88effa81e73c9060fe404297e2621defb7b486a0a6df8a1d13231f477", "src/ai/obney/ontology/core/schemas.clj" "793d9009a654c9b86c23336a2585261cfcaa81c8c25f424e040584ebf19243bb", "src/ai/obney/ontology/core/source_registry.clj" "a521ea63c2602a16dd6660c7a0b94405db8b02cf40d52fa1a41c5d52a93c40a2", "src/ai/obney/ontology/core/state.clj" "3d7192fbd98b87d05d95021c665990438d0a0b511375011673e32eab1ea0df33", "src/ai/obney/ontology/core/streams.clj" "e4bebd13eb9ca290c5be3c0ce6655df643cb3f5c512145b5c92dd91dd4b42677", "src/ai/obney/ontology/interface.clj" "a262baa259a3433282181d38521e0cc94418e184f64170a82599295000d865cf"}, :arch "aarch64", :os-version "15.7.4", :java-version "21.0.7", :options {:samples 3, :sizes [20000], :history 0, :output "/Users/obneyai/Developer/code2/ontology-exp/target/benchmarks/contribution-deltas/sqlite-20000-import-delta", :dimensions 32, :delta-size 10, :operations #{:import-delta}, :warmup 1, :backends [:sqlite], :batch-size 1000}, :os "Mac OS X", :deps {:paths ["src" "resources"], :deps {org.clojure/clojure #:mvn{:version "1.12.0"}, obneyai/grain-core-v2 {:git/url "https://github.com/ObneyAI/grain.git", :git/sha "dbf5b5229aad09785e40f71e96adf65c90f971d5", :deps/root "projects/grain-core-v2"}}, :aliases {:bench {:extra-paths ["bench"], :extra-deps #:obneyai{grain-event-store-sqlite-v3 {:git/url "https://github.com/ObneyAI/grain.git", :git/sha "dbf5b5229aad09785e40f71e96adf65c90f971d5", :deps/root "projects/grain-event-store-sqlite-v3"}}, :main-opts ["-m" "ai.obney.ontology.benchmark"]}, :test {:extra-paths ["test"], :extra-deps {org.clojure/test.check #:mvn{:version "1.1.3"}, obneyai/grain-event-store-sqlite-v3 {:git/url "https://github.com/ObneyAI/grain.git", :git/sha "dbf5b5229aad09785e40f71e96adf65c90f971d5", :deps/root "projects/grain-event-store-sqlite-v3"}}, :main-opts ["-m" "ai.obney.ontology.test-runner"]}}}}
+:results [{:gc-ms 864, :event-count 21, :gc-count 735, :operation :populate, :history 0, :allocated-bytes 82659462968, :concepts 20000, :storage-bytes 60432552, :kind :setup, :elapsed-ms 68467.331833, :backend :sqlite}
+{:end-events 25, :samples [{:elapsed-ms 695.983917, :allocated-bytes 759673768, :gc-count 2, :gc-ms 4} {:elapsed-ms 716.245958, :allocated-bytes 760119736, :gc-count 5, :gc-ms 8} {:elapsed-ms 692.203458, :allocated-bytes 760559616, :gc-count 4, :gc-ms 6}], :median-allocated-bytes 760119736, :gc-ms 18, :start-events 21, :min-ms 692.203458, :gc-count 11, :operation :import-delta, :history 0, :max-ms 716.245958, :median-ms 695.983917, :mean-ms 701.4777776666666, :concepts 20000, :storage-bytes 60432552, :end-revision 25, :kind :write, :backend :sqlite, :start-revision 21}
+]
+:status {:status :complete, :finished-at "2026-09-19T05:12:40.392988Z", :rows 2}}
+"sqlite-20000-lookup-uri" {:metadata {:processors 12, :java-vm "OpenJDK 64-Bit Server VM", :jvm-arguments ["-XX:-OmitStackTraceInFastThrow" "-Djava.io.tmpdir=/var/folders/nb/r64lcbbn0fd6d1vqc3m_0wpr0000gq/T/ontology-benchmark-case-72yhadk_" "-Xms256m" "-Xmx2g" "-Dclojure.basis=.cpcache/4286882845.basis"], :max-heap-bytes 2147483648, :started-at "2026-09-19T05:10:10.449247Z", :source-sha256 {"bench/ai/obney/ontology/benchmark.clj" "db4e36a9cf7db8ccf27e40b65e1abaeb5487c6eb68cdec1837542bfdd8040b9e", "deps.edn" "7e7b757a9ea36beb5beefe7b21c2162509f7b51d2d26f303ea7ca5c6a0610c40", "src/ai/obney/ontology/algorithms.clj" "dc243f9287c81d61586746359930f0a0b9c7dea74aecdcebae3055398ac9f75e", "src/ai/obney/ontology/core/commands.clj" "583b716c5291b1864162153127d14b29086535fcbc01bc16696861c8cf38f819", "src/ai/obney/ontology/core/delta.clj" "716a8e3f339c70cb3a0cdde5d2aab6b3ed20eae7b8f7a321afd6a5bb6ea20175", "src/ai/obney/ontology/core/entity_resolver.clj" "4c8cccbc65ac09072f15aa0fd8cfd81abd90d460b3e2e8706e36fcc2ed55544b", "src/ai/obney/ontology/core/graph.clj" "ad58e808dde7c7464e03dec9dc702f341fd1e891e2edd8acd24519819b484703", "src/ai/obney/ontology/core/graph_evolver.clj" "0dadc9413c4d52b8f0485008c327fd8afd7f98cee2a1b816584aadcf3617a8c9", "src/ai/obney/ontology/core/projection.clj" "c6405144d68c4777aabae31c57645123098d9030face60639ab7a2c85d75025d", "src/ai/obney/ontology/core/rdf.clj" "9bfb58c88effa81e73c9060fe404297e2621defb7b486a0a6df8a1d13231f477", "src/ai/obney/ontology/core/schemas.clj" "793d9009a654c9b86c23336a2585261cfcaa81c8c25f424e040584ebf19243bb", "src/ai/obney/ontology/core/source_registry.clj" "a521ea63c2602a16dd6660c7a0b94405db8b02cf40d52fa1a41c5d52a93c40a2", "src/ai/obney/ontology/core/state.clj" "3d7192fbd98b87d05d95021c665990438d0a0b511375011673e32eab1ea0df33", "src/ai/obney/ontology/core/streams.clj" "e4bebd13eb9ca290c5be3c0ce6655df643cb3f5c512145b5c92dd91dd4b42677", "src/ai/obney/ontology/interface.clj" "a262baa259a3433282181d38521e0cc94418e184f64170a82599295000d865cf"}, :arch "aarch64", :os-version "15.7.4", :java-version "21.0.7", :options {:samples 3, :sizes [20000], :history 0, :output "/Users/obneyai/Developer/code2/ontology-exp/target/benchmarks/contribution-deltas/sqlite-20000-lookup-uri", :dimensions 32, :delta-size 10, :operations #{:lookup-uri}, :warmup 1, :backends [:sqlite], :batch-size 1000}, :os "Mac OS X", :deps {:paths ["src" "resources"], :deps {org.clojure/clojure #:mvn{:version "1.12.0"}, obneyai/grain-core-v2 {:git/url "https://github.com/ObneyAI/grain.git", :git/sha "dbf5b5229aad09785e40f71e96adf65c90f971d5", :deps/root "projects/grain-core-v2"}}, :aliases {:bench {:extra-paths ["bench"], :extra-deps #:obneyai{grain-event-store-sqlite-v3 {:git/url "https://github.com/ObneyAI/grain.git", :git/sha "dbf5b5229aad09785e40f71e96adf65c90f971d5", :deps/root "projects/grain-event-store-sqlite-v3"}}, :main-opts ["-m" "ai.obney.ontology.benchmark"]}, :test {:extra-paths ["test"], :extra-deps {org.clojure/test.check #:mvn{:version "1.1.3"}, obneyai/grain-event-store-sqlite-v3 {:git/url "https://github.com/ObneyAI/grain.git", :git/sha "dbf5b5229aad09785e40f71e96adf65c90f971d5", :deps/root "projects/grain-event-store-sqlite-v3"}}, :main-opts ["-m" "ai.obney.ontology.test-runner"]}}}}
+:results [{:gc-ms 848, :event-count 21, :gc-count 753, :operation :populate, :history 0, :allocated-bytes 82641466864, :concepts 20000, :storage-bytes 60695440, :kind :setup, :elapsed-ms 68772.31775, :backend :sqlite}
+{:end-events 21, :samples [{:elapsed-ms 0.890542, :allocated-bytes 346432, :gc-count 0, :gc-ms 0} {:elapsed-ms 0.719084, :allocated-bytes 346432, :gc-count 0, :gc-ms 0} {:elapsed-ms 0.710125, :allocated-bytes 346432, :gc-count 0, :gc-ms 0}], :median-allocated-bytes 346432, :gc-ms 0, :start-events 21, :min-ms 0.710125, :gc-count 0, :operation :lookup-uri, :history 0, :max-ms 0.890542, :median-ms 0.719084, :mean-ms 0.7732503333333334, :concepts 20000, :storage-bytes 60695440, :end-revision 21, :kind :read, :backend :sqlite, :start-revision 21}
+]
+:status {:status :complete, :finished-at "2026-09-19T05:11:21.951433Z", :rows 2}}}}

@@ -1,4 +1,5 @@
-{"generated_obligations": 96, "prose_obligations": 11, "mapped": 107, "referenced_tests": 55, "status": "pass"}
+{"generated_obligations": 96, "prose_obligations": 13, "mapped": 109, "referenced_tests": 73, "status": "pass"}
+{"control": "pass", "cases": [{"regression": "missing-obligation", "detected": true}, {"regression": "obsolete-obligation", "detected": true}, {"regression": "missing-test", "detected": true}, {"regression": "empty-review", "detected": true}, {"regression": "stale-spec", "detected": true}]}
 Allium check {'warning': 1, 'info': 15} 0 errors, 0 findings
 Allium analyse {'warning': 1, 'info': 15} 0 errors, 0 findings
 
@@ -6,20 +7,24 @@ Testing ai.obney.ontology.algorithms-test
 
 Testing ai.obney.ontology.boundary-test
 
+Testing ai.obney.ontology.delta-test
+
 Testing ai.obney.ontology.durable-test
 SLF4J(W): No SLF4J providers were found.
 SLF4J(W): Defaulting to no-operation (NOP) logger implementation
 SLF4J(W): See https://www.slf4j.org/codes.html#noProviders for further details.
 
+Testing ai.obney.ontology.indexes-test
+
 Testing ai.obney.ontology.mutation-test
 
 Testing ai.obney.ontology.property-test
-canonical-choice {:seed 20260918, :num-tests 60, :pass? true, :time-elapsed-ms 23}
-disjoint-import-order {:seed 20260918, :num-tests 60, :pass? true, :time-elapsed-ms 257}
-literal-roundtrip {:seed 20260918, :num-tests 60, :pass? true, :time-elapsed-ms 43}
-mutation-sequences {:seed 20260918, :num-tests 60, :pass? true, :time-elapsed-ms 759}
-source-versions {:seed 20260918, :num-tests 60, :pass? true, :time-elapsed-ms 142}
-resolution-scores {:seed 20260918, :num-tests 60, :pass? true, :time-elapsed-ms 4}
+canonical-choice {:seed 20260918, :num-tests 60, :pass? true, :time-elapsed-ms 8}
+disjoint-import-order {:seed 20260918, :num-tests 60, :pass? true, :time-elapsed-ms 488}
+literal-roundtrip {:seed 20260918, :num-tests 60, :pass? true, :time-elapsed-ms 96}
+mutation-sequences {:seed 20260918, :num-tests 60, :pass? true, :time-elapsed-ms 1690}
+source-versions {:seed 20260918, :num-tests 60, :pass? true, :time-elapsed-ms 311}
+resolution-scores {:seed 20260918, :num-tests 60, :pass? true, :time-elapsed-ms 3}
 
 Testing ai.obney.ontology.rdf-test
 
@@ -27,16 +32,18 @@ Testing ai.obney.ontology.resolution-test
 
 Testing ai.obney.ontology.search-test
 
-Ran 72 tests containing 539 assertions.
+Testing ai.obney.ontology.structural-test
+
+Ran 91 tests containing 656 assertions.
 0 failures, 0 errors.
 
 Testing ai.obney.ontology.property-test
-canonical-choice {:seed 7, :num-tests 500, :pass? true, :time-elapsed-ms 77}
-disjoint-import-order {:seed 7, :num-tests 500, :pass? true, :time-elapsed-ms 1729}
-literal-roundtrip {:seed 7, :num-tests 500, :pass? true, :time-elapsed-ms 213}
-mutation-sequences {:seed 7, :num-tests 500, :pass? true, :time-elapsed-ms 5608}
-source-versions {:seed 7, :num-tests 500, :pass? true, :time-elapsed-ms 1090}
-resolution-scores {:seed 7, :num-tests 500, :pass? true, :time-elapsed-ms 23}
+canonical-choice {:seed 7, :num-tests 500, :pass? true, :time-elapsed-ms 94}
+disjoint-import-order {:seed 7, :num-tests 500, :pass? true, :time-elapsed-ms 3585}
+literal-roundtrip {:seed 7, :num-tests 500, :pass? true, :time-elapsed-ms 8573}
+mutation-sequences {:seed 7, :num-tests 500, :pass? true, :time-elapsed-ms 169414}
+source-versions {:seed 7, :num-tests 500, :pass? true, :time-elapsed-ms 46458}
+resolution-scores {:seed 7, :num-tests 500, :pass? true, :time-elapsed-ms 27}
 
 Ran 6 tests containing 6 assertions.
 0 failures, 0 errors.
@@ -45,5 +52,5 @@ Ran 6 tests containing 6 assertions.
 {:mutation :ignore-request-payload, :control {:test 1, :pass 15, :fail 0, :error 0}, :mutant {:test 1, :pass 10, :fail 5, :error 0}, :detected true}
 {:mutation :ignore-rdf-validity, :control {:test 1, :pass 10, :fail 0, :error 0}, :mutant {:test 1, :pass 0, :fail 10, :error 0}, :detected true}
 {:mutation :compare-invalid-vectors, :control {:test 1, :pass 6, :fail 0, :error 0}, :mutant {:test 1, :pass 0, :fail 6, :error 0}, :detected true}
-{:mutation :remove-append-cas, :control {:test 1, :pass 6, :fail 0, :error 0}, :mutant {:test 1, :pass 2, :fail 4, :error 0}, :detected true}
+{:mutation :remove-append-cas, :control {:test 1, :pass 6, :fail 0, :error 0}, :mutant {:test 1, :pass 1, :fail 5, :error 0}, :detected true}
 {:detected 6, :total 6}

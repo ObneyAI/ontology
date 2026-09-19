@@ -1,11 +1,11 @@
 
 Testing ai.obney.ontology.property-test
-canonical-choice {:seed 7, :num-tests 500, :pass? true, :time-elapsed-ms 77}
-disjoint-import-order {:seed 7, :num-tests 500, :pass? true, :time-elapsed-ms 1729}
-literal-roundtrip {:seed 7, :num-tests 500, :pass? true, :time-elapsed-ms 213}
-mutation-sequences {:seed 7, :num-tests 500, :pass? true, :time-elapsed-ms 5608}
-source-versions {:seed 7, :num-tests 500, :pass? true, :time-elapsed-ms 1090}
-resolution-scores {:seed 7, :num-tests 500, :pass? true, :time-elapsed-ms 23}
+canonical-choice {:seed 7, :num-tests 500, :pass? true, :time-elapsed-ms 94}
+disjoint-import-order {:seed 7, :num-tests 500, :pass? true, :time-elapsed-ms 3585}
+literal-roundtrip {:seed 7, :num-tests 500, :pass? true, :time-elapsed-ms 8573}
+mutation-sequences {:seed 7, :num-tests 500, :pass? true, :time-elapsed-ms 169414}
+source-versions {:seed 7, :num-tests 500, :pass? true, :time-elapsed-ms 46458}
+resolution-scores {:seed 7, :num-tests 500, :pass? true, :time-elapsed-ms 27}
 
 Ran 6 tests containing 6 assertions.
 0 failures, 0 errors.

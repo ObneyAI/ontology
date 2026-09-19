@@ -172,6 +172,9 @@ behavioral contract.
 
 ## Benchmarking
 
+For stage-level latency and allocation attribution, including Grain's μ/trace
+spans and SQLite writer context, see [contribution profiling](docs/PROFILING.md).
+
 The benchmark harness targets 10,000 and 20,000 concepts on in-memory and SQLite
 stores. It records raw latency/allocation samples, GC activity, fixture loading
 cost and source/environment metadata. Each case runs in its own JVM with a time
@@ -186,3 +189,9 @@ history-length experiments and interpretation limits. Benchmark dependencies
 are confined to the `:bench` alias. The
 [initial 10,000/20,000-concept baseline](docs/BENCHMARK-BASELINE.md) records
 measured replay/import costs, lookup timeouts and the fixed-size history control.
+
+See [scoped reads](docs/SCOPED-READS.md) for event tags, Grain projections, cache context and concurrency behavior.
+
+Accepted contributions persist [resolved record changes](docs/CONTRIBUTION-DELTAS.md), including explicit relationship removals, rather than repeating the ontology snapshot.
+
+Mutation commands use [incrementally maintained graph indexes](docs/MUTATION-INDEXES.md) for parents, hierarchy, resolution, connected scope and counts.

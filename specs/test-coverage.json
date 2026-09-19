@@ -1,5 +1,5 @@
 {
-  "spec_sha256": "6b1db51950207b4323797254e00e6848c1fecdcbb1b10ffedbae51faed444698",
+  "spec_sha256": "c4554f181e353af7bdc1e7208593e043c665e34d9295bdd35c4a8948bdb652e2",
   "obligations": {
     "entity-fields.OntologyConsumer": {
       "tests": [
@@ -785,17 +785,21 @@
         "ai.obney.ontology.boundary-test/retry-identity-is-independent-of-source-content",
         "ai.obney.ontology.mutation-test/invalid-manual-mutations-are-atomic",
         "ai.obney.ontology.durable-test/actual-sqlite-rejection-leaves-no-graph-or-retry-record",
-        "ai.obney.ontology.durable-test/sqlite-competing-writes-have-one-revision-winner"
+        "ai.obney.ontology.durable-test/sqlite-competing-writes-have-one-revision-winner",
+        "ai.obney.ontology.indexes-test/imports-validate-once-and-use-only-the-affected-parent-index"
       ],
-      "review": "Validation, retry, stale revision and actual storage failure leave graph/history unchanged; SQLite compare-and-append gives one winner for competing writes."
+      "review": "Validation, retry, stale revision and actual storage failure leave graph/history unchanged; SQLite compare-and-append gives one winner for competing writes. Mutation-index regression witnesses verify incremental index freshness and command behavior without changing this contract."
     },
     "prose.HierarchyConsistency": {
       "tests": [
         "ai.obney.ontology.boundary-test/manual-hierarchy-maintains-inverses-and-rejects-cycles",
         "ai.obney.ontology.boundary-test/imported-hierarchy-cycles-are-rejected-without-changing-graph",
-        "ai.obney.ontology.property-test/generated-mutation-sequences-match-independent-model-and-replay"
+        "ai.obney.ontology.property-test/generated-mutation-sequences-match-independent-model-and-replay",
+        "ai.obney.ontology.indexes-test/indexes-follow-manual-and-contribution-updates-and-replay",
+        "ai.obney.ontology.indexes-test/hierarchy-and-connections-survive-removing-one-of-parallel-edges",
+        "ai.obney.ontology.indexes-test/connected-indexes-preserve-cross-ontology-cycle-validation"
       ],
-      "review": "Manual and imported hierarchy changes share validation; generated model checks inverse parent/child sets and rejects reachable cycles at each step."
+      "review": "Manual and imported hierarchy changes share validation; generated model checks inverse parent/child sets and rejects reachable cycles at each step. Mutation-index regression witnesses verify incremental index freshness and command behavior without changing this contract."
     },
     "prose.QualifiedIdentityRequired": {
       "tests": [
@@ -846,9 +850,11 @@
         "ai.obney.ontology.resolution-test/imported-entities-retain-creation-and-update-times",
         "ai.obney.ontology.resolution-test/invalid-resolution-thresholds-are-atomic",
         "ai.obney.ontology.property-test/generated-resolution-scores-are-bounded",
-        "ai.obney.ontology.resolution-test/duplicate-uri-candidate-order-is-deterministic"
+        "ai.obney.ontology.resolution-test/duplicate-uri-candidate-order-is-deterministic",
+        "ai.obney.ontology.indexes-test/indexed-resolution-agrees-with-unfiltered-resolution",
+        "ai.obney.ontology.indexes-test/enabled-import-resolution-receives-indexed-candidates"
       ],
-      "review": "Exact/semantic type compatibility, canonical identity retention, reference rewriting, permutation, bounded scores and timestamp retention are checked against observable graph/provenance."
+      "review": "Exact/semantic type compatibility, canonical identity retention, reference rewriting, permutation, bounded scores and timestamp retention are checked against observable graph/provenance. Mutation-index regression witnesses verify incremental index freshness and command behavior without changing this contract."
     },
     "prose.DeterministicRdfImport": {
       "tests": [
@@ -884,6 +890,29 @@
         "ai.obney.ontology.boundary-test/model-free-search-stays-scoped"
       ],
       "review": "Tests run with standalone deps and real Grain store, without ORC/model workflow/provider; loaded namespaces are checked for orchestration components."
+    },
+    "prose.ScopedIncrementalReads": {
+      "tests": [
+        "ai.obney.ontology.structural-test/point-streams-use-grain-and-incremental-watermarks",
+        "ai.obney.ontology.structural-test/parent-streams-track-removed-and-added-edges",
+        "ai.obney.ontology.structural-test/contributions-tag-changes-without-tagging-unchanged-snapshot-records",
+        "ai.obney.ontology.structural-test/relationships-ignore-label-only-events",
+        "ai.obney.ontology.structural-test/caches-isolate-store-instances-even-for-the-same-tenant",
+        "ai.obney.ontology.structural-test/historical-projections-remain-bounded-on-both-stores",
+        "ai.obney.ontology.structural-test/scoped-views-use-the-originating-ontology-predicate-policy",
+        "ai.obney.ontology.indexes-test/sqlite-reopen-reconstructs-command-indexes",
+        "ai.obney.ontology.indexes-test/indexes-follow-manual-and-contribution-updates-and-replay"
+      ],
+      "review": "Observed event-store queries and consumed events verify scoped cold reads, incremental freshness, request-only retries, endpoint tags, source policy dependencies, store isolation and bounded historical reads on in-memory and SQLite stores. Mutation-index regression witnesses verify incremental index freshness and command behavior without changing this contract."
+    },
+    "prose.ResolvedContributionChanges": {
+      "tests": [
+        "ai.obney.ontology.delta-test/resolved-record-diffs-reconstruct-candidates",
+        "ai.obney.ontology.delta-test/a-small-contribution-does-not-carry-the-existing-graph",
+        "ai.obney.ontology.delta-test/contribution-parent-diffs-update-both-endpoints-and-history",
+        "ai.obney.ontology.delta-test/empty-graph-change-still-records-contribution-acceptance"
+      ],
+      "review": "500 generated before/after pairs exercise complete-record replacement, removals and all graph collections. Public imports verify bounded payload, exact reconstruction, warm endpoint views, historical replay, provenance and no-change acceptance versus retries."
     }
   }
 }

@@ -129,7 +129,7 @@
                        (verify! (= (inc @write-revision) (:revision result)) result)
                        (reset! write-revision (:revision result)))]
     [{:name :projection-replay :kind :diagnostic
-      :run #(state/read-state ctx)
+      :run #(reduce state/apply-event {} (state/read-events ctx))
       :check #(verify! (= n (count (:concepts %))) {:operation :projection-replay})}
      {:name :lookup-uri :kind :read
       :run #(o/get-concept-by-uri ctx oid target)

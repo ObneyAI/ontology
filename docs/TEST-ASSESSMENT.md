@@ -3,7 +3,7 @@
 Measured on 18 September 2026, scoped to this standalone library.
 
 The suite provides substantial regression protection for the ontology port.
-All 96 generated Allium obligations and 11 prose invariants/guarantees now have
+All 96 generated Allium obligations and 13 prose invariants/guarantees now have
 reviewed executable witnesses or a documented language-level representation in
 [the coverage ledger](TEST-COVERAGE.md). The checker compares a fresh Allium plan,
 verifies test references and rejects a changed spec hash. This establishes
@@ -11,11 +11,16 @@ reviewed traceability, not a proof of correctness for every possible input.
 
 | Verification | Result | Evidence |
 | --- | --- | --- |
-| Default suite, eight namespaces | 72 tests, 539 assertions, zero failures/errors | [Full run](../evidence/rigorous-current.log) |
+| Default suite, twelve namespaces | 107 tests, 744 assertions, zero failures/errors | [Full run with tracked contribution diffs](../evidence/rigorous-current.log) |
 | Six generated properties, default seed 20260918 | 60 trials each | [Full run](../evidence/rigorous-current.log) |
+| Resolved contribution diffs, seed 20260918 | 500 before/after pairs across all graph collections | `delta-test/resolved-record-diffs-reconstruct-candidates` |
+| Tracked contribution diffs, seed 20260921 | 500 mutation sequences compared with full diffs and replay | `delta-test/tracked-mutation-sequences-agree-with-full-diffs` |
+| Indexed resolution, seed 20260918 | 300 comparisons against the unfiltered resolver | `indexes-test/indexed-resolution-agrees-with-unfiltered-resolution` |
+| Incremental hierarchy, seed 20260919 | 500 comparisons against independent whole-graph cycle detection | `indexes-test/incremental-hierarchy-agrees-with-whole-graph-validation` |
+| Incremental record validation, seed 20260920 | 500 comparisons against whole-graph required-field and endpoint checks | `indexes-test/incremental-record-validation-agrees-with-full-validation` |
 | Additional property campaign, seed 7 | 500 trials each; 3,000 total, all passing | [Campaign](../evidence/property-campaign.log) |
 | Six deliberate regressions | All six detected by assertion failures; unmodified controls pass | [Sensitivity audit](../evidence/mutation-audit.log) |
-| Obligation mapping | 96 generated + 11 prose, all mapped | [Ledger check](../evidence/obligation-review.json) |
+| Obligation mapping | 96 generated + 13 prose, all mapped | [Ledger check](../evidence/obligation-review.json) |
 | Coverage-checker sensitivity | Five invalid ledgers/specs rejected; control passes | [Checker audit](../evidence/coverage-checker-audit.json) |
 | Allium check/analyse | Zero errors or process findings; 15 information diagnostics and one warning | [Check](../evidence/rigorous-spec-check.json), [analysis](../evidence/rigorous-spec-analyse.json) |
 

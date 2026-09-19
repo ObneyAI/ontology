@@ -41,6 +41,19 @@
                                  [:tbox {:optional true} :map]
                                  [:abox {:optional true} [:vector :map]]]})
 
+(defn record-delta [key-schema value-schema]
+  [:map [:upserts [:map-of key-schema value-schema]] [:removals [:vector key-schema]]])
+(def concept-key [:tuple :uuid :string])
+(def relationship-key [:tuple :uuid :string :string :uuid :string])
+(def contribution-changes
+  [:map
+   [:concepts (record-delta concept-key :map)]
+   [:relationships (record-delta relationship-key :map)]
+   [:tbox [:map-of :keyword (record-delta :string :map)]]
+   [:tbox-removals [:vector :keyword]]
+   [:abox (record-delta :string :map)]
+   [:rdf-triples [:map [:additions [:vector :map]] [:removals [:vector :map]]]]])
+
 (defschemas events
   {:ontology/ontology-created [:map [:ontology-id :uuid] [:name :string] [:scope {:optional true} scope]
                                [:predicate-policies {:optional true} policies] [:created-at :string]]
@@ -53,6 +66,5 @@
                                    [:source-uri :string] [:target-uri :string] [:predicate :string]]
    :ontology/predicate-registered [:map [:ontology-id :uuid] [:predicate :string] [:policy :map]]
    :ontology/contribution-imported [:map [:ontology-id :uuid] [:contribution-id :uuid]
-                                    [:source :map] [:concepts [:vector :map]]
-                                    [:relationships [:vector :map]] [:tbox :map] [:abox [:vector :map]]
+                                    [:source :map] [:changes contribution-changes]
                                     [:canonical-map :map] [:result :map] [:request-hash :string]]})

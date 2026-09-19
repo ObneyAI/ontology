@@ -1,5 +1,8 @@
 (ns ai.obney.ontology.core.commands
-  (:require [ai.obney.ontology.core.state :as state]
+  (:require [ai.obney.ontology.core.trace :as trace] [ai.obney.ontology.core.state :as state]
+            [ai.obney.ontology.core.streams :as streams]
+            [ai.obney.ontology.core.delta :as delta]
+            [ai.obney.ontology.core.indexes :as indexes]
             [ai.obney.ontology.core.schemas]
             [ai.obney.ontology.core.rdf :as rdf]
             [ai.obney.ontology.algorithms :as algorithms]
@@ -16,73 +19,125 @@
   (when-not pred (fail! ::anom/incorrect message)))
 (defn nonblank? [s] (and (string? s) (not (str/blank? s))))
 (defn digest [value]
-  (let [canonical (walk/postwalk (fn [v]
-                                   (cond (map? v) (into (sorted-map-by #(compare (pr-str %1) (pr-str %2))) v)
-                                         (set? v) (vec (sort-by pr-str v))
-                                         :else v)) value)]
-    (algorithms/sha256 (pr-str canonical))))
+  (trace/span :ontology.trace/request-or-record-hash
+    (let [canonical (walk/postwalk (fn [v]
+                                     (cond (map? v) (into (sorted-map-by #(compare (pr-str %1) (pr-str %2))) v)
+                                           (set? v) (vec (sort-by pr-str v))
+                                           :else v)) value)]
+      (algorithms/sha256 (pr-str canonical)))))
 
 (defn require-ontology! [s oid]
   (when-not (get-in s [:ontologies oid]) (fail! ::anom/not-found "Ontology not found")))
 
-(defn validate-graph! [s oid]
-  (let [cs (:concepts s)
-        edges (vals (:edges s))]
-    (doseq [[[id _] c] cs :when (= id oid)]
-      (require! (every? nonblank? ((juxt :uri :label :description) c))
-                "Concept URI, label and description must be nonblank"))
-    (doseq [e edges :when (or (= oid (:source-ontology-id e)) (= oid (:target-ontology-id e)))]
-      (let [source [(:source-ontology-id e) (:source-uri e)]
-            target [(:target-ontology-id e) (:target-uri e)]
-            policy (get-in s [:ontologies (:source-ontology-id e) :predicate-policies (:predicate e)])]
-        (require! (and (get cs source) (get cs target)) "Relationship endpoints must exist")
-        (require! policy (str "Undeclared predicate: " (:predicate e)))
-        (require! (or (= (first source) (first target)) (:cross-ontology? policy))
-                  "Predicate does not permit cross-ontology relationships")
-        (require! (not= source target) "Self relationships are not supported")))
-    (let [hierarchy (filter #(get-in s [:ontologies (:source-ontology-id %) :predicate-policies
-                                      (:predicate %) :hierarchical?]) edges)
-          adjacency (group-by (juxt :source-ontology-id :source-uri) hierarchy)]
-      (doseq [start (keys adjacency)]
-        (loop [pending (mapv (juxt :target-ontology-id :target-uri) (get adjacency start)) seen #{}]
-          (when-let [node (peek pending)]
-            (require! (not= start node) "Hierarchy cycle")
-            (recur (if (seen node) (pop pending)
-                       (into (pop pending) (map (juxt :target-ontology-id :target-uri) (get adjacency node))))
-                   (conj seen node)))))))
-  s)
+(defn- affected-relationship-keys [s event]
+  (let [e (state/event-data event) oid (:ontology-id e)]
+    (case (:event/type e)
+      :ontology/contribution-imported (keys (get-in e [:changes :relationships :upserts]))
+      :ontology/relationship-created [(state/edge-key e)]
+      :ontology/concept-created (state/parent-keys s oid (:uri e))
+      :ontology/concept-updated (when (contains? (:changes e) :broader)
+                                  (state/parent-keys s oid (:uri e)))
+      :ontology/predicate-registered (get-in s [:indexes :predicate-edges [oid (:predicate e)]])
+      :ontology/ontology-created (mapcat #(get-in s [:indexes :predicate-edges [oid %]])
+                                         (keys (get-in s [:ontologies oid :predicate-policies])))
+      [])))
+
+(defn validate-hierarchy-edge! [adjacency start target]
+  (loop [pending [target] seen #{}]
+    (when-let [node (peek pending)]
+      (require! (not= start node) "Hierarchy cycle")
+      (recur (if (seen node) (pop pending)
+                 (into (pop pending) (keys (get adjacency node))))
+             (conj seen node)))))
+
+(defn validate-hierarchy! [before s event]
+  (trace/span :ontology.trace/validate-hierarchy
+    ;; The committed graph is acyclic. Every new cycle must contain a newly
+    ;; reachable direct connection. Removals and parallel edges cannot add one.
+    (let [adjacency (get-in s [:indexes :hierarchy])
+          additions (into #{}
+                          (keep (fn [[so su _ to tu]]
+                                  (let [source [so su] target [to tu]]
+                                    (when (and (get-in adjacency [source target])
+                                               (not (get-in before [:indexes :hierarchy source target])))
+                                      [source target]))))
+                          (affected-relationship-keys s event))]
+        (doseq [[start target] additions]
+          ;; Use the final candidate, so additions are checked together and
+          ;; paths removed by the same command do not cause false rejection.
+          (validate-hierarchy-edge! adjacency start target)))))
+
+(defn validate-concept! [c]
+  (require! (and (nonblank? (:uri c)) (nonblank? (:label c)) (nonblank? (:description c)))
+            "Concept URI, label and description must be nonblank"))
+
+(defn validate-relationship! [s e]
+  (let [source [(:source-ontology-id e) (:source-uri e)]
+        target [(:target-ontology-id e) (:target-uri e)]
+        policy (get-in s [:ontologies (:source-ontology-id e) :predicate-policies (:predicate e)])]
+    (require! (and (get-in s [:concepts source]) (get-in s [:concepts target])) "Relationship endpoints must exist")
+    (require! policy (str "Undeclared predicate: " (:predicate e)))
+    (require! (or (= (first source) (first target)) (:cross-ontology? policy))
+              "Predicate does not permit cross-ontology relationships")
+    (require! (not= source target) "Self relationships are not supported")))
+
+(defn validate-graph! [s oid before event]
+  (trace/span :ontology.trace/validate-graph
+    (let [s (indexes/ensure-indexed s)
+          e (state/event-data event)
+          imported? (= :ontology/contribution-imported (:event/type e))
+          concepts (case (:event/type e)
+                     :ontology/contribution-imported (keys (get-in e [:changes :concepts :upserts]))
+                     :ontology/concept-created [[oid (:uri e)]]
+                     :ontology/concept-updated [[oid (:uri e)]]
+                     [])
+          removed (when imported? (get-in e [:changes :concepts :removals]))
+          ;; Endpoint removal can invalidate unchanged incoming or outgoing edges.
+          ;; Select them from the prior index, then check only surviving edges.
+          dependencies (mapcat #(get-in before [:indexes :concept-edges %]) removed)
+          edges (into (set (affected-relationship-keys s event)) dependencies)]
+      (doseq [key concepts] (validate-concept! (get-in s [:concepts key])))
+      (doseq [key edges :let [edge (get-in s [:edges key])] :when edge]
+        (validate-relationship! s edge))
+      (validate-hierarchy! before s event))
+    s))
 
 (defn command-result [ctx oid request-id make-change]
-  (try
-    (when-not (tenant-scoped? ctx) (fail! ::anom/forbidden "A tenant-id is required"))
-    (let [s (state/read-state ctx)
-          command (:command ctx)
-          request-hash (digest (dissoc command :command/id :command/timestamp))
-          prior (get-in s [:requests [oid request-id]])]
-      (if prior
-        (if (= request-hash (:request-hash prior))
-          {:command-result/events [] :command-result/data (:result prior)}
-          {::anom/category ::anom/conflict ::anom/message "Idempotency key reused with different payload"})
-        (do
-          (when (and (contains? command :expected-revision)
-                     (not= (:expected-revision command) (state/revision s oid)))
-            (fail! ::anom/conflict "Stale ontology revision"))
-          (let [{:keys [type body result]} (make-change s)
-                result (assoc result :ontology-id oid :revision (inc (state/revision s oid)))
-                body (assoc body :ontology-id oid :request-id request-id :request-hash request-hash :result result)
-                tags (set (map #(vector :ontology %) (remove nil? [oid (:target-ontology-id body)])))
-                event (es/->event {:type type :tags tags :body body})
-                candidate (state/apply-event s event)]
-            (validate-graph! candidate oid)
-            {:command-result/events [event]
-             :command-result/data result
-             ;; Serialize graph mutations within this tenant. This protects
-             ;; endpoint/cycle/uniqueness checks as well as contribution revisions.
-             :command-result/cas {:types state/events
-                                  :predicate-fn #(= (:event-count s 0) (count (into [] %)))}}))))
-    (catch clojure.lang.ExceptionInfo e
-      (if (::anom/category (ex-data e)) (ex-data e)
-          {::anom/category ::anom/fault ::anom/message (.getMessage e)}))))
+  (trace/span :ontology.trace/command-handler
+    (try
+      (when-not (tenant-scoped? ctx) (fail! ::anom/forbidden "A tenant-id is required"))
+      (let [command (:command ctx)
+            request-hash (digest (dissoc command :command/id :command/timestamp))
+            cached (state/read-request ctx oid request-id)
+            s (when-not cached (state/read-state ctx))
+            prior (or cached (get-in s [:requests [oid request-id]]))]
+        (if prior
+          (if (= request-hash (:request-hash prior))
+            {:command-result/events [] :command-result/data (:result prior)}
+            {::anom/category ::anom/conflict ::anom/message "Idempotency key reused with different payload"})
+          (do
+            (when (and (contains? command :expected-revision)
+                       (not= (:expected-revision command) (state/revision s oid)))
+              (fail! ::anom/conflict "Stale ontology revision"))
+            (let [{:keys [type body result]} (make-change s)
+                  result (assoc result :ontology-id oid :revision (inc (state/revision s oid)))
+                  body (assoc body :ontology-id oid :request-id request-id :request-hash request-hash :result result)
+                  event (es/->event {:type type :tags #{} :body body})
+                  candidate (state/apply-event s event)
+                  event (assoc event :event/tags (streams/event-tags s candidate (state/event-data event)))
+                  ids (:read-ontology-ids s)]
+              (validate-graph! candidate oid s event)
+              {:command-result/events [event]
+               :command-result/data result
+               ;; A connected graph may span several ontology streams. Grain CAS
+               ;; accepts one query, so use a tenant suffix for that case.
+               :command-result/cas (cond-> {:types state/events :limit 1
+                                            :predicate-fn #(empty? (into [] (take 1) %))}
+                                     (:read-head s) (assoc :after (:read-head s))
+                                     (= 1 (count ids)) (assoc :tags #{[:ontology (first ids)]}))}))))
+      (catch clojure.lang.ExceptionInfo e
+        (if (::anom/category (ex-data e)) (ex-data e)
+            {::anom/category ::anom/fault ::anom/message (.getMessage e)})))))
 
 (defcommand :ontology create-ontology {:authorized? tenant-scoped?}
   [ctx]
@@ -114,13 +169,13 @@
     (command-result ctx ontology-id (:command/id p)
       (fn [s]
         (require-ontology! s ontology-id)
-        (let [c (some #(when (and (= ontology-id (:ontology-id %)) (= concept-id (:id %))) %)
-                      (vals (:concepts s)))
+        (let [key (first (get-in s [:indexes :concept-ids [ontology-id concept-id]]))
+              c (get-in s [:concepts key])
               changes (select-keys changes [:label :description :broader :indicators :attributes :embedding :embedding-model])]
           (when-not c (fail! ::anom/not-found "Concept not found"))
           (require! (seq changes) "No mutable fields supplied")
           {:type :ontology/concept-updated
-           :body {:ontology-id ontology-id :concept-id concept-id :changes changes
+           :body {:ontology-id ontology-id :concept-id concept-id :uri (:uri c) :changes changes
                   :updated-at (str (java.time.Instant/now))}
            :result {:concept-id concept-id :uri (:uri c)}})))))
 
@@ -160,13 +215,13 @@
 (defn- rewrite-fields [record fields rewrite]
   (reduce (fn [r k] (if (contains? r k) (update r k rewrite) r)) record fields))
 
-(defn- validate-schema! [concepts tbox abox]
+(defn- validate-schema! [concept-uris tbox abox]
   (require! (every? #{:classes :object-properties :datatype-properties} (keys tbox))
             "Unsupported TBox section")
   (doseq [[_ records] tbox]
     (require! (and (vector? records) (every? #(and (map? %) (nonblank? (:uri %))) records))
               "TBox records require a URI"))
-  (let [known (set (concat (map :uri concepts) (map :uri (:classes tbox))))
+  (let [known (into (or concept-uris #{}) (map :uri (:classes tbox)))
         known? #(or (known %) (and (string? %) (re-find #"^(?:xsd:|rdf:|rdfs:|owl:|http://www.w3.org/)" %)))]
     (doseq [property (concat (:object-properties tbox) (:datatype-properties tbox))
             reference (keep property [:domain :range :datatype])]
@@ -178,75 +233,78 @@
       (when (contains? individual :properties)
         (require! (map? (:properties individual)) "Individual properties must be a map")))))
 
+(defn prepare-schema [s candidate ontology-id rewrite tbox abox rdf-triples]
+  (trace/span :ontology.trace/schema-rdf
+    (let [schema (into {} (map (fn [[k records]]
+                                [k (mapv #(rewrite-fields % [:uri :domain :range :datatype] rewrite) records)]))
+                       (merge-with merge-records (get-in s [:tbox ontology-id] {}) (or tbox {})))
+          instances (mapv #(cond-> (rewrite-fields % [:uri :type] rewrite)
+                             (:properties %) (update :properties
+                                                    (fn [properties] (into {} (map (fn [[k v]] [(rewrite k) v])) properties))))
+                          (merge-records (get-in s [:abox ontology-id]) abox))
+          triples (mapv #(rewrite-fields % [:subject :predicate :object-uri :datatype] rewrite)
+                        (distinct (concat (get-in s [:rdf-triples ontology-id]) rdf-triples)))
+          _ (validate-schema! (get-in candidate [:indexes :concept-uris ontology-id]) schema instances)
+          result (-> candidate
+                        (assoc-in [:tbox ontology-id] (update-vals schema #(delta/ordered (delta/index %))))
+                        (assoc-in [:abox ontology-id] (delta/ordered (delta/index instances)))
+                        (assoc-in [:rdf-triples ontology-id] (vec (sort-by pr-str (set triples)))))]
+      result)))
+
 (defn prepare-contribution [s {:keys [ontology-id contribution-id source concepts relationships
                                     tbox abox resolution-policy rdf-triples] :as p}]
-  (require-ontology! s ontology-id)
-  (require! (nonblank? (:content-hash source)) "Source content hash must be nonblank")
-  (when (contains? resolution-policy :similarity-threshold)
-    (let [threshold (:similarity-threshold resolution-policy)]
-      (require! (and (number? threshold) (Double/isFinite (double threshold)) (<= 0 threshold 1))
-                "Resolution threshold must be finite and between zero and one")))
-  (rdf/validate-triples! (or rdf-triples []))
-  (doseq [individual abox :when (contains? individual :properties)]
-    (require! (map? (:properties individual)) "Individual properties must be a map"))
-  (let [recorded-at (str (java.time.Instant/now))
-        old (filterv #(= ontology-id (:ontology-id %)) (vals (:concepts s)))
-        incoming (mapv #(-> % (assoc :source-id (:source-id source))
-                             (update :entity-type (fn [t] (or t (:scope %) "Concept")))) concepts)
-        old-for-resolution (mapv #(assoc % :entity-type (or (:entity-type %) (:scope %) "Concept")) old)
-        resolution (if (:match-labels? resolution-policy)
-                     (algorithms/resolve-incremental incoming old-for-resolution (set (map :uri old))
-                                                     {:similarity-threshold (or (:similarity-threshold resolution-policy) 0.85)})
-                     {:canonical-map {} :exact-matches 0 :semantic-matches 0})
-        canonical (:canonical-map resolution)
-        existing-uris (set (map :uri old))
-        _ (when (some (fn [[uri target]] (and (existing-uris uri) (not= uri target))) canonical)
-            (fail! ::anom/conflict "Resolution would collapse distinct existing identities"))
-        rewrite #(get canonical % %)
-        incoming (mapv #(cond-> (assoc % :uri (rewrite (:uri %))
-                                        :provenance {:kind :source-extracted
-                                                     :source-reference (str (:source-id source))
-                                                     :producer (:producer source)})
-                          (contains? % :broader) (update :broader (fn [xs] (mapv rewrite xs))))
-                       (sort-by (juxt :uri #(digest (dissoc % :source-id))) incoming))
-        incoming (mapv (fn [c]
-                         (let [existing (get-in s [:concepts [ontology-id (:uri c)]])]
-                           (cond-> (assoc c :created-at (or (:created-at existing) recorded-at))
-                             existing (assoc :updated-at recorded-at)))) incoming)
-        candidate (reduce #(state/put-concept %1 ontology-id %2) s incoming)
-        candidate (reduce (fn [s e]
-                            (doseq [k [:source-ontology-id :target-ontology-id]
-                                    :when (contains? e k)]
-                              (require! (= ontology-id (get e k))
-                                        "Contributions contain local edges; use create-relationship! for cross-ontology edges"))
-                            (state/put-edge s
-                              (-> (state/edge ontology-id (rewrite (or (:subject e) (:source-uri e)))
-                                               (:predicate e) (rewrite (or (:object e) (:target-uri e))))
-                                  (merge (select-keys e [:metadata]))
-                                  (assoc :created-at recorded-at)))) candidate relationships)
-        _ (validate-graph! candidate ontology-id)
-        all-concepts (filterv #(= ontology-id (:ontology-id %)) (vals (:concepts candidate)))
-        all-edges (filterv #(= ontology-id (:source-ontology-id %)) (vals (:edges candidate)))
-        schema (into {} (map (fn [[k records]]
-                              [k (mapv #(rewrite-fields % [:uri :domain :range :datatype] rewrite) records)]))
-                     (merge-with merge-records (get-in s [:tbox ontology-id] {}) (or tbox {})))
-        instances (mapv #(cond-> (rewrite-fields % [:uri :type] rewrite)
-                           (:properties %) (update :properties
-                                                  (fn [properties] (into {} (map (fn [[k v]] [(rewrite k) v])) properties))))
-                        (merge-records (get-in s [:abox ontology-id]) abox))
-        triples (mapv #(rewrite-fields % [:subject :predicate :object-uri :datatype] rewrite)
-                      (distinct (concat (get-in s [:rdf-triples ontology-id]) rdf-triples)))
-        _ (validate-schema! all-concepts schema instances)]
-    {:type :ontology/contribution-imported
-     :body {:ontology-id ontology-id :contribution-id contribution-id :source source
-            :input (dissoc p :command/name :command/id :command/timestamp)
-            :concepts (vec (sort-by :uri all-concepts)) :relationships (vec (sort-by (comp pr-str state/edge-key) all-edges))
-            :tbox schema :abox instances
-            :rdf-triples triples
-            :canonical-map canonical :resolution (select-keys resolution [:exact-matches :semantic-matches :matches])
-            :recorded-at recorded-at}
-     :result {:contribution-id contribution-id :concept-count (count all-concepts)
-              :relationship-count (count all-edges) :canonical-map canonical}}))
+  (trace/span :ontology.trace/prepare-contribution
+    (require-ontology! s ontology-id)
+    (require! (nonblank? (:content-hash source)) "Source content hash must be nonblank")
+    (when (contains? resolution-policy :similarity-threshold)
+      (let [threshold (:similarity-threshold resolution-policy)]
+        (require! (and (number? threshold) (Double/isFinite (double threshold)) (<= 0 threshold 1))
+                  "Resolution threshold must be finite and between zero and one")))
+    (rdf/validate-triples! (or rdf-triples []))
+    (doseq [individual abox :when (contains? individual :properties)]
+      (require! (map? (:properties individual)) "Individual properties must be a map"))
+    (let [recorded-at (str (java.time.Instant/now))
+          incoming (mapv #(-> % (assoc :source-id (:source-id source))
+                               (update :entity-type (fn [t] (or t (:scope %) "Concept")))) concepts)
+          existing-uris (get-in s [:indexes :concept-uris ontology-id] #{})
+          resolution (if (:match-labels? resolution-policy)
+                       (algorithms/resolve-incremental incoming (indexes/resolution-candidates s ontology-id incoming) existing-uris
+                                                       {:similarity-threshold (or (:similarity-threshold resolution-policy) 0.85)})
+                       {:canonical-map {} :exact-matches 0 :semantic-matches 0})
+          canonical (:canonical-map resolution)
+          _ (when (some (fn [[uri target]] (and (existing-uris uri) (not= uri target))) canonical)
+              (fail! ::anom/conflict "Resolution would collapse distinct existing identities"))
+          rewrite #(get canonical % %)
+          incoming (mapv #(cond-> (assoc % :uri (rewrite (:uri %))
+                                          :provenance {:kind :source-extracted
+                                                       :source-reference (str (:source-id source))
+                                                       :producer (:producer source)})
+                            (contains? % :broader) (update :broader (fn [xs] (mapv rewrite xs))))
+                         (sort-by (juxt :uri #(digest (dissoc % :source-id))) incoming))
+          incoming (mapv (fn [c]
+                           (let [existing (get-in s [:concepts [ontology-id (:uri c)]])]
+                             (cond-> (assoc c :created-at (or (:created-at existing) recorded-at))
+                               existing (assoc :updated-at recorded-at)))) incoming)
+          candidate (reduce #(state/put-concept %1 ontology-id %2) (delta/track s) incoming)
+          candidate (reduce (fn [s e]
+                              (doseq [k [:source-ontology-id :target-ontology-id]
+                                      :when (contains? e k)]
+                                (require! (= ontology-id (get e k))
+                                          "Contributions contain local edges; use create-relationship! for cross-ontology edges"))
+                              (state/put-edge s
+                                (-> (state/edge ontology-id (rewrite (or (:subject e) (:source-uri e)))
+                                                 (:predicate e) (rewrite (or (:object e) (:target-uri e))))
+                                    (merge (select-keys e [:metadata]))
+                                    (assoc :created-at recorded-at)))) candidate relationships)
+          candidate (prepare-schema s candidate ontology-id rewrite tbox abox rdf-triples)]
+      {:type :ontology/contribution-imported
+       :body {:ontology-id ontology-id :contribution-id contribution-id :source source
+              :input (dissoc p :command/name :command/id :command/timestamp)
+              :changes (delta/changes s candidate ontology-id)
+              :canonical-map canonical :resolution (select-keys resolution [:exact-matches :semantic-matches :matches])
+              :recorded-at recorded-at}
+       :result {:contribution-id contribution-id :concept-count (count (get-in candidate [:indexes :concept-uris ontology-id]))
+                :relationship-count (count (get-in candidate [:indexes :outgoing ontology-id])) :canonical-map canonical}})))
 
 (defcommand :ontology import-contribution {:authorized? tenant-scoped?}
   [ctx]

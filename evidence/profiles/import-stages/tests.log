@@ -1,0 +1,36 @@
+
+Testing ai.obney.ontology.algorithms-test
+
+Testing ai.obney.ontology.boundary-test
+
+Testing ai.obney.ontology.delta-test
+
+Testing ai.obney.ontology.durable-test
+SLF4J(W): No SLF4J providers were found.
+SLF4J(W): Defaulting to no-operation (NOP) logger implementation
+SLF4J(W): See https://www.slf4j.org/codes.html#noProviders for further details.
+
+Testing ai.obney.ontology.indexes-test
+
+Testing ai.obney.ontology.mutation-test
+
+Testing ai.obney.ontology.profile-test
+
+Testing ai.obney.ontology.property-test
+canonical-choice {:seed 20260918, :num-tests 60, :pass? true, :time-elapsed-ms 5}
+disjoint-import-order {:seed 20260918, :num-tests 60, :pass? true, :time-elapsed-ms 372}
+literal-roundtrip {:seed 20260918, :num-tests 60, :pass? true, :time-elapsed-ms 67}
+mutation-sequences {:seed 20260918, :num-tests 60, :pass? true, :time-elapsed-ms 1248}
+source-versions {:seed 20260918, :num-tests 60, :pass? true, :time-elapsed-ms 252}
+resolution-scores {:seed 20260918, :num-tests 60, :pass? true, :time-elapsed-ms 3}
+
+Testing ai.obney.ontology.rdf-test
+
+Testing ai.obney.ontology.resolution-test
+
+Testing ai.obney.ontology.search-test
+
+Testing ai.obney.ontology.structural-test
+
+Ran 95 tests containing 683 assertions.
+0 failures, 0 errors.

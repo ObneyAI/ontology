@@ -16,7 +16,7 @@
 
 (let [command-result commands/command-result
       mutants [{:name :skip-graph-validation :test #'boundary/manual-hierarchy-maintains-inverses-and-rejects-cycles
-                :replace {#'commands/validate-graph! (fn [s _] s)}}
+                :replace {#'commands/validate-graph! (fn [s & _] s)}}
                {:name :drop-relationship-views :test #'boundary/declared-inverse-produces-reverse-predicate
                 :replace {#'state/relationships (fn [_ _] [])}}
                {:name :ignore-request-payload :test #'mutations/every-mutation-retries-original-result-after-graph-advances
