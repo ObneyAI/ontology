@@ -401,7 +401,8 @@
    Args:
      graph: Graph map with :nodes and :edges
      seed-uris: Collection of starting URIs
-     config: Optional traversal config map
+     config: Optional traversal config map. A nil :min-activation disables
+           score pruning; a nil :max-results disables result truncation.
 
    Returns:
      Vector of {:uri :score :path :depth :source-seed :edge-type}"
@@ -411,7 +412,6 @@
         (merge default-traversal-config config)
 
         edges (:edges graph)
-        seed-set (set seed-uris)
 
         ;; Activation scores and paths for each node
         activations (atom {})
@@ -440,8 +440,9 @@
                       :when (or bidirectional (not reverse))]
                 (let [new-activation (* activation weight (Math/pow decay depth))
                       current-activation (get @activations to 0.0)]
-                  (when (and (> new-activation min-activation)
-                             (> new-activation current-activation))
+                  (when (and (or (nil? min-activation) (> new-activation min-activation))
+                             (or (not (contains? @activations to))
+                                 (> new-activation current-activation)))
                     (swap! activations assoc to new-activation)
                     (swap! paths assoc to {:path (conj path to)
                                            :depth (inc depth)
@@ -460,8 +461,8 @@
                    :depth (or depth 0)
                    :source-seed source-seed
                    :edge-type edge-type})))
-         (sort-by :score >)
-         (take max-results)
+         (sort-by (juxt (comp - :score) :uri))
+         (take (or max-results Long/MAX_VALUE))
          vec)))
 
 ;; =============================================================================

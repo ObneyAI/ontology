@@ -87,3 +87,22 @@
         (when-not (h/anomaly? result)
           (is (every? (set (rdf/parse-ntriples (:ttl-output (o/export-snapshot ctx copy))))
                       (rdf/parse-ntriples exported))))))))
+
+(deftest rdf-history-retains-parsed-input-before-resolution
+  (h/with-context [ctx]
+    (let [oid (h/graph ctx)
+          _ (h/ok! (o/create-concept! ctx oid
+                     (assoc (h/concept "urn:canonical") :label "Shared" :entity-type "Concept")))
+          content "<urn:alias> <http://www.w3.org/2000/01/rdf-schema#label> \"Shared\" ."
+          result (h/ok! (o/import-rdf! ctx oid
+                          (assoc (dissoc (h/request ctx oid []) :concepts)
+                                 :content content :resolution-policy {:match-labels? true})))
+          record (first (o/get-contributions ctx oid))]
+      (is (= result (:result record)))
+      (is (= "urn:canonical" (get-in record [:canonical-map "urn:alias"])))
+      (is (= "urn:alias" (get-in record [:input :concepts 0 :uri])))
+      (is (= (rdf/parse-ntriples content) (get-in record [:input :rdf-triples])))
+      (is (not (contains? (:input record) :content)))
+      (is (not (contains? record :request-hash)))
+      (is (= (:canonical-map record) (o/get-canonical-mappings ctx oid)))
+      (is (seq (get-in record [:resolution :matches]))))))

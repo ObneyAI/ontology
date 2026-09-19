@@ -33,6 +33,8 @@
       (let [opts {:query-text "needle" :embedding-model "fixture" :embed-query (constantly [1.0 0.0])}]
         (is (= "urn:lexical" (:uri (first (o/search ctx oid (assoc opts :weights {:lexical 2.0 :embedding 0.1}))))))
         (is (= "urn:vector" (:uri (first (o/search ctx oid (assoc opts :weights {:lexical 0.0 :embedding 1.0}))))))
+        (is (= (o/search ctx oid opts)
+               (o/search ctx oid (assoc opts :weights {:lexical 1.0 :graph 1.0 :embedding 1.0}))))
         (is (every? #(Double/isFinite (:score %)) (o/search ctx oid opts)))))))
 
 (deftest invalid-search-arguments-are-rejected
@@ -62,3 +64,21 @@
       (let [result (o/search ctx oid {:query-text "unmatched" :embedding-model "fixture" :embed-query (constantly [1.0e300 1.0e300])})]
         (is (= ["urn:large"] (mapv :uri result)))
         (is (every? #(Double/isFinite (:score %)) result))))))
+
+(deftest graph-search-honors-large-limits-and-deep-traversal
+  (h/with-context [ctx]
+    (let [oid (h/graph ctx)
+          seeds (mapv #(format "urn:seed:%03d" %) (range 105))
+          chain (mapv #(str "urn:chain:" %) (range 70))]
+      (h/ok! (o/import-contribution! ctx oid
+               (assoc (h/request ctx oid (mapv h/concept (concat seeds chain)))
+                      :relationships (mapv (fn [[a b]] {:subject a :object b :predicate "skos:broader"})
+                                           (partition 2 1 chain)))))
+      (is (= (subvec seeds 0 10) (mapv :uri (o/search ctx oid {:seed-uris seeds}))))
+      (is (= (set (take 3 chain))
+             (set (map :uri (o/search ctx oid {:seed-uris [(first chain)]})))))
+      (is (= seeds (mapv :uri (o/search ctx oid {:seed-uris (reverse seeds) :max-depth 0 :limit 105}))))
+      (is (= (subvec seeds 0 3) (mapv :uri (o/search ctx oid {:seed-uris seeds :max-depth 0 :limit 3}))))
+      (doseq [depth [0 4 6 69]]
+        (let [results (o/search ctx oid {:seed-uris [(first chain)] :max-depth depth :limit 100})]
+          (is (= (set (take (inc depth) chain)) (set (map :uri results)))))))))

@@ -320,3 +320,17 @@
           (is (= (o/get-concepts ctx filters) result))))
       (is (= :cognitect.anomalies/forbidden
              (:cognitect.anomalies/category (o/get-concept-map (dissoc ctx :tenant-id) {:ontology-id oid})))))))
+
+(deftest ontology-initializes-default-and-supplied-predicate-policies
+  (h/with-context [ctx]
+    (let [oid (h/graph ctx)
+          defaults {"skos:broader" {:hierarchical? true :inverse "skos:narrower"}
+                    "skos:narrower" {:inverse "skos:broader"}
+                    "skos:related" {:symmetric? true}
+                    "owl:sameAs" {:symmetric? true}
+                    "rdfs:subClassOf" {:hierarchical? true}}
+          supplied {"skos:related" {:symmetric? false} "urn:custom" {:cross-ontology? true}}
+          custom (:ontology-id (h/ok! (o/create-ontology! ctx {:name "Custom" :predicate-policies supplied})))]
+      (is (= defaults (:predicate-policies (o/get-ontology ctx oid))))
+      (is (= (merge defaults supplied) (:predicate-policies (o/get-ontology ctx custom))))
+      (is (= 1 (o/get-revision ctx custom))))))

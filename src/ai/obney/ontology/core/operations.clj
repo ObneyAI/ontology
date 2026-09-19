@@ -84,9 +84,8 @@
        (state/concepts s {:ids ids :scope scope :broader-uri broader-uri})))))
 (defn get-concept [ctx oid concept-id]
   (let [oid (state/normalize-id oid)
-        s (state/read-state (assoc ctx :ontology/ids #{oid}))]
-    (when-let [key (first (get-in s [:indexes :concept-ids [oid concept-id]]))]
-      (state/concept-view s key))))
+        s (state/point-id-state ctx oid concept-id)]
+    (state/concept-view s (:concept-key s))))
 (defn get-concept-by-uri [ctx oid uri]
   (when-not oid (errors/fail! :cognitect.anomalies/incorrect "Concept lookup requires ontology-id"))
   (let [oid (state/normalize-id oid)]
@@ -159,7 +158,8 @@
                      (sort-by (juxt (comp - :score) :uri)))
         graph (when (seq seed-uris)
                 (graph/bfs-spreading-activation (graph/concepts->graph by-uri)
-                                                     (filter by-uri seed-uris) {:max-depth max-depth}))
+                                                     (filter by-uri seed-uris)
+                                                     {:max-depth max-depth :min-activation nil :max-results nil}))
         query-vector (when (and embed-query query-text) (embed-query query-text))
         embeddings (when (and query-vector (some? embedding-model))
                      (->> cs

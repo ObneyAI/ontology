@@ -8,7 +8,9 @@ value ConceptDefinition {
     label: String
     description: String
     scope: Any?
-    broader_uris: List<String>
+    alt_labels: List<String>?
+    entity_type: String?
+    broader_uris: List<String>?
     indicators: List<String>?
     provenance: Any?
     attributes: Any?
@@ -17,6 +19,10 @@ value ConceptDefinition {
 }
 
 value ConceptChanges {
+    scope: Any?
+    alt_labels: List<String>?
+    provenance: Any?
+    entity_type: String?
     label: String?
     description: String?
     broader_uris: List<String>?
@@ -26,7 +32,38 @@ value ConceptChanges {
     embedding_model: Any?
 }
 
-value RelationshipMetadata { source_reference: String? }
+value ConceptSelection {
+    ontology_identifier: String?
+    ontology_identifiers: List<String>?
+    scope: Any?
+    broader_uri: String?
+}
+
+value SearchRequest {
+    query_text: String?
+    seed_uris: List<String>?
+    limit: Integer?
+    max_depth: Integer?
+    weights: Any?
+    embed_query: Any?
+    embedding_model: Any?
+}
+
+value ResolutionMatch {
+    source_uri: String
+    target_uri: String
+    match_type: String
+    similarity: Decimal
+}
+
+value ResolutionSummary {
+    exact_matches: Integer
+    semantic_matches: Integer
+    matches: List<ResolutionMatch>?
+}
+
+-- Relationship metadata is opaque caller-owned data.
+value RelationshipMetadata { data: Any? }
 
 value ContributionRequest {
     source_identifier: String
@@ -34,11 +71,12 @@ value ContributionRequest {
     idempotency_key: String
     expected_revision: Integer?
     concepts: List<ConceptDefinition>
-    relationships: Any
-    schema: Any
-    instances: Any
-    producer: Any
-    resolution_policy: Any
+    relationships: Any?
+    schema: Any?
+    instances: Any?
+    rdf_triples: Any?
+    producer: Any?
+    resolution_policy: Any?
 }
 
 contract CustomOntologyMutation {
@@ -66,14 +104,27 @@ contract ScopedConceptLookup {
     get_ontology: (tenant_id: String, ontology_identifier: String) -> Ontology?
     list_ontologies: (tenant_id: String) -> List<Ontology>
     ontology_exists: (tenant_id: String, ontology_identifier: String) -> Boolean
-    get_concept: (ontology: Ontology, uri: String) -> Concept?
-    list_concepts: (ontology: Ontology) -> List<Concept>
-    search: (ontology: Ontology, query: String, limit: Integer) -> Any
-    export_snapshot: (ontology: Ontology, revision: Integer) -> Any
+    get_revision: (tenant_id: String, ontology_identifier: String) -> Integer?
+    get_concept: (ontology: Ontology, concept_identifier: String) -> Concept?
+    get_concept_by_uri: (ontology: Ontology, uri: String) -> Concept?
+    list_concepts: (tenant_id: String, selection: ConceptSelection?) -> List<Concept>
+    get_concept_map: (tenant_id: String, selection: ConceptSelection?) -> Any
+    get_relationships: (ontology: Ontology) -> List<ConceptRelationship>
+    get_contributions: (ontology: Ontology) -> Any
+    get_sources: (ontology: Ontology) -> List<RegisteredSource>
+    get_canonical_mappings: (ontology: Ontology) -> Any
+    search: (ontology: Ontology, request: SearchRequest) -> Any
+    export_snapshot: (ontology: Ontology, revision: Integer?) -> Any
 
     @invariant QualifiedIdentityRequired
-        -- Every concept lookup requires both tenant and ontology identity.
+        -- Individual concept lookups require tenant and ontology identity, plus
+        -- either a concept UUID or URI. Both return the same concept view.
         -- URI-only global lookup is not part of the public graph contract.
+        -- Concept UUID, ontology identity and URI are immutable across updates.
+        -- Collection reads may select one ontology, multiple ontologies or the
+        -- whole tenant. The single and multiple selectors are mutually exclusive;
+        -- an empty multiple selection returns no records. Scope and direct-parent
+        -- filters are optional. Map results use qualified ontology/URI keys.
 
     @invariant ScopedIncrementalReads
         -- Point lookup reads events affecting the qualified concept and the
@@ -90,14 +141,24 @@ contract ScopedConceptLookup {
         -- Traversal depth is a nonnegative integer and the result limit is a
         -- positive integer. Signal weights are finite and nonnegative.
         -- Lexical matching is case-insensitive; equal ranking scores use URI
-        -- order. Graph-only search includes seeds through the requested depth.
+        -- order. Seeds and locally reachable broader, narrower and related
+        -- concepts through the requested depth are candidates before the public
+        -- result limit is applied. No hidden candidate cap or activation cutoff
+        -- removes otherwise reachable concepts. Unknown or foreign seeds are ignored.
+        -- Omitted limit and depth use configured defaults. Supplied signal weights
+        -- override the default weight independently for lexical, graph and embedding.
+        -- Optional query embedding providers are called only with supplied query text;
+        -- provider exceptions propagate. Ranking combines signal ranks, not probabilities.
         -- Vector comparison requires matching named models, equal dimensions,
         -- finite components and nonzero norms. Invalid vectors contribute no
         -- ranking signal; large finite vectors must not overflow comparison.
 
     @invariant ScopedSearchAndExport
-        -- Lookup, traversal, search, sources, mappings and snapshots include only
-        -- the requested tenant and ontology. Search returns qualified identities.
+        -- Reads never cross tenant boundaries. Concept collections follow the
+        -- selected ontology scope; search returns identities in its requested graph.
+        -- Relationship views and snapshots may include permitted links incident to
+        -- another ontology in the same tenant, interpreted using the origin policy.
+        -- Source and contribution history and canonical mappings are graph-scoped.
         -- No optional search provider is required for graph creation or retrieval.
         -- Missing single-resource lookups and revisions return no value.
         -- Explicit collection and search scopes must exist; a missing graph
@@ -105,6 +166,7 @@ contract ScopedConceptLookup {
         -- Existing graphs with no matches return empty collections.
         -- Export of a revision includes concepts, edges, schema and instances
         -- at that revision, and replay reproduces the same graph and provenance.
+        -- Omitted revision selects the current graph revision.
 }
 
 contract GraphContributions {
@@ -159,8 +221,13 @@ contract GraphContributions {
         -- are not reclassified as parsing failures.
 
     @invariant OpaqueProducerProvenance
-        -- Retain the original submitted contribution separately from merged
-        -- graph state so resolution decisions can be reconstructed.
+        -- Retain the original structured contribution separately from merged
+        -- graph state so resolution decisions can be reconstructed. RDF imports
+        -- retain the parsed contribution before canonicalization, not source text.
+        -- Public contribution history exposes identity, ontology, source, input,
+        -- canonical map, resolution evidence, original result and recording time.
+        -- Retry digests remain internal. Accumulated canonical mappings contain
+        -- URI pairs; match types and scores belong to contribution resolution evidence.
         -- Retain source ID, content hash, contribution identity, producer name
         -- and version, optional model metadata and opaque evidence references.
         -- Never interpret or dereference a producer's execution history.
@@ -176,15 +243,19 @@ entity Ontology {
     revision: Integer
     created_at: Timestamp
     concepts: Concept with ontology = this
+    predicate_policies: PredicatePolicy with ontology = this
 }
 
 entity Concept {
+    concept_id: String
     ontology: Ontology
     uri: String
     label: String
     description: String
     scope: Any?
     provenance: Any?
+    alt_labels: List<String>?
+    entity_type: Any?
     broader_uris: List<String>
     indicators: List<String>?
     attributes: Any?
@@ -209,16 +280,15 @@ entity CanonicalMapping {
     ontology: Ontology
     source_uri: String
     canonical_uri: String
-    match_type: String
-    similarity: Decimal
 }
 
 entity PredicatePolicy {
     ontology: Ontology
     predicate: String
     cross_ontology: Boolean
+    symmetric: Boolean
     inverse: String?
-    acyclic: Boolean
+    hierarchical: Boolean
 }
 
 entity RegisteredSource {
@@ -234,23 +304,43 @@ entity Contribution {
     idempotency_key: String
     request_digest: String
     revision: Integer
+    input: Any
+    canonical_map: Any
+    resolution: ResolutionSummary
     result: Any
+    recorded_at: Timestamp
+}
+
+config {
+    search_limit: Integer = 10
+    search_max_depth: Integer = 2
+    search_signal_weight: Decimal = 1.0
 }
 
 rule InitializeOntology {
-    when: InitializeOntologyRequested(consumer, name, scope, description, base_uri)
+    when: InitializeOntologyRequested(consumer, name, scope, description, base_uri, predicate_policies)
     requires: nonblank(name)
     let ontology_id = new_identifier()
-    ensures: Ontology.created(
-        tenant_id: consumer.tenant_id,
-        ontology_id: ontology_id,
-        name: name,
-        scope: scope,
-        description: description,
-        base_uri: base_uri,
-        revision: 1,
-        created_at: now
-    )
+    ensures:
+        let ontology = Ontology.created(
+            tenant_id: consumer.tenant_id,
+            ontology_id: ontology_id,
+            name: name,
+            scope: scope,
+            description: description,
+            base_uri: base_uri,
+            revision: 1,
+            created_at: now
+        )
+        for policy in initial_predicate_policies(predicate_policies):
+            PredicatePolicy.created(ontology: ontology, predicate: policy_name(policy),
+                cross_ontology: permits_cross_ontology(policy), symmetric: is_symmetric(policy),
+                inverse: inverse_predicate(policy), hierarchical: is_hierarchical(policy))
+    @guidance
+        -- Initial policies combine supplied policies with defaults. skos:broader
+        -- is hierarchical with inverse skos:narrower; skos:narrower has inverse
+        -- skos:broader. skos:related and owl:sameAs are symmetric;
+        -- rdfs:subClassOf is hierarchical. Supplied policies override defaults.
 }
 
 rule AddConcept {
@@ -259,17 +349,20 @@ rule AddConcept {
     requires: nonblank(definition.label)
     requires: nonblank(definition.description)
     requires: ontology.concepts.none(concept => concept.uri = definition.uri)
-    requires: definition.broader_uris.all(uri => ontology.concepts.any(concept => concept.uri = uri))
+    requires: definition.broader_uris = null or definition.broader_uris.all(uri => ontology.concepts.any(concept => concept.uri = uri))
     requires: hierarchy_definition_is_valid(ontology, definition)
 
     ensures: Concept.created(
+        concept_id: new_identifier(),
         ontology: ontology,
         uri: definition.uri,
         label: definition.label,
         description: definition.description,
         scope: definition.scope,
         provenance: definition.provenance,
-        broader_uris: definition.broader_uris,
+        alt_labels: definition.alt_labels,
+        entity_type: definition.entity_type,
+        broader_uris: definition.broader_uris ?? [],
         indicators: definition.indicators,
         attributes: definition.attributes,
         embedding: definition.embedding,
@@ -289,6 +382,14 @@ rule UpdateConcept {
     requires: changes.broader_uris = null or changes.broader_uris.all(uri => ontology.concepts.any(candidate => candidate.uri = uri))
     requires: updated_hierarchy_is_valid(ontology, concept, changes)
     ensures:
+        if changes.scope != null:
+            concept.scope = changes.scope
+        if changes.alt_labels != null:
+            concept.alt_labels = changes.alt_labels
+        if changes.provenance != null:
+            concept.provenance = changes.provenance
+        if changes.entity_type != null:
+            concept.entity_type = changes.entity_type
         if changes.label != null:
             concept.label = changes.label
         if changes.description != null:
@@ -305,14 +406,19 @@ rule UpdateConcept {
             concept.embedding_model = changes.embedding_model
         concept.updated_at = now
     ensures: ontology.revision = ontology.revision + 1
+    @guidance
+        -- Supplied values replace entire fields, including maps and lists;
+        -- omitted fields remain unchanged. Empty parent lists remove parents.
+        -- Scope and entity type changes refresh matching groups; alternate label
+        -- changes replace prior aliases used for resolution.
 }
 
 rule RegisterPredicate {
-    when: PredicateRegistrationRequested(ontology, predicate, cross_ontology, inverse, acyclic)
+    when: PredicateRegistrationRequested(ontology, predicate, cross_ontology, symmetric, inverse, hierarchical)
     requires: nonblank(predicate)
     requires: registered_policy(ontology, predicate) = null
     ensures: PredicatePolicy.created(ontology: ontology, predicate: predicate,
-        cross_ontology: cross_ontology, inverse: inverse, acyclic: acyclic)
+        cross_ontology: cross_ontology, symmetric: symmetric, inverse: inverse, hierarchical: hierarchical)
     ensures: ontology.revision = ontology.revision + 1
 }
 
@@ -348,7 +454,9 @@ rule ImportContribution {
         source: source_version(ontology, request.source_identifier, request.content_hash),
         idempotency_key: request.idempotency_key,
         request_digest: contribution_digest(request),
-        revision: ontology.revision + 1, result: merged)
+        revision: ontology.revision + 1,
+        input: request, canonical_map: resolved_mapping(merged),
+        resolution: resolution_summary(merged), result: import_result(merged), recorded_at: now)
     ensures: CanonicalGraphCommitted(ontology: ontology, merged: merged)
     ensures: ontology.revision = ontology.revision + 1
 }
@@ -368,16 +476,21 @@ rule RejectContribution {
 }
 
 rule SearchGraph {
-    when: GraphSearchRequested(ontology, query, limit)
+    when: GraphSearchRequested(ontology, request)
+    let limit = request.limit ?? config.search_limit
+    let max_depth = request.max_depth ?? config.search_max_depth
     requires: limit > 0
-    ensures: GraphSearchCompleted(ontology: ontology, results: scoped_search(ontology, query, limit))
+    requires: max_depth >= 0
+    ensures: GraphSearchCompleted(ontology: ontology,
+        results: scoped_search(ontology, request, limit, max_depth, config.search_signal_weight))
 }
 
 rule ExportGraph {
     when: GraphExportRequested(ontology, revision)
-    requires: revision >= 1 and revision <= ontology.revision
-    ensures: GraphSnapshotReturned(ontology: ontology, revision: revision,
-        snapshot: replay_and_export(ontology, revision))
+    let selected_revision = revision ?? ontology.revision
+    requires: selected_revision >= 1 and selected_revision <= ontology.revision
+    ensures: GraphSnapshotReturned(ontology: ontology, revision: selected_revision,
+        snapshot: replay_and_export(ontology, selected_revision))
 }
 
 invariant ConceptUrisAreUniqueWithinOntology {
@@ -393,8 +506,9 @@ invariant RelationshipEdgesAreUnique {
 }
 
 invariant ResolutionScoresAreBounded {
-    for mapping in CanonicalMappings:
-        mapping.similarity >= 0 and mapping.similarity <= 1
+    for contribution in Contributions:
+        for match in contribution.resolution.matches:
+            match.similarity >= 0 and match.similarity <= 1
 }
 
 invariant TenantQualifiedRelationships {
@@ -412,13 +526,13 @@ invariant SourceVersionsAreScoped {
 surface OntologyGraph {
     facing consumer: OntologyConsumer
     provides:
-        InitializeOntologyRequested(consumer, name, scope, description, base_uri)
+        InitializeOntologyRequested(consumer, name, scope, description, base_uri, predicate_policies)
         ConceptCreationRequested(ontology, definition)
         ConceptUpdateRequested(ontology, concept, changes)
         RelationshipCreationRequested(source, target, predicate, metadata)
-        PredicateRegistrationRequested(ontology, predicate, cross_ontology, inverse, acyclic)
+        PredicateRegistrationRequested(ontology, predicate, cross_ontology, symmetric, inverse, hierarchical)
         ContributionImportRequested(ontology, request)
-        GraphSearchRequested(ontology, query, limit)
+        GraphSearchRequested(ontology, request)
         GraphExportRequested(ontology, revision)
     exposes:
         Ontology
@@ -426,7 +540,15 @@ surface OntologyGraph {
         ConceptRelationship
         PredicatePolicy
         RegisteredSource
-        Contribution
+        for contribution in Contributions where contribution.ontology.tenant_id = consumer.tenant_id:
+            contribution.idempotency_key
+            contribution.ontology
+            contribution.source
+            contribution.input
+            contribution.canonical_map
+            contribution.resolution
+            contribution.result
+            contribution.recorded_at
         CanonicalMapping
     contracts:
         fulfils CustomOntologyMutation

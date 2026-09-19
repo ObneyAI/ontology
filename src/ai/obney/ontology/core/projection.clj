@@ -66,8 +66,10 @@
              ;; identity. Put the complete namespace digest in its model name.
              name (str model "/" (digest [(store-key ctx) (:tenant-id ctx) queries options]))
              lock (nth locks (mod (hash name) (count locks)))
-             reducer (if-let [key (:concept-key options)]
-                       (fn [s e] (reducer-fn s (assoc e :projection/concept-key key))) reducer-fn)]
+             reducer (if (seq options)
+                       (fn [s e] (reducer-fn s (assoc e :projection/options options
+                                                     :projection/concept-key (:concept-key options))))
+                       reducer-fn)]
          ;; Serialize same-key updates so a slower caller cannot overwrite a
          ;; newer watermark in Grain's process-global L1.
          (locking lock

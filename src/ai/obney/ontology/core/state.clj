@@ -196,6 +196,19 @@
       (select-keys s [:edges]))))
 (defreadmodel :ontology.graph concept {:events events :version 2}
   [s e] (view-event s e (:projection/concept-key e)))
+(defreadmodel :ontology.graph concept-by-id {:events events :version 1}
+  [s event]
+  (let [{:keys [ontology-id concept-id]} (:projection/options event)
+        e (event-data event)
+        key (or (:concept-key s)
+                (when (and (= :ontology/concept-created (:event/type e))
+                           (= ontology-id (:ontology-id e)) (= concept-id (:concept-id e)))
+                  [ontology-id (:uri e)])
+                (when (= :ontology/contribution-imported (:event/type e))
+                  (some (fn [[[oid _ :as key] c]]
+                          (when (and (= oid ontology-id) (= concept-id (:concept-id c))) key))
+                        (get-in e [:changes :concepts :upserts]))))]
+    (if key (assoc (view-event s event key) :concept-key key) s)))
 (defreadmodel :ontology.graph relationships {:events events :version 2}
   [s e] (view-event s e nil))
 
@@ -230,6 +243,11 @@
                               [{:types events :tags #{(streams/concept-tag oid uri)}}]
                               {:concept-key [oid uri]})]
     (if (get-in s [:concepts [oid uri]]) (with-policies ctx s #{oid} nil) s)))
+(defn point-id-state [ctx oid concept-id]
+  (let [s (projection/project ctx :ontology.graph/concept-by-id
+                              [{:types events :tags #{[:ontology oid] [:concept-id concept-id]}}]
+                              {:ontology-id oid :concept-id concept-id})]
+    (if (get-in s [:concepts (:concept-key s)]) (with-policies ctx s #{oid} nil) s)))
 (defn relationship-state [ctx oid]
   (with-policies ctx
     (projection/project ctx :ontology.graph/relationships

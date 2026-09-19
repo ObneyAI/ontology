@@ -156,6 +156,8 @@
                                          :target-ontology-id b :target-uri "urn:b" :predicate "urn:forward"}))
       (is (= #{[a "urn:a"]} (get-in (o/get-concept-by-uri ctx b "urn:b") [:relations "urn:back"])))
       (is (= #{"urn:forward" "urn:back"} (set (map :predicate (o/get-relationships ctx b)))))
+      (let [concept (o/get-concept-by-uri ctx b "urn:b")]
+        (is (= concept (o/get-concept ctx b (:concept-id concept)))))
       (is (= [(o/get-concept-by-uri ctx b "urn:b")] (o/get-concepts ctx {:ontology-id b}))))))
 
 (deftest independent-ontology-writes-do-not-conflict
@@ -171,3 +173,44 @@
                 right (future (o/create-concept! ctx b (h/concept "urn:right")))]
             (is (not (h/anomaly? (deref left 15000 {:cognitect.anomalies/category :timeout}))))
             (is (not (h/anomaly? (deref right 15000 {:cognitect.anomalies/category :timeout}))))))))))
+
+(deftest uuid-point-streams-are-scoped-incremental-and-replayable
+  (doseq [backend [:memory :sqlite]]
+    (let [file (when (= backend :sqlite) (durable/temp-db))
+          base (if file {:event-store (durable/open-store file) :tenant-id (random-uuid)} (h/context))]
+      (try
+        (let [oid (h/graph base) other (h/graph base)
+              manual (h/add! base oid "urn:manual")
+              _ (h/ok! (o/import-contribution! base oid
+                        (h/request base oid [(h/concept "urn:imported") (h/concept "urn:noise")])))
+              imported (o/get-concept-by-uri base oid "urn:imported")
+              [ctx reads] (observed base)]
+          (doseq [c [manual imported]]
+            (let [cid (:concept-id c) uri (:uri c)]
+              (reset! reads [])
+              (is (= uri (:uri (o/get-concept ctx oid cid))))
+              (is (every? (fn [e] (or (contains? state/policy-events (:event/type e))
+                                     (contains? (:event/tags e) [:concept-id cid]))) (consumed reads)))
+              (is (every? (fn [q] (or (= state/policy-events (:types q))
+                                     (= #{[:ontology oid] [:concept-id cid]} (:tags q)))) (query-maps reads)))
+              (reset! reads [])
+              (o/get-concept ctx oid cid)
+              (is (empty? (consumed reads)))
+              (h/ok! (o/update-concept! base oid cid {:changes {:label "Updated"}}))
+              (h/add! base other (str "urn:noise:" uri))
+              (reset! reads [])
+              (is (= "Updated" (:label (o/get-concept ctx oid cid))))
+              (is (= [:ontology/concept-updated] (mapv :event/type (consumed reads))))
+              (is (nil? (o/get-concept ctx other cid)))
+              (is (nil? (o/get-concept (assoc ctx :tenant-id (random-uuid)) oid cid)))
+              (is (= (o/get-concept-by-uri base oid uri) (o/get-concept ctx oid cid)))))
+          (h/ok! (o/update-concept! base oid (:concept-id imported) {:changes {:broader ["urn:manual"]}}))
+          (is (= #{"urn:imported"} (:narrower (o/get-concept ctx oid (:concept-id manual)))))
+          (h/ok! (o/update-concept! base oid (:concept-id imported) {:changes {:broader []}}))
+          (is (= #{} (:narrower (o/get-concept ctx oid (:concept-id manual)))))
+          (h/with-context [fresh]
+            (h/replay! base fresh)
+            (doseq [c [manual imported]]
+              (is (= (o/get-concept base oid (:concept-id c))
+                     (o/get-concept fresh oid (:concept-id c)))))))
+        (finally (es/stop (:event-store base)) (when file (durable/cleanup file)))))))
