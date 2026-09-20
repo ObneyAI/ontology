@@ -321,7 +321,7 @@ clojure -M:test
 clojure -M:test ai.obney.ontology.rdf-test
 ```
 
-The suite covers public contracts, graph algorithms, property tests, and SQLite
+The suite covers public contracts, graph algorithms, [property tests](docs/PROPERTY-TESTS.md), and SQLite
 persistence, replay, and concurrent writes. Additional verification requires
 Python 3 and the Allium CLI:
 
