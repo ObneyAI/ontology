@@ -162,7 +162,7 @@ def publish(root, control_path, run, dest, pilot):
         "",
         f"This campaign spent ${sum(costs.values()):.4f} on demand, including ${costs['control']:.4f} to update the control and ${costs['development_alternatives']:.4f} for the alternative development reader. The selected reader and its judge cost ${costs['routed_reader']:.4f} and ${costs['routed_judge']:.4f}, respectively. These incremental charges reuse the existing retrieval, prior answers and competitor verdicts.",
         "",
-        "[Per-question answers and source spans](results.json) · [Earlier 434/500 run](../longmemeval-s-session-reader/report.md)",
+        "[Per-question answers and source spans](results.json) · [Earlier 434/500 run](../longmemeval-s-session-reader/results.json)",
     ]
     (dest / "report.md").write_text("\n".join(lines) + "\n")
     print(summary["All questions"], costs)

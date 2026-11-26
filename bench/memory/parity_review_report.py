@@ -150,7 +150,7 @@ def publish(root, baseline, review, decisions, dest):
         "",
         f"This review spent ${sum(costs.values()):.4f} on demand. Total incremental charges for the control, reader comparison and review experiments were ${campaign:.4f}. These totals exclude previously paid ingestion, retrieval and comparison runs.",
         "",
-        "[Review decisions and changed answers](review.json) · [Original routed answers, comparison and source spans](report.md) · [Supermemory’s published runs](https://supermemory.ai/research/runs/longmemeval/)",
+        "[Review decisions and changed answers](review.json) · [Original routed answers, comparison and source spans](results.json) · [Supermemory’s published runs](https://supermemory.ai/research/runs/longmemeval/)",
     ]
     (dest / "review.md").write_text("\n".join(lines) + "\n")
     print(summary["All questions"], coverage, campaign)

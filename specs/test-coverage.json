@@ -975,7 +975,7 @@
         "ai.obney.ontology.boundary-test/declarative-predicate-policy-has-no-agent-vocabulary",
         "ai.obney.ontology.boundary-test/model-free-search-stays-scoped"
       ],
-      "review": "Tests run with standalone deps and real Grain store, without ORC/model workflow/provider; loaded namespaces are checked for orchestration components."
+      "review": "Tests exercise declarative predicate policies and graph-scoped lexical search using only a Grain event store and tenant context."
     },
     "prose.ScopedIncrementalReads": {
       "tests": [

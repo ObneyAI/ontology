@@ -1,4 +1,0 @@
-WARNING: sequence already refers to: #'clojure.core/sequence in namespace: ai.obney.orc.orc-service.core.dsl, being replaced by: #'ai.obney.orc.orc-service.core.dsl/sequence
-WARNING: sequence already refers to: #'clojure.core/sequence in namespace: ai.obney.orc.orc-service.interface, being replaced by: #'ai.obney.orc.orc-service.interface/sequence
-WARNING: run! already refers to: #'clojure.core/run! in namespace: ai.obney.orc.ontology.test-support.c2a-live-verify, being replaced by: #'ai.obney.orc.ontology.test-support.c2a-live-verify/run!
-{:total 76, :failed 0}

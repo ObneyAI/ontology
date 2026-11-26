@@ -1,7 +1,0 @@
-WARNING: sequence already refers to: #'clojure.core/sequence in namespace: ai.obney.orc.orc-service.core.dsl, being replaced by: #'ai.obney.orc.orc-service.core.dsl/sequence
-WARNING: sequence already refers to: #'clojure.core/sequence in namespace: ai.obney.orc.orc-service.interface, being replaced by: #'ai.obney.orc.orc-service.interface/sequence
-
-Testing ai.obney.orc.ontology.contribution-integration-test
-
-Ran 3 tests containing 24 assertions.
-0 failures, 0 errors.

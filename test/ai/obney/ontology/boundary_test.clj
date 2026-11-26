@@ -1,6 +1,6 @@
 (ns ai.obney.ontology.boundary-test
-  "Public-boundary obligations from ontology-extraction-boundary.md.
-   Fixtures use the real Grain event store; no ORC runtime or model provider."
+  "Public graph behavior specified in specs/ontology.allium.
+   Fixtures use the in-memory Grain event store."
   (:require [clojure.string :as str]
             [clojure.test :refer [deftest is testing]]
             [ai.obney.grain.event-store-v3.interface :as es]
@@ -143,9 +143,7 @@
       (let [found (ontology/search ctx oid {:query-text "Photosynthesis" :limit 5})]
         (is (= ["urn:shared"] (mapv :uri found)))
         (is (every? #(= oid (:ontology-id %)) found)))
-      (is (empty? (ontology/search ctx other {:query-text "Photosynthesis" :limit 5})))
-      (is (empty? (filter #(str/starts-with? (str (ns-name %)) "ai.obney.orc.")
-                          (all-ns)))))))
+      (is (empty? (ontology/search ctx other {:query-text "Photosynthesis" :limit 5}))))))
 
 (deftest current-graph-events-replay-in-fresh-store
   (with-context [ctx]

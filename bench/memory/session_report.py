@@ -94,7 +94,7 @@ def publish(root, run, dest):
             "",
             f"On-demand reader charges were ${reader:.4f} and judging cost ${judge:.4f}, totaling ${reader + judge:.4f}. This experiment reused the retrieval artifacts and competitor judgments. The revised reader requires no separate evidence-selection inference call.",
             "",
-            "[Per-question evidence and scores](results.json) · [Previous full comparison](../longmemeval-s-full/report.md)",
+            "[Per-question evidence and scores](results.json) · [Previous full comparison](../longmemeval-s-full/results.json)",
         ]
     )
     (dest / "report.md").write_text("\n".join(lines) + "\n")
