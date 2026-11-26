@@ -79,7 +79,7 @@
   ([ctx {:keys [ontology-id ontology-ids scope broader-uri]}]
    (let [ids (cond ontology-ids (set (map state/normalize-id ontology-ids))
                    ontology-id #{(state/normalize-id ontology-id)})]
-     (let [s (state/read-state (assoc ctx :ontology/ids ids))]
+     (let [s (state/read-state (assoc (dissoc ctx :command) :ontology/ids ids))]
        (doseq [id ids] (commands/require-ontology! s id))
        (state/concepts s {:ids ids :scope scope :broader-uri broader-uri})))))
 (defn get-concept [ctx oid concept-id]
@@ -119,7 +119,7 @@
 (defn export-snapshot
   ([ctx oid] (export-snapshot ctx oid nil))
   ([ctx oid revision]
-   (let [oid (state/normalize-id oid) s (state/state-at ctx oid revision)
+   (let [oid (state/normalize-id oid) s (state/state-at (dissoc ctx :command) oid revision)
          o (get-in s [:ontologies oid])]
      (when-not o (errors/fail! :cognitect.anomalies/not-found "Ontology not found"))
      (when (and revision (not= revision (state/revision s oid)))

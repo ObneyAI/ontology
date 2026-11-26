@@ -104,77 +104,87 @@
       (validate-hierarchy! before s event))
     s))
 
+(defn mutation-guard
+  "Guard a creation retry key or the connected graph state used for validation."
+  [s oid request-id]
+  (let [ids (:read-ontology-ids s)
+        guard {:types state/events :limit 1 :predicate-fn #(empty? (into [] (take 1) %))}]
+    (if (nil? oid)
+      (assoc guard :tags #{(streams/request-tag nil request-id)})
+      (cond-> guard
+        (:read-head s) (assoc :after (:read-head s))
+        (= 1 (count ids)) (assoc :tags #{[:ontology (first ids)]})))))
+
+(defn prepare-change
+  "Validate one mutation against the supplied graph state and construct its Grain result."
+  [s command oid request-id cached make-change]
+  (let [request-hash (digest (dissoc command :command/id :command/timestamp))
+        prior (or cached (get-in s [:requests [oid request-id]]))]
+    (if prior
+      (if (= request-hash (:request-hash prior))
+        {:command-result/events [] :command-result/data (:result prior)}
+        {::anom/category ::anom/conflict ::anom/message "Idempotency key reused with different payload"})
+      (do
+        (when oid (require-ontology! s oid))
+        (when (and (contains? command :expected-revision)
+                   (not= (:expected-revision command) (state/revision s oid)))
+          (fail! ::anom/conflict "Stale ontology revision"))
+        (let [{:keys [type body result]} (make-change s)
+              request-ontology-id oid
+              oid (or oid (:ontology-id result))
+              result (assoc result :ontology-id oid :revision (inc (state/revision s oid)))
+              body (assoc body :ontology-id oid :request-id request-id :request-hash request-hash :result result)
+              event (es/->event {:type type :tags #{} :body body})
+              candidate (state/apply-event s event)
+              event (assoc event :event/tags (streams/event-tags s candidate (state/event-data event)))]
+          (validate-graph! candidate oid s event)
+          {:command-result/events [event]
+           :command-result/data result
+           :command-result/cas (mutation-guard s request-ontology-id request-id)})))))
+
 (defn command-result [ctx oid request-id make-change]
   (trace/span :ontology.trace/command-handler
     (try
       (when-not (tenant-scoped? ctx) (fail! ::anom/forbidden "A tenant-id is required"))
       (let [command (:command ctx)
-            request-hash (digest (dissoc command :command/id :command/timestamp))
             cached (state/read-request ctx oid request-id)
-            s (when-not cached (state/read-state ctx))
-            prior (or cached (get-in s [:requests [oid request-id]]))]
-        (if prior
-          (if (= request-hash (:request-hash prior))
-            {:command-result/events [] :command-result/data (:result prior)}
-            {::anom/category ::anom/conflict ::anom/message "Idempotency key reused with different payload"})
-          (do
-            (when oid (require-ontology! s oid))
-            (when (and (contains? command :expected-revision)
-                       (not= (:expected-revision command) (state/revision s oid)))
-              (fail! ::anom/conflict "Stale ontology revision"))
-            (let [{:keys [type body result]} (make-change s)
-                  request-ontology-id oid
-                  oid (or oid (:ontology-id result))
-                  result (assoc result :ontology-id oid :revision (inc (state/revision s oid)))
-                  body (assoc body :ontology-id oid :request-id request-id :request-hash request-hash :result result)
-                  event (es/->event {:type type :tags #{} :body body})
-                  candidate (state/apply-event s event)
-                  event (assoc event :event/tags (streams/event-tags s candidate (state/event-data event)))
-                  ids (:read-ontology-ids s)]
-              (validate-graph! candidate oid s event)
-              {:command-result/events [event]
-               :command-result/data result
-               ;; A connected graph may span several ontology streams. Grain CAS
-               ;; accepts one query, so use a tenant suffix for that case.
-               :command-result/cas (if (nil? request-ontology-id)
-                                     ;; Creation has no graph identity yet. Atomically claim
-                                     ;; its tenant-scoped retry key, even across concurrent creates.
-                                     {:types state/events :limit 1
-                                      :tags #{(streams/request-tag nil request-id)}
-                                      :predicate-fn #(empty? (into [] (take 1) %))}
-                                     (cond-> {:types state/events :limit 1
-                                              :predicate-fn #(empty? (into [] (take 1) %))}
-                                       (:read-head s) (assoc :after (:read-head s))
-                                       (= 1 (count ids)) (assoc :tags #{[:ontology (first ids)]})))}))))
+            s (when-not cached (state/read-state ctx))]
+        (prepare-change s command oid request-id cached make-change))
       (catch Exception e
         (if (::anom/category (ex-data e)) (ex-data e)
             ;; Grain catches handler exceptions. Preserve the cause for the public
             ;; dispatcher to rethrow after the engine declines to append events.
             {::anom/category ::anom/fault ::anom/message (.getMessage e) ::exception e})))))
 
+(defn create-ontology-change [{:keys [name] :as p}]
+  (let [id (random-uuid)]
+    (fn [_]
+      (require! (nonblank? name) "Ontology name must be nonblank")
+      {:type :ontology/ontology-created
+       :body (assoc (select-keys p [:name :scope :description :base-uri :predicate-policies])
+                    :ontology-id id :created-at (str (java.time.Instant/now)))
+       :result {:ontology-id id}})))
+
 (defcommand :ontology create-ontology {:authorized? tenant-scoped?}
   [ctx]
-  (let [{:keys [name] :as p} (:command ctx) id (random-uuid)]
-    (command-result ctx nil (:command/id p)
-      (fn [_]
-        (require! (nonblank? name) "Ontology name must be nonblank")
-        {:type :ontology/ontology-created
-         :body (assoc (select-keys p [:name :scope :description :base-uri :predicate-policies])
-                      :ontology-id id :created-at (str (java.time.Instant/now)))
-         :result {:ontology-id id}}))))
+  (let [p (:command ctx)]
+    (command-result ctx nil (:command/id p) (create-ontology-change p))))
+
+(defn create-concept-change [{:keys [ontology-id uri] :as p}]
+  (let [id (random-uuid)]
+    (fn [s]
+      (require-ontology! s ontology-id)
+      (when (get-in s [:concepts [ontology-id uri]]) (fail! ::anom/conflict "Concept URI already exists"))
+      {:type :ontology/concept-created
+       :body (assoc (select-keys p [:ontology-id :uri :label :description :scope :broader
+                                   :indicators :attributes :embedding :embedding-model :provenance :entity-type :alt-labels])
+                    :concept-id id :created-at (str (java.time.Instant/now)))
+       :result {:concept-id id :uri uri}})))
 
 (defcommand :ontology create-concept {:authorized? tenant-scoped?}
   [ctx]
-  (let [{:keys [ontology-id uri] :as p} (:command ctx) id (random-uuid)]
-    (command-result ctx ontology-id (:command/id p)
-      (fn [s]
-        (require-ontology! s ontology-id)
-        (when (get-in s [:concepts [ontology-id uri]]) (fail! ::anom/conflict "Concept URI already exists"))
-        {:type :ontology/concept-created
-         :body (assoc (select-keys p [:ontology-id :uri :label :description :scope :broader
-                                     :indicators :attributes :embedding :embedding-model :provenance :entity-type :alt-labels])
-                      :concept-id id :created-at (str (java.time.Instant/now)))
-         :result {:concept-id id :uri uri}}))))
+  (let [p (:command ctx)]
+    (command-result ctx (:ontology-id p) (:command/id p) (create-concept-change p))))
 
 (defcommand :ontology update-concept {:authorized? tenant-scoped?}
   [ctx]
@@ -193,21 +203,23 @@
                   :updated-at (str (java.time.Instant/now))}
            :result {:concept-id concept-id :uri (:uri c)}})))))
 
+(defn create-relationship-change [{:keys [source-ontology-id target-ontology-id] :as p}]
+  (let [relationship-id (random-uuid)]
+    (fn [s]
+      (require-ontology! s source-ontology-id)
+      (require-ontology! s target-ontology-id)
+      (let [e (select-keys p [:source-ontology-id :target-ontology-id :source-uri :target-uri :predicate :metadata])]
+        (when (some #(= (state/edge-key e) (state/edge-key %))
+                    (state/relationships s source-ontology-id))
+          (fail! ::anom/conflict "Relationship already exists"))
+        {:type :ontology/relationship-created
+         :body (assoc e :relationship-id relationship-id :created-at (str (java.time.Instant/now)))
+         :result (assoc e :relationship-id relationship-id)}))))
+
 (defcommand :ontology create-relationship {:authorized? tenant-scoped?}
   [ctx]
-  (let [{:keys [source-ontology-id target-ontology-id] :as p} (:command ctx)
-        relationship-id (random-uuid)]
-    (command-result ctx source-ontology-id (:command/id p)
-      (fn [s]
-        (require-ontology! s source-ontology-id)
-        (require-ontology! s target-ontology-id)
-        (let [e (select-keys p [:source-ontology-id :target-ontology-id :source-uri :target-uri :predicate :metadata])]
-          (when (some #(= (state/edge-key e) (state/edge-key %))
-                      (state/relationships s source-ontology-id))
-            (fail! ::anom/conflict "Relationship already exists"))
-          {:type :ontology/relationship-created
-           :body (assoc e :relationship-id relationship-id :created-at (str (java.time.Instant/now)))
-           :result (assoc e :relationship-id relationship-id)})))))
+  (let [p (:command ctx)]
+    (command-result ctx (:source-ontology-id p) (:command/id p) (create-relationship-change p))))
 
 (defcommand :ontology register-predicate {:authorized? tenant-scoped?}
   [ctx]

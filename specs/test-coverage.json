@@ -1,5 +1,5 @@
 {
-  "spec_sha256": "f2c24d1ff99c2302f0ce87e93a76fc1cce4498c25603cfb37ead551896442dcd",
+  "spec_sha256": "d3df4ab606a6fde65e012e26edfccd14dbefa859e31bae2654508789fdffcccc",
   "obligations": {
     "entity-fields.OntologyConsumer": {
       "tests": [
@@ -1172,6 +1172,12 @@
         "ai.obney.ontology.search-test/invalid-search-arguments-are-rejected"
       ],
       "review": "Negative and fractional traversal depths are rejected at the public boundary."
+    },
+    "prose.AtomicHostVocabulary": {
+      "tests": [
+        "ai.obney.ontology.grain-test/prepare-vocabulary-validates-and-commits-with-host"
+      ],
+      "review": "A prepared vocabulary is invisible before append. A competing graph creation rejects the stale batch. Current writes produce scoped UUID and URI views, preserve hierarchy and embeddings, and replay without new events."
     }
   }
 }

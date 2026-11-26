@@ -95,4 +95,7 @@
     (try (spit file "λ" :encoding "UTF-8")
          (is (= (source-registry/sha256 "λ") (source-registry/compute-content-hash (.getAbsolutePath file) nil)))
          (is (= 2 (source-registry/get-file-size (.getAbsolutePath file) nil)))
+         (java.nio.file.Files/write (.toPath file) (byte-array [(byte -1) 0])
+                                    (make-array java.nio.file.OpenOption 0))
+         (is (= "ea5dbf9596d187e9500f23e9a680109475341cf4e81f7e043f7d97152c10772f" (source-registry/compute-content-hash (.getAbsolutePath file) nil)))
          (finally (.delete file)))))

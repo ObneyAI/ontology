@@ -1,7 +1,8 @@
 (ns ai.obney.ontology.core.source-registry
   "Source identity and content utilities; persistence belongs to graph commands."
-  (:require [clojure.string :as str])
-  (:import [java.security MessageDigest]
+  (:require [clojure.java.io :as io]
+            [clojure.string :as str])
+  (:import [java.security DigestInputStream MessageDigest]
            [java.io File]))
 
 (defn sha256
@@ -24,7 +25,10 @@
 
     ;; File path - read and hash
     (and source-uri (.exists (File. ^String source-uri)))
-    (sha256 (slurp source-uri))
+    (let [digest (MessageDigest/getInstance "SHA-256")]
+      (with-open [stream (DigestInputStream. (io/input-stream source-uri) digest)]
+        (.transferTo stream (java.io.OutputStream/nullOutputStream)))
+      (apply str (map #(format "%02x" %) (.digest digest))))
 
     ;; URL or non-file path - hash the URI itself
     :else

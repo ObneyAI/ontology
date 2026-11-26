@@ -95,6 +95,11 @@ contract CustomOntologyMutation {
         -- Created entity identifiers are independent of command identifiers;
         -- retries recover the originally generated entity identifiers.
 
+    @invariant AtomicHostVocabulary
+        -- A host may prepare missing concepts and relationships for a vocabulary.
+        -- Readers see those changes together with the host record in one commit.
+        -- A stale preparation fails as a unit. Retrying preserves existing identities.
+
     @invariant HierarchyConsistency
         -- Broader and narrower are inverse views of one hierarchy. Updating
         -- parents removes obsolete inverse edges. Reject self-links and cycles.

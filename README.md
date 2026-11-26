@@ -4,13 +4,24 @@ A Clojure library for tenant-scoped concept graphs, built on Grain's event store
 It provides typed relationships, hierarchy validation, contribution imports,
 entity resolution, search, and revision snapshots.
 
-The public API is `ai.obney.ontology.interface`. Each function documents its
+The public graph API is `ai.obney.ontology.interface`. Each function documents its
 arguments, results, and errors in the [API namespace](src/ai/obney/ontology/interface.clj)
 and exposes a Malli schema.
 
 Applications supply an event store, a KV store for read-model caching, and
 authenticated tenant context. Extraction and embedding providers are managed
 by the application.
+
+Grain applications can compose their own audit events with validated graph writes
+using `ai.obney.ontology.grain/prepare-vocabulary`. Supply a stable
+`:ontology :request-id`, concept definitions, and relationships identified by URI.
+Append the returned events and host events in one transaction with the returned
+`:command-result/cas`. Re-prepare after a conflict. Read the generated ontology
+ID from `:command-result/data` or recover it by replaying the creation request.
+
+ORC also uses the pure graph, entity resolution, graph evolution, RDF, and
+source hashing functions in the corresponding `ai.obney.ontology.core`
+namespaces for in-memory operations.
 
 ## Installation
 
