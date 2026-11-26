@@ -175,6 +175,7 @@
 
    ::search-request
    [:map [:query-text {:optional true} [:maybe :string]]
+    [:lexical-method {:optional true} [:maybe [:enum :overlap :bm25]]]
     [:seed-uris {:optional true} [:maybe [:and coll? [:seqable ::nonblank-string]]]]
     [:limit {:optional true} pos-int?] [:max-depth {:optional true} nat-int?]
     [:weights {:optional true} [:map-of :keyword ::nonnegative-weight]]

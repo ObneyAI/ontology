@@ -1,0 +1,101 @@
+{
+  "dataset_sha256": "d6f21ea9d60a0d56f34a05b609c79c88a451d2ae03597821ea3d5a9678c3a442",
+  "policy": "session-bm25",
+  "baseline": "distinct-sessions-v1",
+  "cutoff": 80,
+  "cases_verified": 500,
+  "coverage": {
+    "original": {
+      "answerable": 470,
+      "complete": 441,
+      "any": 463,
+      "turns": 845
+    },
+    "revised": {
+      "answerable": 470,
+      "complete": 447,
+      "any": 464,
+      "turns": 852
+    }
+  },
+  "changed_evidence": [
+    {
+      "id": "00ca467f",
+      "category": "multi-session",
+      "required_turns": 2,
+      "before": 1,
+      "after": 2,
+      "gained_turns": [
+        "s040-000"
+      ],
+      "lost_turns": []
+    },
+    {
+      "id": "gpt4_31ff4165",
+      "category": "multi-session",
+      "required_turns": 6,
+      "before": 4,
+      "after": 5,
+      "gained_turns": [
+        "s040-000"
+      ],
+      "lost_turns": []
+    },
+    {
+      "id": "5025383b",
+      "category": "multi-session",
+      "required_turns": 2,
+      "before": 1,
+      "after": 2,
+      "gained_turns": [
+        "s041-004"
+      ],
+      "lost_turns": []
+    },
+    {
+      "id": "gpt4_468eb063",
+      "category": "temporal-reasoning",
+      "required_turns": 1,
+      "before": 0,
+      "after": 1,
+      "gained_turns": [
+        "s039-000"
+      ],
+      "lost_turns": []
+    },
+    {
+      "id": "gpt4_ec93e27f",
+      "category": "temporal-reasoning",
+      "required_turns": 2,
+      "before": 1,
+      "after": 2,
+      "gained_turns": [
+        "s013-000"
+      ],
+      "lost_turns": []
+    },
+    {
+      "id": "a3838d2b",
+      "category": "temporal-reasoning",
+      "required_turns": 6,
+      "before": 5,
+      "after": 6,
+      "gained_turns": [
+        "s033-000"
+      ],
+      "lost_turns": []
+    },
+    {
+      "id": "gpt4_5438fa52",
+      "category": "temporal-reasoning",
+      "required_turns": 2,
+      "before": 1,
+      "after": 2,
+      "gained_turns": [
+        "s026-004"
+      ],
+      "lost_turns": []
+    }
+  ],
+  "ranking_set_sha256": "27e91f5ae12396570446432d9e7ddb49119b93b2a671854bc88152119c8a78c9"
+}

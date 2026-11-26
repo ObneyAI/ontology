@@ -82,3 +82,35 @@
       (doseq [depth [0 4 6 69]]
         (let [results (o/search ctx oid {:seed-uris [(first chain)] :max-depth depth :limit 100})]
           (is (= (set (take (inc depth) chain)) (set (map :uri results)))))))))
+
+(deftest bm25-scopes-term-statistics-and-preserves-the-overlap-default
+  (h/with-context [ctx]
+    (let [oid (h/graph ctx) other (h/graph ctx)
+          rare {:query-text "COMMON saffron" :lexical-method :bm25}
+          uris #(mapv :uri (o/search ctx oid %))]
+      (is (= [] (uris rare)))
+      (doseq [[uri text] [["urn:a" "common"] ["urn:b" "common"]
+                          ["urn:c" "common"] ["urn:d" "common"] ["urn:e" "common"]
+                          ["urn:y" "saffron"] ["urn:z" "saffron"]]]
+        (h/ok! (o/create-concept! ctx oid (assoc (h/concept uri) :label text :description "entry"))))
+      (let [expected ["urn:y" "urn:z" "urn:a" "urn:b" "urn:c" "urn:d" "urn:e"]]
+        (is (= expected (uris rare)))
+        (doseq [i (range 8)]
+          (h/ok! (o/create-concept! ctx other (assoc (h/concept (str "urn:other:" i)) :label "saffron"))))
+        (is (= expected (uris rare)))
+        (is (= ["urn:y"] (uris (assoc rare :limit 1)))))
+      (let [default (uris (dissoc rare :lexical-method))]
+        (is (= (sort default) default))
+        (is (= default (uris (assoc rare :lexical-method :overlap)))))
+      (is (= [] (uris (assoc rare :query-text "unmatched"))))
+      (is (h/rejected? #(o/search ctx oid (assoc rare :lexical-method :unknown)))))))
+
+(deftest bm25-uses-term-frequency-and-document-length
+  (h/with-context [ctx]
+    (let [oid (h/graph ctx)]
+      (doseq [[uri description] [["urn:a" "red blue blue blue"]
+                                 ["urn:b" "red red blue blue"]
+                                 ["urn:c" "red blue blue blue blue blue blue blue"]]]
+        (h/ok! (o/create-concept! ctx oid (assoc (h/concept uri) :label "entry" :description description))))
+      (is (= ["urn:b" "urn:a" "urn:c"]
+             (mapv :uri (o/search ctx oid {:query-text "Red" :lexical-method :bm25})))))))

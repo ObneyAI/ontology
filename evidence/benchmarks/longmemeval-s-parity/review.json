@@ -1,0 +1,3007 @@
+{
+  "dataset_sha256": "d6f21ea9d60a0d56f34a05b609c79c88a451d2ae03597821ea3d5a9678c3a442",
+  "rubric_sha256": "ecce9c4c79dc89d99534ac17b383a5cbb5b9f0c69ee98adaf0684742e3d95251",
+  "selector": "anthropic/claude-haiku-5.5",
+  "reviewer": "openai/gpt-6.1-terra",
+  "decider": "anthropic/claude-haiku-5.5",
+  "judge": "openai/gpt-6-luna",
+  "summary": {
+    "All questions": {
+      "n": 500,
+      "control": 432,
+      "correct": 446,
+      "supermemory": 466,
+      "ours_only": 21,
+      "supermemory_only": 41,
+      "before_review": 451
+    },
+    "Development": {
+      "n": 93,
+      "control": 82,
+      "correct": 91,
+      "supermemory": 85,
+      "ours_only": 7,
+      "supermemory_only": 1,
+      "before_review": 90
+    },
+    "Remaining": {
+      "n": 407,
+      "control": 350,
+      "correct": 355,
+      "supermemory": 381,
+      "ours_only": 14,
+      "supermemory_only": 40,
+      "before_review": 361
+    },
+    "Previously designated unseen": {
+      "n": 394,
+      "control": 338,
+      "correct": 344,
+      "supermemory": 368,
+      "ours_only": 14,
+      "supermemory_only": 38,
+      "before_review": 349
+    },
+    "knowledge-update": {
+      "n": 78,
+      "control": 73,
+      "correct": 72,
+      "supermemory": 74,
+      "ours_only": 3,
+      "supermemory_only": 5,
+      "before_review": 72
+    },
+    "multi-session": {
+      "n": 133,
+      "control": 108,
+      "correct": 111,
+      "supermemory": 117,
+      "ours_only": 6,
+      "supermemory_only": 12,
+      "before_review": 112
+    },
+    "single-session-assistant": {
+      "n": 56,
+      "control": 46,
+      "correct": 47,
+      "supermemory": 56,
+      "ours_only": 0,
+      "supermemory_only": 9,
+      "before_review": 47
+    },
+    "single-session-preference": {
+      "n": 30,
+      "control": 19,
+      "correct": 26,
+      "supermemory": 26,
+      "ours_only": 4,
+      "supermemory_only": 4,
+      "before_review": 25
+    },
+    "single-session-user": {
+      "n": 70,
+      "control": 69,
+      "correct": 68,
+      "supermemory": 67,
+      "ours_only": 3,
+      "supermemory_only": 2,
+      "before_review": 69
+    },
+    "temporal-reasoning": {
+      "n": 133,
+      "control": 117,
+      "correct": 122,
+      "supermemory": 126,
+      "ours_only": 5,
+      "supermemory_only": 9,
+      "before_review": 126
+    },
+    "With usable evidence": {
+      "n": 485,
+      "control": 430,
+      "correct": 444,
+      "supermemory": 452,
+      "ours_only": 20,
+      "supermemory_only": 28,
+      "before_review": 449
+    },
+    "Unavailable histories": {
+      "n": 15,
+      "control": 2,
+      "correct": 2,
+      "supermemory": 14,
+      "ours_only": 1,
+      "supermemory_only": 13,
+      "before_review": 2
+    }
+  },
+  "review_cost_usd": {
+    "selector": 1.2612655999999989,
+    "reviewer": 0.6783049999999997,
+    "judge": 0.0030827999999999993,
+    "decider": 0.38300170000000006
+  },
+  "campaign_cost_usd": 3.8692623889999984,
+  "experiments": {
+    "dev": {
+      "review_only": 89,
+      "with_decision": 91
+    },
+    "remaining": {
+      "review_only": 347,
+      "with_decision": 355
+    }
+  },
+  "annotated_turn_coverage_on_available_misses": {
+    "complete": 37,
+    "partial": 1,
+    "none": 1
+  },
+  "cases": [
+    {
+      "id": "e47becba",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "6f9b354f",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "f8c5f88b",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "c960da58",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "dccbc061",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "a06e4cfe",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "d52b4f67",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "caf9ead2",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "b320f3f8",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "1faac195",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "faba32e5",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "36580ce8",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "a82c026e",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "0862e8bf_abs",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "19b5f2b3_abs",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "29f2956b_abs",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "0a995998",
+      "accepted_revision": false,
+      "correct": false
+    },
+    {
+      "id": "6d550036",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "b5ef892d",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "gpt4_d12ceb0e",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "129d1232",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "eeda8a6d_abs",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "edced276_abs",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "75832dbd",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "0edc2aef",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "35a27287",
+      "accepted_revision": false,
+      "correct": false
+    },
+    {
+      "id": "32260d93",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "caf03d32",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "54026fce",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "06f04340",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "6b7dfb22",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "09d032c9",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "38146c39",
+      "accepted_revision": true,
+      "correct": true,
+      "answer": "Since you liked the richer flavor of turbinado sugar, try replacing about a third of the white sugar in your cookie recipe with it. For a deeper molasses note, you could instead replace some of the brown sugar with muscovado.\n\nFor something extra, try:\n\n- **Toasted chopped almonds:** Fold in about ½ cup for crunch—you were interested in adding almonds to your clafoutis, too.\n- **Flaky sea salt:** Sprinkle a few flakes on each cookie just after baking to balance the sweetness.\n\nI’d start with the turbinado and salt, then try almonds in your next batch.",
+      "review_sources": [
+        "s030-000",
+        "s030-012",
+        "s030-010",
+        "s030-002",
+        "s030-004",
+        "s030-008",
+        "s030-006",
+        "s030-014",
+        "s043-006",
+        "s043-002",
+        "s043-007",
+        "s043-004",
+        "s026-005"
+      ]
+    },
+    {
+      "id": "d24813b1",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "505af2f5",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "75f70248",
+      "accepted_revision": true,
+      "correct": true,
+      "answer": "It could be. You mentioned dust in your living room and a cat that sheds a lot; dust and cat dander are possible triggers, though sneezing alone can’t establish the cause.\n\nTry noticing whether you sneeze more in that room or feel better when you’re away. Some simple steps from our earlier discussion:\n\n- Vacuum floors and upholstery regularly, ideally with a HEPA-filter vacuum, and dust with a damp microfiber cloth.\n- Groom your cat regularly and wash its bedding.\n- Check and replace your home’s air filters as needed.\n\nYou were also considering a plant: if you get one, good drainage and avoiding overwatering can help prevent moldy soil.\n\nIf the sneezing persists or bothers you, a clinician or allergist can help identify the cause.",
+      "review_sources": [
+        "s025-002",
+        "s025-003",
+        "s025-004",
+        "s025-006",
+        "s025-008",
+        "s025-010",
+        "s034-000",
+        "s034-002",
+        "s034-004",
+        "s014-000",
+        "s014-002",
+        "s034-005",
+        "s034-006"
+      ]
+    },
+    {
+      "id": "1da05512",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "fca70973",
+      "accepted_revision": true,
+      "correct": true,
+      "answer": "I’d build the weekend around **Halloween Horror Nights at Universal Studios Hollywood**, since you were especially interested in its VIP Experience and Gourmet Buffet.\n\nFor your second day, consider **Knott’s Berry Farm** for another Halloween-focused visit, or **Six Flags Magic Mountain** if thrill rides are the priority. Check each park’s event calendar and seasonal food offerings before choosing your weekend.\n\nFor Universal, confirm the VIP package’s price, buffet details and booking options directly with the park. You also asked about a behind-the-scenes tour; its availability and what it includes should be verified before booking.",
+      "review_sources": [
+        "s044-000",
+        "s044-002",
+        "s044-004",
+        "s044-006",
+        "s044-008",
+        "s044-010",
+        "s044-009"
+      ]
+    },
+    {
+      "id": "a89d7624",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "0a34ad58",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "cc06de0d",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "5025383b",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "3fe836c9",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "60159905",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "d6062bb9",
+      "accepted_revision": true,
+      "correct": true,
+      "answer": "The two videos had **1,998 views combined**:\n\n- **TikTok:** Luna chasing a laser pointer — 1,456 views.\n- **YouTube:** Social media analytics tutorial — 542 views.\n\nYou identified the tutorial as your most popular YouTube video. You said the TikTok video was doing well, but didn’t explicitly say it was your most popular.",
+      "review_sources": [
+        "s019-000",
+        "s014-000",
+        "s019-004",
+        "s014-006",
+        "s014-010"
+      ]
+    },
+    {
+      "id": "a08a253f",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "a346bb18",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "8e91e7d9",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "6456829e_abs",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "e5ba910e_abs",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "a96c20ee_abs",
+      "accepted_revision": true,
+      "correct": true,
+      "answer": "The transcripts don’t name the university. You mentioned presenting a poster on your thesis research at a summer conference, but didn’t identify the venue.",
+      "review_sources": [
+        "s018-000",
+        "s018-010"
+      ]
+    },
+    {
+      "id": "0db4c65d",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "gpt4_7a0daae1",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "gpt4_4fc4f797",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "6e984301",
+      "accepted_revision": true,
+      "correct": true,
+      "answer": "Your statements give two different answers:\n\n- If you started classes on **February 11**, you’d been taking them for **3 weeks** when you got your tools on March 4.\n- If you’d already been taking classes for **about 6 weeks** on February 11, it would have been **about 9 weeks** by March 4.",
+      "review_sources": [
+        "s039-008",
+        "s039-000",
+        "s044-002",
+        "s039-001"
+      ]
+    },
+    {
+      "id": "gpt4_59149c78",
+      "accepted_revision": true,
+      "correct": true,
+      "answer": "I can’t identify an event exactly two weeks before February 1. The closest dated art-related event you mentioned was the **“Ancient Civilizations” exhibit at the Metropolitan Museum of Art**, which you attended on January 15—17 days earlier.\n\nYou also mentioned a crafting retreat at a **local farm stay** on January 15.",
+      "review_sources": [
+        "s003-000",
+        "s003-002",
+        "s023-006",
+        "s023-000",
+        "s029-004",
+        "s029-000",
+        "s040-006"
+      ]
+    },
+    {
+      "id": "2c63a862",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "2a1811e2",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "a3838d2b",
+      "accepted_revision": true,
+      "correct": true,
+      "answer": "You participated in **4 charity events** before the October 15 Run for the Cure:\n\n1. **Dance for a Cause** — May 1\n2. **Walk for Wildlife** — June\n3. **Charity golf tournament** — July 17\n4. **Food for Thought charity gala** — September 25\n\nThe November Bike-a-Thon was afterward.",
+      "review_sources": [
+        "s012-000",
+        "s033-000",
+        "s042-000",
+        "s019-008",
+        "s019-000",
+        "s006-000",
+        "s004-000",
+        "s004-006"
+      ]
+    },
+    {
+      "id": "gpt4_2c50253f",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "gpt4_7de946e7",
+      "accepted_revision": true,
+      "correct": true,
+      "answer": "The **persistent cough came first**. You saw Dr. Smith about it on **February 10**, and had the skin tag removed on **February 22**.",
+      "review_sources": [
+        "s018-000",
+        "s007-006",
+        "s018-002",
+        "s007-000",
+        "s018-004"
+      ]
+    },
+    {
+      "id": "b29f3365",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "gpt4_fe651585",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "gpt4_70e84552_abs",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "982b5123_abs",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "c8090214_abs",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "gpt4_c27434e8_abs",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "6a1eabeb",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "ce6d2d27",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "41698283",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "c4ea545c",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "18bc8abd",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "db467c8c",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "50635ada",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "cf22b7bf",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "9bbe84a2",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "dad224aa",
+      "accepted_revision": true,
+      "correct": true,
+      "answer": "You most recently said you **like to wake up at 7:30 am on Saturdays**. Earlier, you said your weekend wake-up time varies and that you’d been waking around 8:30 am on Saturdays.",
+      "review_sources": [
+        "s037-002",
+        "s009-002",
+        "s002-002",
+        "s002-000"
+      ]
+    },
+    {
+      "id": "ba61f0b9",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "c6853660",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "0977f2af",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "f685340e_abs",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "7161e7e2",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "0e5e2d1a",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "8aef76bc",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "70b3e69b",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "8752c811",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "561fabcd",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "ac031881",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "28bcfaac",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "eaca4986",
+      "accepted_revision": true,
+      "correct": true,
+      "answer": "The second song didn’t specify a chord progression. It gave this **sequence of notes** for each chorus line:\n\n**C – D – E – F – G – A – B – A – G – F – E – D – C**",
+      "review_sources": [
+        "s037-003",
+        "s037-002",
+        "s037-001"
+      ]
+    },
+    {
+      "id": "c7cf7dfd",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "e48988bc",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "1de5cff2",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "118b2229",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "51a45a95",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "58bf7951",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "1e043500",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "c5e8278d",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "6ade9755",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "58ef2f1c",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "5d3d2817",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "7527f7e2",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "3b6f954b",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "726462e0",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "94f70d80",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "66f24dbb",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "ad7109d1",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "af8d2e46",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "c8c3f81d",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "8ebdbe50",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "6b168ec8",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "75499fd8",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "21436231",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "95bcc1c8",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "0862e8bf",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "853b0a1d",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "37d43f65",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "b86304ba",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "25e5aa4f",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "8550ddae",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "60d45044",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "3f1e9474",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "86b68151",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "577d4d32",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "ec81a493",
+      "accepted_revision": false,
+      "correct": false
+    },
+    {
+      "id": "15745da0",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "e01b8e2f",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "bc8a6e93",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "ccb36322",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "001be529",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "19b5f2b3",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "4fd1909e",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "545bd2b5",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "8a137a7f",
+      "accepted_revision": true,
+      "correct": false,
+      "answer": "You mentioned using a **warm-toned Philips LED bulb** in your bedside lamp, but didn’t say what bulb it replaced.",
+      "review_sources": [
+        "s009-010",
+        "s009-002",
+        "s009-011"
+      ]
+    },
+    {
+      "id": "76d63226",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "86f00804",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "8e9d538c",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "311778f1",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "c19f7a0b",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "4100d0a0",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "29f2956b",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "f4f1d8a4",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "c14c00dd",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "3d86fd0a",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "15745da0_abs",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "bc8a6e93_abs",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "f4f1d8a4_abs",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "gpt4_59c863d7",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "e831120c",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "3a704032",
+      "accepted_revision": false,
+      "correct": false
+    },
+    {
+      "id": "gpt4_d84a3211",
+      "accepted_revision": true,
+      "correct": true,
+      "answer": "Your **known bike-related spending is $185**:\n\n- Helmet: $120\n- Replacement chain: $25\n- Bike lights: $40\n\nThat counts the lights once, despite being mentioned several times. You also had a tune-up, but its cost wasn’t stated, so your total could be higher. The bike rack was only a planned purchase.",
+      "review_sources": [
+        "s009-006",
+        "s010-006",
+        "s009-000",
+        "s010-004",
+        "s010-008",
+        "s000-002",
+        "s046-008",
+        "s000-008",
+        "s046-004"
+      ]
+    },
+    {
+      "id": "aae3761f",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "gpt4_f2262a51",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "dd2973ad",
+      "accepted_revision": false,
+      "correct": false
+    },
+    {
+      "id": "c4a1ceb8",
+      "accepted_revision": false,
+      "correct": false
+    },
+    {
+      "id": "gpt4_a56e767c",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "6cb6f249",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "46a3abf7",
+      "accepted_revision": false,
+      "correct": false
+    },
+    {
+      "id": "36b9f61e",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "28dc39ac",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "gpt4_2f8be40d",
+      "accepted_revision": false,
+      "correct": false
+    },
+    {
+      "id": "2e6d26dc",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "gpt4_15e38248",
+      "accepted_revision": false,
+      "correct": false
+    },
+    {
+      "id": "88432d0a",
+      "accepted_revision": false,
+      "correct": false
+    },
+    {
+      "id": "80ec1f4f",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "d23cf73b",
+      "accepted_revision": false,
+      "correct": false
+    },
+    {
+      "id": "gpt4_7fce9456",
+      "accepted_revision": false,
+      "correct": false
+    },
+    {
+      "id": "d682f1a2",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "7024f17c",
+      "accepted_revision": false,
+      "correct": false
+    },
+    {
+      "id": "gpt4_5501fe77",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "gpt4_2ba83207",
+      "accepted_revision": true,
+      "correct": false,
+      "answer": "**Walmart** is the highest confirmed spending within the past month: about **$120**.\n\nYou spent about **$150 at Thrive Market** “last month,” but the order date isn’t specified, so it’s unclear whether it falls within the past 30 days.",
+      "review_sources": [
+        "s048-006",
+        "s048-000",
+        "s048-002",
+        "s030-000",
+        "s030-010",
+        "s032-000",
+        "s044-000",
+        "s044-010",
+        "s044-004",
+        "s032-004",
+        "s044-002"
+      ]
+    },
+    {
+      "id": "2318644b",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "2ce6a0f2",
+      "accepted_revision": true,
+      "correct": true,
+      "answer": "You attended **4 art-related events** in the past month:\n\n1. **“Women in Art” exhibition** — February 10\n2. **“Art Afternoon” at the Children’s Museum** — February 17, where you volunteered\n3. **History Museum guided tour** — February 24, which included ancient pottery and sparked your interest in art\n4. **“The Evolution of Street Art” lecture** — March 3",
+      "review_sources": [
+        "s008-000",
+        "s024-000",
+        "s038-002",
+        "s040-000",
+        "s040-002",
+        "s040-008",
+        "s038-008"
+      ]
+    },
+    {
+      "id": "00ca467f",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "b3c15d39",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "gpt4_31ff4165",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "eeda8a6d",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "2788b940",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "60bf93ed",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "9d25d4e0",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "60472f9c",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "gpt4_194be4b3",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "a9f6b44c",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "d851d5ba",
+      "accepted_revision": false,
+      "correct": false
+    },
+    {
+      "id": "5a7937c8",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "gpt4_ab202e7f",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "gpt4_e05b82a6",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "gpt4_731e37d7",
+      "accepted_revision": true,
+      "correct": false,
+      "answer": "You spent **at least $220** on workshops in the last four months:\n\n- Writing workshop in November: **$200**\n- Mindfulness workshop on December 12: **$20**\n- Photography workshop on February 22: **free**\n\nThe full total is unknown because you didn’t state the cost of the January entrepreneurship workshop or the recently attended digital marketing workshop. The marketing workshop’s stated March dates are also inconsistent with the February 26 conversation date.",
+      "review_sources": [
+        "s042-008",
+        "s042-002",
+        "s042-010",
+        "s021-000",
+        "s021-004",
+        "s017-010",
+        "s017-000",
+        "s017-008",
+        "s026-000",
+        "s026-010",
+        "s017-004",
+        "s021-006",
+        "s042-000"
+      ]
+    },
+    {
+      "id": "edced276",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "10d9b85a",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "e3038f8c",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "2b8f3739",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "1a8a66a6",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "c2ac3c61",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "bf659f65",
+      "accepted_revision": false,
+      "correct": false
+    },
+    {
+      "id": "gpt4_372c3eed",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "gpt4_2f91af09",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "81507db6",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "88432d0a_abs",
+      "accepted_revision": false,
+      "correct": false
+    },
+    {
+      "id": "80ec1f4f_abs",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "60bf93ed_abs",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "gpt4_372c3eed_abs",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "8a2466db",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "06878be2",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "195a1a1b",
+      "accepted_revision": true,
+      "correct": true,
+      "answer": "Since it’s already past your preferred 9:30 pm wind-down time, you might keep tonight gentle:\n\n- **Try the Insight Timer body scan** you were interested in, or repeat the Headspace Sleep meditation you found calming.\n- **Do a few minutes of gentle yoga or stretching**, then dim the lights.\n- **Write in your journal** to reflect on the day.\n\nFor an earlier evening another day, you could knit your beanie, experiment with fabric and acrylic paints, or practice a hip-hop routine to a Spotify playlist. You could also watch an indie film—perhaps *The Farewell*, which you were considering for movie night.",
+      "review_sources": [
+        "s020-010",
+        "s020-006",
+        "s020-002",
+        "s020-008",
+        "s020-004",
+        "s045-004",
+        "s045-005",
+        "s045-014",
+        "s045-012",
+        "s045-008",
+        "s045-010",
+        "s045-006",
+        "s045-002",
+        "s039-008",
+        "s039-010",
+        "s025-000",
+        "s005-000",
+        "s026-008",
+        "s037-000",
+        "s005-004",
+        "s007-004",
+        "s025-002",
+        "s044-006",
+        "s002-000",
+        "s040-000",
+        "s042-004",
+        "s026-006",
+        "s014-002",
+        "s006-008"
+      ]
+    },
+    {
+      "id": "afdc33df",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "1a1907b4",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "57f827a0",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "95228167",
+      "accepted_revision": true,
+      "correct": true,
+      "answer": "Since you’re considering a **Les Paul as an upgrade from your Strat**, try them side by side through the same amp if possible.\n\n- **Try coil-splitting options.** Ask the staff to show you how the controls work, then compare the split sounds with the full humbuckers. See whether the extra tonal flexibility appeals to you.\n- **Play in open D.** Ask to tune the guitar to D–A–D–F♯–A–D. Check how the strings feel and whether chords sound in tune up the neck.\n- **Test fingerpicking.** Play a little of the “Blackbird” intro on a clean setting. Listen for clarity and see whether the neck and string height feel comfortable.\n- **Check weight and comfort.** Try the Les Paul both seated and standing with a strap; it may feel heavier and differently shaped than your Strat.\n- **Explore the pickups.** Compare the neck and bridge positions, and try the volume and tone controls at different settings.\n\nFinally, ask about the setup and return policy. A comfortable, well-set-up guitar is worth prioritizing over one that just looks appealing.",
+      "review_sources": [
+        "s027-000",
+        "s027-001",
+        "s027-005",
+        "s027-004",
+        "s027-002",
+        "s027-008",
+        "s027-006",
+        "s027-010",
+        "s027-009"
+      ]
+    },
+    {
+      "id": "d6233ab6",
+      "accepted_revision": false,
+      "correct": false
+    },
+    {
+      "id": "b6025781",
+      "accepted_revision": false,
+      "correct": false
+    },
+    {
+      "id": "b0479f84",
+      "accepted_revision": false,
+      "correct": false
+    },
+    {
+      "id": "1d4e3b97",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "07b6f563",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "1c0ddc50",
+      "accepted_revision": true,
+      "correct": true,
+      "answer": "Your roughly 40-minute commute is a good opportunity to replace some email and social-media scrolling with activities you enjoy:\n\n- **Try a history podcast:** Queue a 30–40 minute episode, or split a longer one between the trip to work and the ride home. You could also try a science podcast for variety.\n- **Keep listening to *How I Built This*:** Save an entrepreneur’s story for Monday, when you’re hoping to avoid the crowded bus.\n- **Refresh your soundtrack playlist:** Add a new film score or composer each week, alongside your Hans Zimmer favorites.\n- **Mentally plan your day:** Think through your top two or three priorities before you arrive, without checking your phone.\n\nIf you switch to biking, set up audio before you leave, avoid interacting with your phone, and keep your hearing clear enough to notice traffic and pedestrians.",
+      "review_sources": [
+        "s013-006",
+        "s013-008",
+        "s013-007",
+        "s013-002",
+        "s013-004",
+        "s013-000",
+        "s013-001",
+        "s034-004",
+        "s034-000",
+        "s013-010",
+        "s013-009",
+        "s034-002",
+        "s003-010"
+      ]
+    },
+    {
+      "id": "d3ab962e",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "2311e44b",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "a11281a2",
+      "accepted_revision": true,
+      "correct": false,
+      "answer": "You reported having **around 350 followers after two weeks** of regular posting, but you didn’t say how many you had at the start of those two weeks, so the increase isn’t known.\n\nYou started the year with 250 followers, but that isn’t necessarily the two-week starting count.",
+      "review_sources": [
+        "s023-000",
+        "s023-001",
+        "s037-000",
+        "s037-006"
+      ]
+    },
+    {
+      "id": "4f54b7c9",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "85fa3a3f",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "9aaed6a3",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "1f2b8d4f",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "e6041065",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "51c32626",
+      "accepted_revision": false,
+      "correct": false
+    },
+    {
+      "id": "d905b33f",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "7405e8b1",
+      "accepted_revision": false,
+      "correct": false
+    },
+    {
+      "id": "f35224e0",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "6456829e",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "a4996e51",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "3c1045c8",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "60036106",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "681a1674",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "e25c3b8d",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "4adc0475",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "4bc144e2",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "ef66a6e5",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "a1cc6108",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "9ee3ecd6",
+      "accepted_revision": false,
+      "correct": false
+    },
+    {
+      "id": "3fdac837",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "91b15a6e",
+      "accepted_revision": true,
+      "correct": true,
+      "answer": "Based on the necklace’s stated value of **$5,000** and your estimate of at least **$150** for the vanity, the combined estimate is **$5,150**.\n\nThat isn’t a guaranteed minimum sale price; what you receive will depend on buyers and market conditions.",
+      "review_sources": [
+        "s014-009",
+        "s014-006",
+        "s028-004",
+        "s028-008",
+        "s028-003",
+        "s014-000"
+      ]
+    },
+    {
+      "id": "27016adc",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "720133ac",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "77eafa52",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "8979f9ec",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "0100672e",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "a96c20ee",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "92a0aa75",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "1c549ce4",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "6c49646a",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "1192316e",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "0ea62687",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "67e0d0f2",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "bb7c3b45",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "ba358f49",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "61f8c8f8",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "ef9cf60a",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "73d42213",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "bc149d6b",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "099778bb",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "09ba9854",
+      "accepted_revision": true,
+      "correct": true,
+      "answer": "Based on the figures you were told, you’d save **about $50 one way**: $60 for a taxi minus $10 for the train.\n\nThe $10 fare is consistent with the earlier estimate for a cheaper commuter train to Shinjuku, but it may not cover the final trip from the station to your hotel. The $60 taxi quote is also much lower than the earlier Narita-to-Shinjuku estimates. Check both fares for your exact route before relying on the saving.",
+      "review_sources": [
+        "s028-007",
+        "s028-008",
+        "s028-009",
+        "s013-009",
+        "s013-005",
+        "s013-003",
+        "s028-005",
+        "s028-006",
+        "s028-001",
+        "s013-006",
+        "s028-004",
+        "s013-008",
+        "s028-003"
+      ]
+    },
+    {
+      "id": "157a136e",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "c18a7dc8",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "a3332713",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "55241a1f",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "f0e564bc",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "078150f1",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "8cf4d046",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "37f165cf",
+      "accepted_revision": false,
+      "correct": false
+    },
+    {
+      "id": "87f22b4a",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "e56a43b9",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "efc3f7c2",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "21d02d0d",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "2311e44b_abs",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "ba358f49_abs",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "09ba9854_abs",
+      "accepted_revision": false,
+      "correct": false
+    },
+    {
+      "id": "gpt4_59149c77",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "gpt4_f49edff3",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "71017276",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "b46e15ed",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "gpt4_fa19884c",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "0bc8ad92",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "af082822",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "gpt4_4929293a",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "gpt4_b5700ca9",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "9a707b81",
+      "accepted_revision": true,
+      "correct": false,
+      "answer": "You attended the baking class **26 days ago**, on March 20, 2022.\n\nThe records don’t link the class to your friend’s birthday cake. You said you baked that chocolate cake on April 10, 2022.",
+      "review_sources": [
+        "s020-002",
+        "s051-010"
+      ]
+    },
+    {
+      "id": "gpt4_1d4ab0c9",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "gpt4_e072b769",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "gpt4_1d80365e",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "gpt4_7f6b06db",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "gpt4_6dc9b45b",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "gpt4_8279ba02",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "gpt4_18c2b244",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "gpt4_a1b77f9c",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "gpt4_1916e0ea",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "gpt4_468eb063",
+      "accepted_revision": false,
+      "correct": false
+    },
+    {
+      "id": "gpt4_7abb270c",
+      "accepted_revision": false,
+      "correct": false
+    },
+    {
+      "id": "gpt4_1e4a8aeb",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "4dfccbf7",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "gpt4_61e13b3c",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "gpt4_45189cb4",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "2ebe6c90",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "gpt4_e061b84f",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "370a8ff4",
+      "accepted_revision": false,
+      "correct": false
+    },
+    {
+      "id": "gpt4_d6585ce8",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "gpt4_4ef30696",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "gpt4_ec93e27f",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "8077ef71",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "gpt4_f420262c",
+      "accepted_revision": false,
+      "correct": false
+    },
+    {
+      "id": "gpt4_8e165409",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "gpt4_74aed68e",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "bcbe585f",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "gpt4_21adecb5",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "5e1b23de",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "gpt4_98f46fc6",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "gpt4_af6db32f",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "eac54adc",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "gpt4_7ddcf75f",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "gpt4_a2d1d1f6",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "gpt4_85da3956",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "gpt4_b0863698",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "gpt4_68e94287",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "gpt4_e414231e",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "gpt4_7ca326fa",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "gpt4_7bc6cf22",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "2ebe6c92",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "gpt4_e061b84g",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "71017277",
+      "accepted_revision": false,
+      "correct": false
+    },
+    {
+      "id": "b46e15ee",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "gpt4_d6585ce9",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "gpt4_1e4a8aec",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "gpt4_f420262d",
+      "accepted_revision": true,
+      "correct": true,
+      "answer": "You mentioned an **American Airlines** flight from LAX to JFK on Valentine’s Day, but you didn’t say whether you flew that day.",
+      "review_sources": [
+        "s034-004",
+        "s034-003",
+        "s029-007",
+        "s029-000",
+        "s029-004",
+        "s029-006",
+        "s029-008",
+        "s029-002",
+        "s015-006",
+        "s034-000"
+      ]
+    },
+    {
+      "id": "gpt4_e414231f",
+      "accepted_revision": true,
+      "correct": true,
+      "answer": "The closest match is your **road bike**: on Sunday, March 19, you decided to upgrade it with Shimano Ultegra clipless pedals and asked how to install them. You also considered a maintenance check, but didn’t say either was completed.\n\nYou fixed a flat and cleaned the chain on your **mountain bike** earlier, not that weekend.",
+      "review_sources": [
+        "s038-000",
+        "s038-001",
+        "s038-002",
+        "s033-000",
+        "s033-008",
+        "s038-004",
+        "s038-006",
+        "s038-008",
+        "s038-010"
+      ]
+    },
+    {
+      "id": "gpt4_4929293b",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "gpt4_468eb064",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "gpt4_fa19884d",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "9a707b82",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "eac54add",
+      "accepted_revision": false,
+      "correct": false
+    },
+    {
+      "id": "4dfccbf8",
+      "accepted_revision": true,
+      "correct": true,
+      "answer": "On Wednesday, February 1, you started taking **ukulele lessons with your friend Rachel**. You said they were fun, and Rachel had also given you fingerpicking exercises to practice.",
+      "review_sources": [
+        "s039-004",
+        "s039-006",
+        "s003-002",
+        "s003-003"
+      ]
+    },
+    {
+      "id": "0bc8ad93",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "6e984302",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "gpt4_8279ba03",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "gpt4_b5700ca0",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "gpt4_68e94288",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "gpt4_2655b836",
+      "accepted_revision": true,
+      "correct": true,
+      "answer": "You reported a **GPS system issue on March 22**. The dealership replaced the entire system, and it then worked properly. The available record doesn’t establish whether it was the first issue after your car’s first service.",
+      "review_sources": [
+        "s020-002",
+        "s020-004",
+        "s037-000"
+      ]
+    },
+    {
+      "id": "gpt4_2487a7cb",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "gpt4_76048e76",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "gpt4_2312f94c",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "0bb5a684",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "08f4fc43",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "gpt4_385a5000",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "bbf86515",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "gpt4_5dcc0aab",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "gpt4_0b2f1d21",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "f0853d11",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "gpt4_6ed717ea",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "gpt4_70e84552",
+      "accepted_revision": true,
+      "correct": false,
+      "answer": "By 08:03 on May 25, you had said you trimmed the goats’ hooves about two weeks earlier. You hadn’t yet mentioned when you fixed the fence, so I can’t determine which came first from the information available at that time.",
+      "review_sources": [
+        "s026-000",
+        "s017-000",
+        "s017-006"
+      ]
+    },
+    {
+      "id": "gpt4_93159ced",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "gpt4_2d58bcd6",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "gpt4_65aabe59",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "982b5123",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "b9cfe692",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "gpt4_4edbafa2",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "c8090214",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "gpt4_483dd43c",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "e4e14d04",
+      "accepted_revision": true,
+      "correct": false,
+      "answer": "I can’t determine that from the information available at the time. You said you attended the meetup last week, but hadn’t said when you joined Book Lovers Unite.",
+      "review_sources": [
+        "s042-000",
+        "s008-000",
+        "s042-004",
+        "s008-006",
+        "s008-010"
+      ]
+    },
+    {
+      "id": "c9f37c46",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "dcfa8644",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "gpt4_b4a80587",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "gpt4_9a159967",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "cc6d1ec1",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "gpt4_8c8961ae",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "gpt4_d9af6064",
+      "accepted_revision": true,
+      "correct": false,
+      "answer": "You got the **new router on January 15** and set up the **smart thermostat on February 10**. But you didn’t say when you set up the router, so I can’t tell which you set up first.",
+      "review_sources": [
+        "s036-000",
+        "s036-002",
+        "s011-000"
+      ]
+    },
+    {
+      "id": "d01c6aa8",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "993da5e2",
+      "accepted_revision": true,
+      "correct": false,
+      "answer": "You’d had the rug for about a month as of May 26. I can’t determine how long you’d had it when you rearranged the furniture: the mention of the rearrangement is timestamped after the specified as-of time.",
+      "review_sources": [
+        "s009-000",
+        "s039-000",
+        "s009-001",
+        "s009-006",
+        "s009-008"
+      ]
+    },
+    {
+      "id": "a3045048",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "gpt4_d31cdae3",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "gpt4_cd90e484",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "gpt4_88806d6e",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "gpt4_4cd9eba1",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "gpt4_93f6379c",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "gpt4_2f56ae70",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "6613b389",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "gpt4_78cf46a3",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "gpt4_0a05b494",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "gpt4_1a1dc16d",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "gpt4_2f584639",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "gpt4_213fd887",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "gpt4_5438fa52",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "gpt4_c27434e8",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "8c18457d",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "gpt4_93159ced_abs",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "gpt4_fe651585_abs",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "6aeb4375",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "830ce83f",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "852ce960",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "945e3d21",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "d7c942c3",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "71315a70",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "89941a93",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "9ea5eabc",
+      "accepted_revision": true,
+      "correct": true,
+      "answer": "You went to **Paris with your family in April 2023**. That’s the most recent family trip with a stated date. You also mentioned a recent family trip to Hawaii, but didn’t say when it happened, so I can’t confirm which was later.",
+      "review_sources": [
+        "s000-004",
+        "s000-006",
+        "s031-000",
+        "s036-000",
+        "s004-002",
+        "s019-010",
+        "s035-002",
+        "s021-002",
+        "s021-004",
+        "s028-006",
+        "s019-008"
+      ]
+    },
+    {
+      "id": "07741c44",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "a1eacc2a",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "184da446",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "031748ae",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "4d6b87c8",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "0f05491a",
+      "accepted_revision": true,
+      "correct": true,
+      "answer": "You most recently said you need **120 stars** to reach Gold. Earlier figures in the conversation conflicted, so it’s worth checking your app to confirm.",
+      "review_sources": [
+        "s043-006",
+        "s043-007",
+        "s043-005",
+        "s004-010",
+        "s004-011",
+        "s004-009",
+        "s004-007",
+        "s043-004",
+        "s004-006",
+        "s004-008"
+      ]
+    },
+    {
+      "id": "08e075c7",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "f9e8c073",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "2698e78f",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "b6019101",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "45dc21b6",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "5a4f22c0",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "6071bd76",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "e493bb7c",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "618f13b2",
+      "accepted_revision": false,
+      "correct": false
+    },
+    {
+      "id": "72e3ee87",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "01493427",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "6a27ffc2",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "2133c1b5",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "7a87bd0c",
+      "accepted_revision": true,
+      "correct": true,
+      "answer": "You most recently said you’d been sticking to it for **4 weeks**, as of September 30.\n\nYou also reported a 3-week streak on June 11, but the records don’t establish whether the routine continued between those dates.",
+      "review_sources": [
+        "s039-000",
+        "s000-000",
+        "s000-008",
+        "s025-004",
+        "s004-000"
+      ]
+    },
+    {
+      "id": "e61a7584",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "1cea1afa",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "ed4ddc30",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "8fb83627",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "b01defab",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "22d2cb42",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "0e4e4c46",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "4b24c848",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "7e974930",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "603deb26",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "59524333",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "5831f84d",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "eace081b",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "affe2881",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "e66b632c",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "0ddfec37",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "f685340e",
+      "accepted_revision": false,
+      "correct": false
+    },
+    {
+      "id": "cc5ded98",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "dfde3500",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "69fee5aa",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "7401057b",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "a2f3aa27",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "c7dc5443",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "06db6396",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "3ba21379",
+      "accepted_revision": false,
+      "correct": false
+    },
+    {
+      "id": "10e09553",
+      "accepted_revision": false,
+      "correct": false
+    },
+    {
+      "id": "42ec0761",
+      "accepted_revision": false,
+      "correct": false
+    },
+    {
+      "id": "5c40ec5b",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "26bdc477",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "6aeb4375_abs",
+      "accepted_revision": false,
+      "correct": false
+    },
+    {
+      "id": "031748ae_abs",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "2698e78f_abs",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "2133c1b5_abs",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "0ddfec37_abs",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "89941a94",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "07741c45",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "c4f10528",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "89527b6b",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "e9327a54",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "4c36ccef",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "6ae235be",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "7e00a6cb",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "1903aded",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "ceb54acb",
+      "accepted_revision": false,
+      "correct": false
+    },
+    {
+      "id": "f523d9fe",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "fea54f57",
+      "accepted_revision": false,
+      "correct": false
+    },
+    {
+      "id": "cc539528",
+      "accepted_revision": false,
+      "correct": false
+    },
+    {
+      "id": "dc439ea3",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "18dcd5a5",
+      "accepted_revision": false,
+      "correct": false
+    },
+    {
+      "id": "488d3006",
+      "accepted_revision": false,
+      "correct": false
+    },
+    {
+      "id": "58470ed2",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "8cf51dda",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "1d4da289",
+      "accepted_revision": false,
+      "correct": false
+    },
+    {
+      "id": "8464fc84",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "71a3fd6b",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "2bf43736",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "3249768e",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "1b9b7252",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "1568498a",
+      "accepted_revision": false,
+      "correct": false
+    },
+    {
+      "id": "6222b6eb",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "e8a79c70",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "d596882b",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "e3fc4d6e",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "51b23612",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "3e321797",
+      "accepted_revision": true,
+      "correct": true,
+      "answer": "I said **10 minutes**, then wash it off with cold water.",
+      "review_sources": [
+        "s039-001",
+        "s039-000"
+      ]
+    },
+    {
+      "id": "e982271f",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "352ab8bd",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "fca762bc",
+      "accepted_revision": false,
+      "correct": false
+    },
+    {
+      "id": "7a8d0b71",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "a40e080f",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "8b9d4367",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "5809eb10",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "41275add",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "4388e9dd",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "4baee567",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "b759caee",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "16c90bf4",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "c8f1aeed",
+      "accepted_revision": false,
+      "correct": true
+    },
+    {
+      "id": "65240037",
+      "accepted_revision": false,
+      "correct": false
+    },
+    {
+      "id": "778164c6",
+      "accepted_revision": false,
+      "correct": true
+    }
+  ]
+}

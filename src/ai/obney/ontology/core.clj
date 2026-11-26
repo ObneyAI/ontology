@@ -95,6 +95,8 @@
   (scoped-request ctx ontology-id request
     #(do (when (some? (:query-text request))
            (errors/require! (string? (:query-text request)) "Query text must be a string"))
+         (when (some? (:lexical-method request))
+           (errors/require! (#{:overlap :bm25} (:lexical-method request)) "Unknown lexical method"))
          (when (some? (:seed-uris request))
            (errors/require! (and (coll? (:seed-uris request)) (every? nonblank? (:seed-uris request)))
                             "Seed URIs must be a collection of nonblank strings"))

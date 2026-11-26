@@ -1,5 +1,5 @@
 {
-  "spec_sha256": "ac71fca50c1af3b61332985132ce1c7e7c60c89a5c4409d722e3ad87904d9264",
+  "spec_sha256": "f2c24d1ff99c2302f0ce87e93a76fc1cce4498c25603cfb37ead551896442dcd",
   "obligations": {
     "entity-fields.OntologyConsumer": {
       "tests": [
@@ -887,9 +887,11 @@
         "ai.obney.ontology.search-test/finite-large-vectors-cannot-produce-nan-scores",
         "ai.obney.ontology.boundary-test/absent-vector-models-are-not-comparable",
         "ai.obney.ontology.search-test/graph-search-honors-large-limits-and-deep-traversal",
-        "ai.obney.ontology.property-test/generated-search-agrees-with-independent-reachability"
+        "ai.obney.ontology.property-test/generated-search-agrees-with-independent-reachability",
+        "ai.obney.ontology.search-test/bm25-scopes-term-statistics-and-preserves-the-overlap-default",
+        "ai.obney.ontology.search-test/bm25-uses-term-frequency-and-document-length"
       ],
-      "review": "Tests exercise each ranking signal, graph depths, weights, ties, case, limits, dimensions, model identity and numerical validity. Graph candidate discovery has no hidden size/activation limit, including depth 69 with numeric underflow. URI breaks equal graph-score ties; public limits are applied after fusion. Generated hierarchy/related graphs are compared with independent breadth-first reachability; seed permutations preserve ranking and smaller limits preserve result prefixes."
+      "review": "Tests exercise each ranking signal, graph depths, weights, ties, case, limits, dimensions, model identity and numerical validity. Graph candidate discovery has no hidden size/activation limit, including depth 69 with numeric underflow. URI breaks equal graph-score ties; public limits are applied after fusion. Generated hierarchy/related graphs are compared with independent breadth-first reachability; seed permutations preserve ranking and smaller limits preserve result prefixes. The lexical method defaults to overlap. BM25 uses graph-local term statistics and deterministically orders ties by URI."
     },
     "prose.ScopedSearchAndExport": {
       "tests": [
@@ -1021,18 +1023,20 @@
         "ai.obney.ontology.search-test/graph-search-honors-large-limits-and-deep-traversal",
         "ai.obney.ontology.search-test/weighted-fusion-controls-ranking",
         "ai.obney.ontology.search-test/invalid-search-arguments-are-rejected",
-        "ai.obney.ontology.api-schemas-test/public-schemas-cover-real-command-and-read-results"
+        "ai.obney.ontology.api-schemas-test/public-schemas-cover-real-command-and-read-results",
+        "ai.obney.ontology.search-test/bm25-scopes-term-statistics-and-preserves-the-overlap-default"
       ],
-      "review": "Public request maps expose query text, seeds, limit, depth, signal weights and optional opaque embedding provider/model. Defaults and overrides are exercised with actual candidates; malformed arguments reject."
+      "review": "Public request maps expose query text, seeds, limit, depth, signal weights and optional opaque embedding provider/model. Defaults and overrides are exercised with actual candidates; malformed arguments reject. The lexical method defaults to overlap. BM25 uses graph-local term statistics and deterministically orders ties by URI."
     },
     "value-equality.SearchRequest": {
       "tests": [
         "ai.obney.ontology.search-test/graph-search-honors-large-limits-and-deep-traversal",
         "ai.obney.ontology.search-test/weighted-fusion-controls-ranking",
         "ai.obney.ontology.search-test/invalid-search-arguments-are-rejected",
-        "ai.obney.ontology.api-schemas-test/public-schemas-cover-real-command-and-read-results"
+        "ai.obney.ontology.api-schemas-test/public-schemas-cover-real-command-and-read-results",
+        "ai.obney.ontology.search-test/bm25-scopes-term-statistics-and-preserves-the-overlap-default"
       ],
-      "review": "Immutable Clojure maps/lists implement structural equality; provider values remain opaque. Public request maps expose query text, seeds, limit, depth, signal weights and optional opaque embedding provider/model. Defaults and overrides are exercised with actual candidates; malformed arguments reject."
+      "review": "Immutable Clojure maps/lists implement structural equality; provider values remain opaque. Public request maps expose query text, seeds, limit, depth, signal weights and optional opaque embedding provider/model. Defaults and overrides are exercised with actual candidates; malformed arguments reject. The lexical method defaults to overlap. BM25 uses graph-local term statistics and deterministically orders ties by URI."
     },
     "entity-fields.ResolutionMatch": {
       "tests": [

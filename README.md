@@ -244,6 +244,8 @@ The result limit applies after combining signal ranks. Results contain concept
 records with `:score`; scores represent ranking strength, not probabilities.
 URI order breaks ties.
 
+For corpus-weighted text search, pass `:lexical-method :bm25` to `ontology/search`. Term statistics use concepts in the requested ontology. Omitting the option uses the existing token-overlap ranking.
+
 For embedding search, supply `:embed-query`, a function from query text to a
 vector, and `:embedding-model`. Comparisons require matching model identifiers
 and valid vectors of equal dimension. Unusable vectors contribute no signal.
@@ -334,6 +336,8 @@ campaign, and a mutation audit. Reports are written to `evidence/`.
 
 The [Allium specification](specs/ontology.allium) defines behavioral contracts.
 The [coverage ledger](docs/TEST-COVERAGE.md) maps obligations to executable tests.
+
+Track ontology health through the core suite and raw retrieval coverage. The retrieval audit measures whether search returns the annotated source turns before any reranking or answer generation. [Primary ontology checks and current results](docs/BENCHMARKS.md#primary-ontology-checks)
 
 ## Performance and architecture
 

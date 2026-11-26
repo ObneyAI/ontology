@@ -1,0 +1,51 @@
+{
+  "task_rubric_correct": 3,
+  "questions": 5,
+  "cases": [
+    {
+      "id": "0a34ad58",
+      "category": "single-session-preference",
+      "reader_mode": null,
+      "task_rubric_correct": false
+    },
+    {
+      "id": "35a27287",
+      "category": "single-session-preference",
+      "reader_mode": "advice",
+      "answer": "I do not have access to your current GPS location to see exactly what is happening in your immediate vicinity this weekend. However, based on your interest in finding cultural events that celebrate language diversity and cultural exchange, I can suggest two specific ways to find something interesting:\n\n* **Check the schedules of local French or Spanish Embassies or Cultural Centers:** Since you previously mentioned an interest in finding opportunities specifically for **French and Spanish languages** [s040-012], these institutions are your best bet for finding high-quality cultural events (like film screenings or art exhibits) that focus on those specific cultures.\n* **Search Eventbrite using \"Language Exchange\" or \"International Festival\" keywords:** Because you have expressed a desire to attend events similar to the **cultural festival you volunteered at",
+      "reader_usage": [
+        1497,
+        160
+      ],
+      "task_rubric_correct": true
+    },
+    {
+      "id": "6b7dfb22",
+      "category": "single-session-preference",
+      "reader_mode": null,
+      "task_rubric_correct": false
+    },
+    {
+      "id": "a89d7624",
+      "category": "single-session-preference",
+      "reader_mode": "advice",
+      "answer": "Since you have previously enjoyed the music scene in Denver—specifically noting a great experience meeting Brandon Flowers after a The Killers concert [s034-004]—and have expressed interest in finding good BBQ near Red Rocks [s034-006], here are two suggestions for your upcoming trip:\n\n*   **Plan your itinerary around a concert at Red Rocks Amphitheatre:** Since you are already interested in the local music scene and looking for food options near this specific venue [s034-006], check the venue's schedule for upcoming shows. You could pair a concert night with a meal at **GQue BBQ** in Golden, which is a short drive from the amphitheater [s034-007].",
+      "reader_usage": [
+        1564,
+        160
+      ],
+      "task_rubric_correct": true
+    },
+    {
+      "id": "d24813b1",
+      "category": "single-session-preference",
+      "reader_mode": "advice",
+      "answer": "Since you are hosting a gathering for colleagues, here are two suggestions for what to bake, based on your previous baking interests:\n\n*   **Lemon Poppyseed Cake:** Since you have successfully made a lemon poppyseed cake for a colleague's going-away party in the past [s037-002], this is a reliable, crowd-pleasing option. It is a proven \"win\" for professional social settings.\n*   **Oatmeal Raisin Cookies with Nuts:** You mentioned recently experimenting with different flavors like oatmeal raisin with nuts [s021-006]. Baking a batch of these would allow you to share your latest baking experiments with your colleagues in a casual, easy-to-eat format.\n\n**A quick tip for your gathering",
+      "reader_usage": [
+        1533,
+        160
+      ],
+      "task_rubric_correct": true
+    }
+  ]
+}

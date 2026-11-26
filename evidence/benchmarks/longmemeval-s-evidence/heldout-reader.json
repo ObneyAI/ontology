@@ -1,0 +1,192 @@
+{
+  "task_rubric_correct": 17,
+  "questions": 21,
+  "cases": [
+    {
+      "id": "09d032c9",
+      "category": "single-session-preference",
+      "reader_mode": "advice",
+      "answer": "Since you have been traveling frequently—noting that you have taken about five domestic flights in the past month and have been flying every 2-3 weeks for the last three months [s030-010]—your battery issues might be related to your travel habits.\n\nHere are two suggestions to help manage your phone's battery life:\n\n*   **Carry a portable power bank:** Since you are often on the move and flying frequently, having a dedicated power bank is essential. You previously noted the need for accessories like a power bank [s008-005], and having one on hand will ensure you don't run out of power during long flights or transit periods.\n*   **Use a dedicated travel pouch for tech accessories:** To prevent",
+      "reader_usage": [
+        1565,
+        160
+      ],
+      "task_rubric_correct": false
+    },
+    {
+      "id": "0db4c65d",
+      "category": "temporal-reasoning",
+      "reader_mode": "aggregation",
+      "answer": "18 days.\n\n**Calculation Check:**\n*   **Finished reading 'The Seven Husbands of Evelyn Hugo':** 2022/12/28 (Source [s028-002])\n*   **Attended book reading event:** 2023/01/15 (Source [s039-000])\n*   **Days elapsed:** From December 28, 2022, to January 15, 2023, is 3 days remaining in December + 15 days in January = 18 days.",
+      "reader_usage": [
+        1565,
+        133
+      ],
+      "task_rubric_correct": true
+    },
+    {
+      "id": "18bc8abd",
+      "category": "knowledge-update",
+      "reader_mode": null,
+      "task_rubric_correct": true
+    },
+    {
+      "id": "19b5f2b3_abs",
+      "category": "abstention",
+      "reader_mode": "timeline",
+      "answer": "Insufficient evidence",
+      "reader_usage": [
+        1575,
+        3
+      ],
+      "task_rubric_correct": true
+    },
+    {
+      "id": "1faac195",
+      "category": "single-session-user",
+      "reader_mode": null,
+      "task_rubric_correct": true
+    },
+    {
+      "id": "28bcfaac",
+      "category": "single-session-assistant",
+      "reader_mode": null,
+      "task_rubric_correct": true
+    },
+    {
+      "id": "38146c39",
+      "category": "single-session-preference",
+      "reader_mode": "advice",
+      "answer": "Since you have been experimenting with different sugars and textures lately, here are two suggestions for your chocolate chip cookies:\n\n*   **Incorporate Sea Salt:** You mentioned on May 27th that you found turbinado sugar adds a richer flavor. Adding a sprinkle of flaky sea salt on top of the cookies right after they come out of the oven can help balance that extra richness and enhance the sweetness of the sugar.\n*   **Add Texture with Nuts:** Based on your recent idea to add sliced almonds to a clafoutis for \"extra crunch and texture\" (May 30th), you might consider adding toasted chopped almonds or even walnuts to your cookie dough. This would provide a similar textural contrast to the soft dough.",
+      "reader_usage": [
+        1565,
+        150
+      ],
+      "task_rubric_correct": true
+    },
+    {
+      "id": "505af2f5",
+      "category": "single-session-preference",
+      "reader_mode": "advice",
+      "answer": "Since you are looking for a new recipe, here are two recommendations tailored to your goal of reducing sugar and saving money:\n\n*   **Lavender & Vanilla Almond Creamer**: Since you previously mentioned making a creamer with almond milk, vanilla, and honey [s008-000], you might enjoy a floral twist. You can steep dried culinary lavender in your almond milk. This pairs beautifully with the \"spring-themed\" flavors you expressed interest in previously [s010-006].\n*   **Cinnamon & Nutmeg \"Warm Spice\" Creamer**: To keep your sugar intake low [s008-000], try adding warm spices like cinnamon and nutmeg to your existing almond milk base. This provides a rich, flavorful experience without",
+      "reader_usage": [
+        1491,
+        160
+      ],
+      "task_rubric_correct": true
+    },
+    {
+      "id": "6d550036",
+      "category": "multi-session",
+      "reader_mode": "aggregation",
+      "answer": "You have led or are currently leading 2 projects:\n\n1.  **A project in Nigeria**: A project you are planning to connect 100 rural villages to running water [s005-000].\n2.  **A new product feature launch**: A project you are planning to launch in June [s035-000].\n\n**Note on other mentioned projects:** While you mentioned a high-priority project that you completed two months ahead of schedule [s035-002], this is a past project, not one you are currently leading or are in the process of leading.",
+      "reader_usage": [
+        1576,
+        132
+      ],
+      "task_rubric_correct": true
+    },
+    {
+      "id": "6e984301",
+      "category": "temporal-reasoning",
+      "reader_mode": "aggregation",
+      "answer": "Based on the records provided, you had been taking sculpting classes for approximately **8 weeks** when you invested in your own set of sculpting tools.\n\n**Calculation and Evidence:**\n*   **Start of classes:** On 2023/02/11, you stated you \"just started taking sculpting classes... today\" [s039-000].\n*   **Contradictory statement:** In the same session (2023/02/11), you also stated you had been taking the classes \"for about 6 weeks now\" [s039-008].\n*   **Investment in tools:** On 2023/03/04, you stated, \"I actually got my",
+      "reader_usage": [
+        1500,
+        160
+      ],
+      "task_rubric_correct": false
+    },
+    {
+      "id": "7161e7e2",
+      "category": "single-session-assistant",
+      "reader_mode": null,
+      "task_rubric_correct": false
+    },
+    {
+      "id": "8aef76bc",
+      "category": "single-session-assistant",
+      "reader_mode": null,
+      "task_rubric_correct": true
+    },
+    {
+      "id": "982b5123_abs",
+      "category": "abstention",
+      "reader_mode": null,
+      "task_rubric_correct": true
+    },
+    {
+      "id": "a346bb18",
+      "category": "multi-session",
+      "reader_mode": "aggregation",
+      "answer": "You exceeded your target time by 12 minutes.\n\n**Calculation:**\n*   **Actual marathon time:** 4 hours and 22 minutes (from s023-000)\n*   **Target marathon time:** 4 hours and 10 minutes (from s001-000)\n*   **Difference:** 4h 22m - 4h 10m = 12 minutes",
+      "reader_usage": [
+        1555,
+        96
+      ],
+      "task_rubric_correct": true
+    },
+    {
+      "id": "b320f3f8",
+      "category": "single-session-user",
+      "reader_mode": null,
+      "task_rubric_correct": true
+    },
+    {
+      "id": "ba61f0b9",
+      "category": "knowledge-update",
+      "reader_mode": "aggregation",
+      "answer": "There are 6 women on the team led by Rachel.\n\n**Calculation Check:**\nWhile earlier records (s013-002, s013-008) stated there were 5 women on a team of 10, the most recent record (s041-000) explicitly states that Rachel's team has \"6 women out of 10 people.\"",
+      "reader_usage": [
+        1565,
+        87
+      ],
+      "task_rubric_correct": true
+    },
+    {
+      "id": "d6062bb9",
+      "category": "multi-session",
+      "reader_mode": null,
+      "task_rubric_correct": true
+    },
+    {
+      "id": "dad224aa",
+      "category": "knowledge-update",
+      "reader_mode": null,
+      "task_rubric_correct": true
+    },
+    {
+      "id": "eeda8a6d_abs",
+      "category": "abstention",
+      "reader_mode": "aggregation",
+      "answer": "Insufficient evidence.",
+      "reader_usage": [
+        1515,
+        4
+      ],
+      "task_rubric_correct": true
+    },
+    {
+      "id": "faba32e5",
+      "category": "single-session-user",
+      "reader_mode": "timeline",
+      "answer": "Alex marinated the BBQ ribs in a special sauce for 24 hours.",
+      "reader_usage": [
+        1495,
+        16
+      ],
+      "task_rubric_correct": true
+    },
+    {
+      "id": "gpt4_4fc4f797",
+      "category": "temporal-reasoning",
+      "reader_mode": "aggregation",
+      "answer": "Insufficient evidence\n\n**Reasoning:**\n* **Feedback Date:** On 2023/03/17, the user states they have been getting feedback from judges that their car's suspension was too soft (s020-010).\n* **Testing Date:** The user mentions preparing for an open track day at VIR \"tomorrow\" on 2023/04/23 (s036-000), which would be 2023/04/24. However, the user also mentions a planned participation in the \"Track Day Frenzy\" event on May 15th (s036-002).\n* **Missing Information:** While the date of the feedback is established",
+      "reader_usage": [
+        1523,
+        160
+      ],
+      "task_rubric_correct": false
+    }
+  ]
+}

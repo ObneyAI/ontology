@@ -410,6 +410,8 @@
 
   Request options
     :query-text       String; lexical matching uses label/description tokens.
+    :lexical-method   :overlap (default) or :bm25. BM25 weights terms using the
+                      concepts in this ontology (k1 1.2, b 0.75).
     :seed-uris        Collection of URIs for graph traversal.
     :limit            Positive integer; default 10.
     :max-depth        Nonnegative integer; default 2.

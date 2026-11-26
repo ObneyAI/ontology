@@ -41,6 +41,7 @@ value ConceptSelection {
 
 value SearchRequest {
     query_text: String?
+    lexical_method: String?
     seed_uris: List<String>?
     limit: Integer?
     max_depth: Integer?
@@ -140,6 +141,8 @@ contract ScopedConceptLookup {
     @invariant SearchValidityAndDeterminism
         -- Traversal depth is a nonnegative integer and the result limit is a
         -- positive integer. Signal weights are finite and nonnegative.
+        -- Omitted lexical method uses overlap. BM25 uses document frequencies and
+        -- average document length within the requested ontology. Unknown methods reject.
         -- Lexical matching is case-insensitive; equal ranking scores use URI
         -- order. Seeds and locally reachable broader, narrower and related
         -- concepts through the requested depth are candidates before the public

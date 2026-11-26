@@ -1,0 +1,78 @@
+{
+  "dataset_sha256": "d6f21ea9d60a0d56f34a05b609c79c88a451d2ae03597821ea3d5a9678c3a442",
+  "policy": "distinct-sessions-v1",
+  "cutoff": 80,
+  "cases_verified": 500,
+  "coverage": {
+    "original": {
+      "answerable": 470,
+      "complete": 438,
+      "any": 462,
+      "turns": 840
+    },
+    "revised": {
+      "answerable": 470,
+      "complete": 441,
+      "any": 463,
+      "turns": 845
+    }
+  },
+  "changed_evidence": [
+    {
+      "id": "6d550036",
+      "category": "multi-session",
+      "required_turns": 4,
+      "before": 0,
+      "after": 1,
+      "gained_turns": [
+        "s006-000"
+      ],
+      "lost_turns": []
+    },
+    {
+      "id": "gpt4_59c863d7",
+      "category": "multi-session",
+      "required_turns": 5,
+      "before": 3,
+      "after": 4,
+      "gained_turns": [
+        "s040-000"
+      ],
+      "lost_turns": []
+    },
+    {
+      "id": "1d4e3b97",
+      "category": "single-session-preference",
+      "required_turns": 2,
+      "before": 1,
+      "after": 2,
+      "gained_turns": [
+        "s040-002"
+      ],
+      "lost_turns": []
+    },
+    {
+      "id": "0bc8ad92",
+      "category": "temporal-reasoning",
+      "required_turns": 3,
+      "before": 2,
+      "after": 3,
+      "gained_turns": [
+        "s012-000"
+      ],
+      "lost_turns": []
+    },
+    {
+      "id": "gpt4_21adecb5",
+      "category": "temporal-reasoning",
+      "required_turns": 2,
+      "before": 1,
+      "after": 2,
+      "gained_turns": [
+        "s024-000"
+      ],
+      "lost_turns": []
+    }
+  ],
+  "ranking_set_sha256": "ee20a2052590497177dd6fb4a847cd5ee8c3caf4f90c924daed7b0842695dc8e"
+}

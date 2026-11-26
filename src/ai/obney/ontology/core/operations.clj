@@ -137,11 +137,32 @@
         :rdf-triples (get-in s [:rdf-triples oid] [])
         :ttl-output (:ttl-string result) :triple-count (:triple-count result) :checksum (:checksum result)}))))
 
-(defn- tokens [s] (set (re-seq #"[\p{L}\p{N}]+" (str/lower-case (or s "")))))
+(defn- tokenize [s]
+  (re-seq #"[\p{L}\p{N}]+" (str/lower-case (or s ""))))
+
+(defn- bm25-lexical
+  "BM25 lexical signal with k1=1.2 and b=0.75 over the scoped concept collection."
+  [concepts query]
+  (when (and (seq query) (seq concepts))
+    (let [docs (mapv (fn [{:keys [uri label description]}]
+                       (let [terms (tokenize (str label " " description))]
+                         {:uri uri :length (count terms) :matches (frequencies (filter query terms))}))
+                     concepts)
+          document-count (count docs)
+          average-length (/ (double (reduce + (map :length docs))) document-count)
+          df (frequencies (mapcat (comp keys :matches) docs))
+          idf (into {} (map (fn [[term hits]]
+                              [term (Math/log1p (/ (+ (- document-count hits) 0.5) (+ hits 0.5)))]) df))]
+      (for [{:keys [uri length matches]} docs :when (seq matches)]
+        (let [norm (* 1.2 (+ 0.25 (* 0.75 (/ length average-length))))
+              score (reduce + (for [[term tf] (sort-by key matches)]
+                                (* (idf term) (/ (* 2.2 tf) (+ tf norm)))))]
+          {:uri uri :score score})))))
+
 (defn search
   "Scoped concept search. Lexical and graph signals work without a model.
    Optional :embed-query returns a vector; :embedding-model must match stored vectors."
-  [ctx ontology-id {:keys [query-text seed-uris limit max-depth weights embed-query embedding-model]
+  [ctx ontology-id {:keys [query-text lexical-method seed-uris limit max-depth weights embed-query embedding-model]
         :or {limit 10 max-depth 2 weights {:lexical 1.0 :graph 1.0 :embedding 1.0}}}]
   (when-not ontology-id (errors/fail! :cognitect.anomalies/incorrect "Search requires ontology-id"))
   (when-not (pos-int? limit) (errors/fail! :cognitect.anomalies/incorrect "Search limit must be positive"))
@@ -151,10 +172,12 @@
     (errors/fail! :cognitect.anomalies/incorrect "Search weights must be finite and nonnegative"))
   (let [cs (get-concepts ctx {:ontology-id ontology-id})
         by-uri (into {} (map (juxt :uri identity)) cs)
-        q (tokens query-text)
-        lexical (->> cs (keep (fn [c]
-                               (let [n (count (set/intersection q (tokens (str (:label c) " " (:description c)))))]
-                                 (when (pos? n) {:uri (:uri c) :score n}))))
+        q (set (tokenize query-text))
+        lexical (->> (if (= lexical-method :bm25)
+                       (bm25-lexical cs q)
+                       (keep (fn [c]
+                               (let [n (count (set/intersection q (set (tokenize (str (:label c) " " (:description c))))))]
+                                 (when (pos? n) {:uri (:uri c) :score n}))) cs))
                      (sort-by (juxt (comp - :score) :uri)))
         graph (when (seq seed-uris)
                 (graph/bfs-spreading-activation (graph/concepts->graph by-uri)
