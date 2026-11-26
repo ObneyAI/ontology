@@ -24,7 +24,6 @@
       (when (.find matcher)
         (let [anchor (re-groups matcher)
               prefix (subs question 0 (.start matcher))
-              ;; Avoid reading the last component of a range, fraction or compound number as the offset.
               compound? (re-find #"(?i)(?:[\d][.,/–—-]|\b(?:between|and|or|to|twenty|thirty|forty|fifty|sixty|seventy|eighty|ninety|hundred|thousand)[ -]+)$" prefix)]
           (when-not (or compound? (.find matcher))
             {:as-of day :day (- day (days-back anchor))

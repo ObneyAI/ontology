@@ -17,7 +17,6 @@
         base (vec (take seeds/window candidates))
         existing (set base)
         additions (->> ranked (filter #(= "user" (role %))) (take 16) (remove existing) (take 8))
-        ;; Start at the bottom so tied, unmatched replies drop in reverse baseline order.
         replies (->> (drop (quot (count base) 2) base) reverse
                      (filter #(= "assistant" (role %)))
                      (sort-by #(get rank % (count ranked)) >))

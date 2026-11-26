@@ -176,7 +176,6 @@
         (is (empty? @calls))
         (h/ok! (o/import-contribution! ctx oid (h/request ctx oid [(assoc (h/concept "urn:a") :broader ["urn:b"])])))
         (is (= [[[oid "urn:a"] [oid "urn:b"]]] @calls))
-        ;; Another hierarchical predicate between the same nodes adds no reachability.
         (h/ok! (o/create-relationship! ctx {:source-ontology-id oid :target-ontology-id oid
                                           :source-uri "urn:a" :target-uri "urn:b" :predicate "rdfs:subClassOf"}))
         (is (= 1 (count @calls)))))))
@@ -189,12 +188,10 @@
         (let [oid (h/graph ctx)]
           (h/ok! (o/import-contribution! ctx oid (h/request ctx oid [(h/concept "urn:a")
                                                                (assoc (h/concept "urn:b") :broader ["urn:a"])])))
-          ;; Reverse the edge atomically: the removed path must not reject the new edge.
           (is (not (h/anomaly? (o/import-contribution! ctx oid (h/request ctx oid
                                 [(assoc (h/concept "urn:a") :broader ["urn:b"])
                                  (assoc (h/concept "urn:b") :broader [])])))))
           (let [before (h/graph-events ctx)]
-            ;; A cycle consisting entirely of edges introduced in one contribution.
             (is (h/anomaly? (o/import-contribution! ctx oid (h/request ctx oid
                               [(assoc (h/concept "urn:x") :broader ["urn:y"])
                                (assoc (h/concept "urn:y") :broader ["urn:z"])
@@ -203,7 +200,6 @@
         (finally (es/stop (:event-store ctx)) (when file (durable/cleanup file)))))))
 
 (defn acyclic-edges? [edges]
-  ;; Independent whole-graph oracle: repeatedly remove nodes with no incoming edges.
   (loop [nodes (set (mapcat identity edges)) edges (set edges)]
     (if (empty? nodes) true
         (let [targets (set (map second edges)) roots (remove targets nodes)]
@@ -331,7 +327,6 @@
                                  :provenance {:old true} :embedding-model "m" :embedding [1 0])))
           cid (:concept-id created)
           original (o/get-concept ctx oid cid)]
-      ;; Scope controls index buckets until an explicit entity type is supplied.
       (h/ok! (o/update-concept! ctx oid cid {:changes {:scope :new-scope}}))
       (let [s (graph-state ctx oid)]
         (check-indexes s)

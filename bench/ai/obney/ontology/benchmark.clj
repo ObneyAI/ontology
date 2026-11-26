@@ -111,7 +111,6 @@
       (let [input (request oid @revision (str "initial-" i) batch)]
         (reset! revision (:revision (ok! (o/import-contribution! ctx oid input))))
         (reset! last-input input)))
-    ;; Additional contributions upsert an existing record, keeping graph size fixed.
     (dotimes [i history]
       (let [input (request oid @revision (str "history-" i) [(first records)])]
         (reset! revision (:revision (ok! (o/import-contribution! ctx oid input))))

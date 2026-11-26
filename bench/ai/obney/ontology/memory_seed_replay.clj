@@ -23,7 +23,6 @@
         ctx {:event-store store :tenant-id (random-uuid)}]
     (try
       (let [graph (:ontology-id (ontology/create-ontology! ctx {:name "Session traversal replay"}))]
-        ;; BM25 uses statistics from the whole graph. Traversal alone needs only seeded sessions.
         (doseq [session (partition-by :session turns)
                 :when (or (not= policy :session-only) (sessions (:session (first session))))]
           (pilot/import-session! ctx graph session))

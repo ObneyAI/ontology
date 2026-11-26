@@ -106,7 +106,9 @@
       (is (m/validate ::schemas/context ctx))
       (is (m/validate ::schemas/ontology-id (str oid)))
       (is (m/validate ::schemas/update-request {:changes {:embedding nil :embedding-model nil}}))
+      (doseq [invalid [{:embedding 42} {:embedding-model {:wrong "shape"}}]]
+        (is (not (m/validate ::schemas/concept-request (merge (h/concept "urn:bad") invalid)))))
+      (is (not (m/validate ::schemas/local-edge {:subject "a" :predicate "p" :object "b" :metadata 12})))
       (is (m/validate ::schemas/concept-request (assoc (h/concept "urn:opaque") :embedding [##NaN "bad"])))
-      ;; Defining/collecting schemas does not instrument functions automatically.
       (is (= :cognitect.anomalies/incorrect
              (:cognitect.anomalies/category (o/search ctx oid {:limit 0})))))))

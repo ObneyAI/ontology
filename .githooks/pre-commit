@@ -1,0 +1,9 @@
+#!/bin/sh
+set -eu
+cd "$(git rev-parse --show-toplevel)"
+snapshot=$(mktemp -d "${TMPDIR:-/tmp}/ontology-pre-commit.XXXXXX")
+trap 'rm -rf "$snapshot"' EXIT
+trap 'exit 1' HUP INT TERM
+git ls-files --cached -z -- src test bench scripts deps.edn > "$snapshot/index-files"
+git checkout-index --prefix="$snapshot/" --stdin -z < "$snapshot/index-files"
+sh "$snapshot/scripts/lint.sh"

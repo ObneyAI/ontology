@@ -53,8 +53,6 @@
 
 (defn validate-hierarchy! [before s event]
   (trace/span :ontology.trace/validate-hierarchy
-    ;; The committed graph is acyclic. Every new cycle must contain a newly
-    ;; reachable direct connection. Removals and parallel edges cannot add one.
     (let [adjacency (get-in s [:indexes :hierarchy])
           additions (into #{}
                           (keep (fn [[so su _ to tu]]
@@ -64,8 +62,6 @@
                                       [source target]))))
                           (affected-relationship-keys s event))]
         (doseq [[start target] additions]
-          ;; Use the final candidate, so additions are checked together and
-          ;; paths removed by the same command do not cause false rejection.
           (validate-hierarchy-edge! adjacency start target)))))
 
 (defn validate-concept! [c]
@@ -94,8 +90,6 @@
                      :ontology/concept-updated [[oid (:uri e)]]
                      [])
           removed (when imported? (get-in e [:changes :concepts :removals]))
-          ;; Endpoint removal can invalidate unchanged incoming or outgoing edges.
-          ;; Select them from the prior index, then check only surviving edges.
           dependencies (mapcat #(get-in before [:indexes :concept-edges %]) removed)
           edges (into (set (affected-relationship-keys s event)) dependencies)]
       (doseq [key concepts] (validate-concept! (get-in s [:concepts key])))
@@ -152,8 +146,6 @@
         (prepare-change s command oid request-id cached make-change))
       (catch Exception e
         (if (::anom/category (ex-data e)) (ex-data e)
-            ;; Grain catches handler exceptions. Preserve the cause for the public
-            ;; dispatcher to rethrow after the engine declines to append events.
             {::anom/category ::anom/fault ::anom/message (.getMessage e) ::exception e})))))
 
 (defn create-ontology-change [{:keys [name] :as p}]

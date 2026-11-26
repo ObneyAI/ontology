@@ -327,6 +327,20 @@ predicate policies and TBox sections reject unknown keys.
 
 ## Development
 
+Install the pre-commit hook once per checkout with Babashka (`bb`) on your
+PATH. Run the same checks against the working tree at any time.
+
+```sh
+./scripts/install-hooks.sh
+./scripts/lint.sh
+```
+
+The hook checks the Git index, including partially staged files. It checks
+Clojure comments, explicit dependencies, forward declarations, SQL deletion,
+Grain declaration placement, Grain runtime calls in graph logic, read-model
+versions, and Malli schema types. Read models use version 1. Older projection
+caches rebuild from the event log on first access.
+
 Run the test suite or a focused namespace with the Clojure CLI:
 
 ```sh

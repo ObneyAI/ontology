@@ -13,8 +13,6 @@
 (def seed (Long/parseLong (or (System/getenv "ONTOLOGY_TEST_SEED") "20260918")))
 (def trials (Long/parseLong (or (System/getenv "ONTOLOGY_TEST_TRIALS") "60")))
 (defn check! [label property]
-  ;; Each generated case owns fresh stores. Release their shared L1 entries
-  ;; after the whole case (including replay), preserving warm reads within it.
   (rmp/l1-clear!)
   (let [isolated (gen/fmap (fn [result] (rmp/l1-clear!) result) property)
         result (tc/quick-check trials isolated :seed seed :max-size 35)]
@@ -156,7 +154,6 @@
              (every? #(and (Double/isFinite (double (:similarity-score %))) (<= 0 (:similarity-score %) 1)) (:matches result))
              (= "urn:original" (get (:canonical-map result) "urn:new")))))))
 
-;; Independent public-boundary models deliberately avoid projection/index helpers.
 (defn reachable-within [edges seeds depth]
   (loop [seen (set seeds) frontier (set seeds) remaining depth]
     (if (or (zero? remaining) (empty? frontier)) seen
@@ -220,7 +217,6 @@
                                 input (h/request ctx oid [c])
                                 result (if (zero? i) (h/add! ctx oid (uri n))
                                            (h/ok! (o/import-contribution! ctx oid input)))
-                                ;; Import assigns identity; subsequent expectations use that receipt's graph view.
                                 cid (if (zero? i) (:concept-id result)
                                         (:concept-id (o/get-concept-by-uri ctx oid (uri n))))
                                 record (if (zero? i) (h/concept (uri n))

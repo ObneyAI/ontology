@@ -75,7 +75,6 @@
       (is (= event-count (count (events ctx))))
       (is (conflict? (ontology/import-contribution! ctx oid (assoc-in input [:concepts 0 :label] "Changed"))))
       (is (= revision (ontology/get-revision ctx oid)))
-      ;; Identical source bytes may be reprocessed under a new contribution ID.
       (let [next-input (-> input
                            (assoc :contribution-id (random-uuid) :expected-revision revision)
                            (assoc-in [:source :producer :version] "2")
@@ -212,7 +211,6 @@
           results (with-redefs [state/read-state
                                (fn [c]
                                  (let [s (read-state c)]
-                                   ;; Both writers validate the same persisted prefix.
                                    (when (<= (swap! reads inc) 2)
                                      (.await barrier 10 java.util.concurrent.TimeUnit/SECONDS))
                                    s))]

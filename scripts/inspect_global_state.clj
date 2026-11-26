@@ -1,5 +1,3 @@
-;; Run in an isolated JVM using the :test classpath, with clojure.main (see report).
-;; Enumerates root values, not their contents; does not force delays.
 (require '[clojure.java.io :as io]
          '[clojure.pprint :as pp]
          '[ai.obney.ontology.interface]

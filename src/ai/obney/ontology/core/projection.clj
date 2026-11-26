@@ -6,8 +6,6 @@
             [ai.obney.grain.kv-store.interface.protocol :as kv]
             [clj-uuid :as uuid]))
 
-;; L1 belongs to Grain. Hosts may supply :cache for durable L2 storage; an L2
-;; sink preserves the existing cache-free host context without another cache.
 (def ^:private no-l2
   (reify kv/KVStore
     (start [this] this) (stop [this] this)
@@ -31,15 +29,14 @@
   (when-not (:tenant-id ctx)
     (throw (ex-info "A tenant-id is required" {:cognitect.anomalies/category :cognitect.anomalies/forbidden}))))
 
-(defn- read-bounded [store query]
+(defn- read-bounded
+  "Read a historical suffix without combining Grain's mutually exclusive :after and :as-of."
+  [store query]
   (let [queries (if (vector? query) query [query])
         bound (:as-of (first queries)) after (:after (first queries))]
     (cond
       (and bound after (not (uuid/< after bound))) []
       (and bound after)
-      ;; Grain adds :after to historical scopes, but the event-store contract
-      ;; forbids combining :after with :as-of. Stream the suffix and stop at the
-      ;; common bound instead; never feed already-projected events back in.
       (let [q (mapv #(dissoc % :as-of) queries)
             events (es/read store (if (vector? query) q (first q)))]
         (reify clojure.lang.IReduceInit
@@ -56,22 +53,20 @@
         (read-bounded store (if (vector? query) (mapv bounded query) (bounded query)))))))
 
 (defn project
+  "Serialize updates to a store- and tenant-qualified Grain projection. The cache
+   namespace isolates this layout from previously persisted version-1 entries."
   ([ctx model queries] (project ctx model queries {}))
   ([ctx model queries options]
    (authorize! ctx)
    (if (empty? queries) {}
        (let [{:keys [reducer-fn version]} (get (rmp/global-read-model-registry) model)
              _ (when-not reducer-fn (throw (ex-info "Unknown ontology projection" {:model model})))
-             ;; Grain's default key hashes scope to 32 bits and omits store
-             ;; identity. Put the complete namespace digest in its model name.
-             name (str model "/" (digest [(store-key ctx) (:tenant-id ctx) queries options]))
+             name (str "ontology-projections/" model "/" (digest [(store-key ctx) (:tenant-id ctx) queries options]))
              lock (nth locks (mod (hash name) (count locks)))
              reducer (if (seq options)
                        (fn [s e] (reducer-fn s (assoc e :projection/options options
                                                      :projection/concept-key (:concept-key options))))
                        reducer-fn)]
-         ;; Serialize same-key updates so a slower caller cannot overwrite a
-         ;; newer watermark in Grain's process-global L1.
          (locking lock
            (rmp/p (assoc ctx :cache (or (:cache ctx) no-l2) :event-store (bounded-store (:event-store ctx) (:as-of (first queries))))
                   {:name name :version version :f reducer :query (let [live (mapv #(dissoc % :as-of) queries)]

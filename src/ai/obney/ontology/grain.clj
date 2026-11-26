@@ -14,7 +14,7 @@
    [:concepts [:vector ::api/concept-definition]]
    [:relationships [:vector [:map {:closed true} [:source-uri ::api/nonblank-string]
                              [:target-uri ::api/nonblank-string] [:predicate ::api/nonblank-string]
-                             [:metadata {:optional true} :any]]]]])
+                             [:metadata {:optional true} ::api/relationship-metadata]]]]])
 
 (defn- stage [batch oid command-name request-id params change]
   (let [command (assoc params :command/name command-name)

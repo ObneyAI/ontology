@@ -19,18 +19,15 @@
    For direct content, hashes the content string."
   [source-uri content]
   (cond
-    ;; Direct content provided
     (and content (string? content))
     (sha256 content)
 
-    ;; File path - read and hash
     (and source-uri (.exists (File. ^String source-uri)))
     (let [digest (MessageDigest/getInstance "SHA-256")]
       (with-open [stream (DigestInputStream. (io/input-stream source-uri) digest)]
         (.transferTo stream (java.io.OutputStream/nullOutputStream)))
       (apply str (map #(format "%02x" %) (.digest digest))))
 
-    ;; URL or non-file path - hash the URI itself
     :else
     (sha256 (or source-uri ""))))
 

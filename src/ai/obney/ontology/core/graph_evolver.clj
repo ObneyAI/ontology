@@ -78,7 +78,6 @@
          (map (fn [[_uri cs]]
                 (if (= 1 (count cs))
                   (first cs)
-                  ;; Merge multiple concepts
                   (reduce (fn [merged c]
                             (-> merged
                                 (update :alt-labels #(vec (distinct (concat % (:alt-labels c)))))
@@ -104,7 +103,6 @@
        (group-by (juxt :subject :predicate :object))
        vals
        (map (fn [rels]
-              ;; Keep the one with highest confidence
               (apply max-key #(or (:confidence %) 0) rels)))
        vec))
 
@@ -188,22 +186,18 @@
         added-uris (set/difference new-uris existing-uris)
         merged-uris (set/intersection new-uris existing-uris)
 
-        ;; Build updated concepts map
         updated-concepts (reduce
                            (fn [m c]
                              (if (contains? m (:uri c))
-                               ;; Merge with existing
                                (update m (:uri c)
                                        (fn [existing]
                                          (-> existing
                                              (update :alt-labels into (:alt-labels c))
                                              (update :relationships into (:relationships c)))))
-                               ;; Add new
                                (assoc m (:uri c) c)))
                            concepts
                            new-concepts)
 
-        ;; Merge relationships (deduplicate)
         all-relationships (deduplicate-relationships
                             (concat relationships new-relationships))]
 

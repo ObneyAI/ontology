@@ -163,7 +163,7 @@
 (deftest independent-ontology-writes-do-not-conflict
   (h/with-context [ctx]
     (let [a (h/graph ctx) b (h/graph ctx)
-          read-state (requiring-resolve 'ai.obney.ontology.core.state/read-state)
+          read-state #'state/read-state
           original @read-state barrier (java.util.concurrent.CyclicBarrier. 2)]
       (with-redefs-fn {read-state (fn [ctx]
                                   (let [s (original ctx)]

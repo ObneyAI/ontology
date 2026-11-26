@@ -17,8 +17,7 @@
 (def default-edge-weights
   "Edge weights for different predicate types.
    Higher weight = stronger semantic connection."
-  {;; SKOS predicates
-   "skos:exactMatch"   1.0
+  {"skos:exactMatch"   1.0
    "skos:closeMatch"   0.95
    "skos:broader"      0.9
    "skos:narrower"     0.85
@@ -26,27 +25,24 @@
    "skos:narrowMatch"  0.8
    "skos:related"      0.7
 
-   ;; RDFS predicates
    "rdfs:subClassOf"   0.9
    "rdfs:seeAlso"      0.6
 
-   ;; OWL predicates
    "owl:sameAs"        1.0
    "owl:equivalentClass" 1.0
 
-   "a"                       0.3    ;; rdf:type - weak for traversal
+   "a"                       0.3
 
-   ;; Default for unknown predicates
    :default            0.5})
 
 (def default-traversal-config
   "Default configuration for graph traversal."
-  {:max-depth       3      ;; Maximum hops from seeds
-   :decay           0.5    ;; Activation decay per hop (decay^depth)
-   :min-activation  0.01   ;; Stop threshold
-   :max-results     100    ;; Result limit
-   :bidirectional   true   ;; Follow edges both directions
-   :predicates      nil})  ;; nil = follow all predicates
+  {:max-depth       3
+   :decay           0.5
+   :min-activation  0.01
+   :max-results     100
+   :bidirectional   true
+   :predicates      nil})
 
 ;; =============================================================================
 ;; Graph Construction from Read Models
@@ -64,21 +60,18 @@
   (let [nodes (atom (set (keys concepts)))
         edges (atom {})]
     (doseq [[uri concept] concepts]
-      ;; Add broader edges
       (doseq [broader-uri (:broader concept)]
         (swap! nodes conj broader-uri)
         (swap! edges update uri (fnil conj [])
                {:to broader-uri :predicate "skos:broader" :weight 0.9})
         (swap! edges update broader-uri (fnil conj [])
                {:to uri :predicate "skos:narrower" :weight 0.85 :reverse true}))
-      ;; Add narrower edges
       (doseq [narrower-uri (:narrower concept)]
         (swap! nodes conj narrower-uri)
         (swap! edges update uri (fnil conj [])
                {:to narrower-uri :predicate "skos:narrower" :weight 0.85})
         (swap! edges update narrower-uri (fnil conj [])
                {:to uri :predicate "skos:broader" :weight 0.9 :reverse true}))
-      ;; Add related edges
       (doseq [related-uri (:related concept)]
         (swap! nodes conj related-uri)
         (swap! edges update uri (fnil conj [])
@@ -96,9 +89,6 @@
                                (str/trim line))]
     [(second match) (nth match 2) (nth match 3)]))
 
-;; =============================================================================
-;; Multi-line Turtle Parser (handles ; continuation syntax)
-;; =============================================================================
 
 (defn- extract-uri
   "Extract URI from various Turtle formats.
@@ -107,10 +97,8 @@
   (cond
     (nil? token) nil
     (str/blank? token) nil
-    ;; Full URI in angle brackets
     (str/starts-with? token "<")
     (-> token (str/replace #"^<" "") (str/replace #">$" ""))
-    ;; Already clean
     :else token))
 
 (defn- extract-value
@@ -125,38 +113,30 @@
     (nil? token) nil
     (str/blank? token) nil
 
-    ;; URI in angle brackets
     (str/starts-with? token "<")
     {:type :uri :value (extract-uri token)}
 
-    ;; Prefixed URI (e.g., cip:cip_11_0701)
     (and (re-matches #"^[a-zA-Z][a-zA-Z0-9]*:[^\s\"]+$" token)
          (not (str/starts-with? token "\"")))
     {:type :uri :value token}
 
-    ;; Quoted literal with language tag: "value"@en
     (re-matches #"^\".*\"@[a-z]+$" token)
     (let [[_ val lang] (re-matches #"^\"(.*)\"@([a-z]+)$" token)]
       {:type :literal :value val :lang lang})
 
-    ;; Quoted literal with datatype: "value"^^xsd:type
     (re-matches #"^\".*\"\^\^.*$" token)
     (let [[_ val dtype] (re-matches #"^\"(.*)\"\^\^(.+)$" token)]
       {:type :typed-literal :value val :datatype dtype})
 
-    ;; Simple quoted literal: "value"
     (re-matches #"^\".*\"$" token)
     {:type :literal :value (subs token 1 (dec (count token)))}
 
-    ;; Numeric literal
     (re-matches #"^-?[0-9]+\.?[0-9]*$" token)
     {:type :number :value (try (Double/parseDouble token) (catch Exception _ token))}
 
-    ;; Boolean
     (contains? #{"true" "false"} (str/lower-case token))
     {:type :boolean :value (= "true" (str/lower-case token))}
 
-    ;; Fallback - treat as URI
     :else
     {:type :uri :value token}))
 
@@ -177,29 +157,23 @@
             (conj tokens current))
           (let [c (first chars)]
             (cond
-              ;; Start of quoted string
               (and (= c \") (not in-quotes))
               (recur (rest chars) tokens (str current c) true in-uri)
 
-              ;; End of quoted string (but might have @lang or ^^type following)
               (and (= c \") in-quotes)
               (recur (rest chars) tokens (str current c) false in-uri)
 
-              ;; Start of URI
               (and (= c \<) (not in-quotes))
               (recur (rest chars) tokens (str current c) in-quotes true)
 
-              ;; End of URI
               (and (= c \>) (not in-quotes))
               (recur (rest chars) tokens (str current c) in-quotes false)
 
-              ;; Whitespace outside quotes - token separator
               (and (Character/isWhitespace c) (not in-quotes) (not in-uri))
               (if (str/blank? current)
                 (recur (rest chars) tokens "" in-quotes in-uri)
                 (recur (rest chars) (conj tokens current) "" in-quotes in-uri))
 
-              ;; Any other character
               :else
               (recur (rest chars) tokens (str current c) in-quotes in-uri))))))))
 
@@ -230,40 +204,32 @@
         prefixes (atom {})
         nodes (atom #{})
         edges (atom {})
-        properties (atom {})  ;; Store literal properties
+        properties (atom {})
         triple-count (atom 0)
 
-        ;; State for multi-line parsing
         current-subject (atom nil)
         current-predicate (atom nil)]
 
-    ;; Process each line
     (doseq [line lines]
       (let [trimmed (str/trim line)]
         (cond
-          ;; Skip empty lines and comments
           (or (str/blank? trimmed)
               (str/starts-with? trimmed "#"))
           nil
 
-          ;; Parse @prefix declaration
           (str/starts-with? trimmed "@prefix")
           (when-let [[_ prefix expansion]
                      (re-matches #"@prefix\s+([^:]+):\s+<([^>]+)>\s*\.$" trimmed)]
             (swap! prefixes assoc prefix expansion))
 
-          ;; Parse @base declaration
           (str/starts-with? trimmed "@base")
-          nil  ;; Skip for now
+          nil
 
-          ;; Parse statement line
           :else
           (let [tokens (tokenize-turtle-line trimmed)
-                ;; Detect line ending
                 ends-with-period (str/ends-with? trimmed ".")
                 ends-with-semi (str/ends-with? trimmed ";")
                 ends-with-comma (str/ends-with? trimmed ",")
-                ;; Remove trailing punctuation from tokens
                 tokens (cond-> tokens
                          (and (seq tokens)
                               (contains? #{"." ";" ","} (last tokens)))
@@ -271,7 +237,6 @@
 
             (when (seq tokens)
               (cond
-                ;; Full triple: subject predicate object
                 (and (nil? @current-subject) (>= (count tokens) 3))
                 (let [[subj pred & objs] tokens
                       subj-uri (extract-uri subj)]
@@ -283,21 +248,17 @@
                       (when obj-val
                         (swap! triple-count inc)
                         (if (= :uri (:type obj-val))
-                          ;; URI object - create edge
                           (let [obj-uri (:value obj-val)
                                 weight (get default-edge-weights pred
                                             (get default-edge-weights :default))]
                             (swap! nodes conj obj-uri)
                             (swap! edges update subj-uri (fnil conj [])
                                    {:to obj-uri :predicate pred :weight weight})
-                            ;; Bidirectional edge
                             (swap! edges update obj-uri (fnil conj [])
                                    {:to subj-uri :predicate pred :weight weight :reverse true}))
-                          ;; Literal object - store as property
                           (swap! properties update subj-uri assoc
                                  (keyword pred) (:value obj-val)))))))
 
-                ;; Continuation with new predicate: predicate object (after ;)
                 (and @current-subject (>= (count tokens) 2))
                 (let [[pred & objs] tokens]
                   (reset! current-predicate pred)
@@ -317,7 +278,6 @@
                           (swap! properties update @current-subject assoc
                                  (keyword pred) (:value obj-val)))))))
 
-                ;; Continuation with same predicate: object (after ,)
                 (and @current-subject @current-predicate (= (count tokens) 1))
                 (let [obj (first tokens)
                       obj-val (extract-value obj)]
@@ -340,12 +300,10 @@
                                  (conj v (:value obj-val))
                                  (if v [v (:value obj-val)] (:value obj-val))))))))))
 
-            ;; Update state based on line ending
             (when ends-with-period
               (reset! current-subject nil)
               (reset! current-predicate nil))
             (when ends-with-comma
-              ;; Keep same subject and predicate
               nil)))))
 
     {:nodes @nodes
@@ -376,7 +334,6 @@
                         (get default-edge-weights :default))]
         (swap! edges update subj (fnil conj [])
                {:to obj :predicate pred :weight weight})
-        ;; Add reverse edge for bidirectional traversal
         (swap! edges update obj (fnil conj [])
                {:to subj :predicate pred :weight weight :reverse true})))
     {:nodes @nodes
@@ -413,21 +370,17 @@
 
         edges (:edges graph)
 
-        ;; Activation scores and paths for each node
         activations (atom {})
         paths (atom {})
 
-        ;; BFS queue: [[uri current-activation depth source-seed path]]
         queue (atom (into clojure.lang.PersistentQueue/EMPTY
                           (for [seed seed-uris]
                             [seed 1.0 0 seed [seed]])))]
 
-    ;; Initialize seeds
     (doseq [seed seed-uris]
       (swap! activations assoc seed 1.0)
       (swap! paths assoc seed {:path [seed] :depth 0 :source-seed seed :edge-type nil}))
 
-    ;; BFS traversal
     (loop []
       (when-let [item (first @queue)]
         (swap! queue pop)
@@ -451,7 +404,6 @@
                     (swap! queue conj [to new-activation (inc depth) source-seed (conj path to)]))))))
           (recur))))
 
-    ;; Build results sorted by activation
     (->> @activations
          (map (fn [[uri score]]
                 (let [{:keys [path depth source-seed edge-type]} (get @paths uri)]
@@ -465,9 +417,6 @@
          (take (or max-results Long/MAX_VALUE))
          vec)))
 
-;; =============================================================================
-;; Link Expansion (Fast 2-3 hop)
-;; =============================================================================
 
 (defn link-expansion
   "Fast 2-3 hop expansion for real-time suggestions.
@@ -487,13 +436,10 @@
         edges (:edges graph)
         seed-set (set seed-uris)
 
-        ;; Track visited with scores
         visited (atom (into {} (for [s seed-uris] [s {:score 1.0 :path [s] :depth 0}])))
 
-        ;; Current frontier
         frontier (atom seed-set)]
 
-    ;; Expand for each hop
     (doseq [hop (range 1 (inc hops))]
       (let [new-frontier (atom #{})]
         (doseq [uri @frontier]
@@ -510,7 +456,6 @@
                   (swap! new-frontier conj to))))))
         (reset! frontier @new-frontier)))
 
-    ;; Convert to result format
     (->> @visited
          (map (fn [[uri {:keys [score path depth]}]]
                 {:uri uri
@@ -520,9 +465,6 @@
          (sort-by :score >)
          vec)))
 
-;; =============================================================================
-;; RRF (Reciprocal Rank Fusion)
-;; =============================================================================
 
 (defn compute-rrf-scores
   "Reciprocal Rank Fusion for merging multiple ranked result lists.
@@ -537,13 +479,12 @@
    Returns:
      Vector of [uri fused-score] sorted by fused score descending"
   [batches & {:keys [k] :or {k 60}}]
-  (let [;; Convert each batch to ranked list
+  (let [
         ranked-batches (for [batch batches]
                          (->> batch
                               (sort-by :score >)
                               (map-indexed (fn [rank item] [(:uri item) rank]))))
 
-        ;; Accumulate RRF scores
         rrf-scores (reduce
                      (fn [acc ranked-list]
                        (reduce (fn [a [uri rank]]
@@ -554,7 +495,6 @@
                      {}
                      ranked-batches)]
 
-    ;; Sort by fused score
     (->> rrf-scores
          (sort-by val >)
          vec)))
@@ -646,7 +586,7 @@
      Vector of {:uri :score :path :depth}"
   [graph seed-uris & {:keys [strategy max-depth decay hops]
                       :or {strategy "bfs" max-depth 3 decay 0.5 hops 2}}]
-  (let [;; Convert concept map to graph if needed
+  (let [
         g (if (contains? graph :edges)
             graph
             (concepts->graph graph))

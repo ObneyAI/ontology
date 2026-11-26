@@ -1,5 +1,6 @@
 (ns ai.obney.ontology.durable-test
   (:require [clojure.test :refer [deftest is]]
+            [ai.obney.ontology.core.state :as state]
             [ai.obney.ontology.interface :as o]
             [ai.obney.ontology.support :as h]
             [ai.obney.grain.event-store-v3.interface :as es]
@@ -41,7 +42,6 @@
         url (str "jdbc:sqlite:" (.getAbsolutePath file))]
     (try
       (let [oid (h/graph ctx) input (h/request ctx oid [(h/concept "urn:write")]) before (h/capture ctx oid)]
-        ;; This is a real database constraint failure, not a substituted append result.
         (jdbc/execute! {:jdbcUrl url} ["CREATE TRIGGER reject_contribution BEFORE INSERT ON events WHEN NEW.type = ':ontology/contribution-imported' BEGIN SELECT RAISE(ABORT, 'deliberate-write-failure'); END"])
         (is (try (h/anomaly? (o/import-contribution! ctx oid input))
                  (catch java.sql.SQLException e
@@ -82,7 +82,7 @@
             a (dissoc (h/request ctx oid [(h/concept "urn:a")]) :expected-revision)
             b (dissoc (h/request ctx oid [(h/concept "urn:b")]) :expected-revision)
             barrier (java.util.concurrent.CyclicBarrier. 2)
-            read-state (requiring-resolve 'ai.obney.ontology.core.state/read-state)
+            read-state #'state/read-state
             original @read-state
             n (atom 0)
             results (with-redefs-fn {read-state (fn [c]
@@ -106,7 +106,7 @@
           left-id (random-uuid) right-id (if same-key? left-id (random-uuid))
           send (fn [context command-id]
                  (o/create-ontology! context {:name "Independent identity" :request-id command-id}))
-          read-state (requiring-resolve 'ai.obney.ontology.core.state/read-state)
+          read-state #'state/read-state
           original @read-state
           barrier (java.util.concurrent.CyclicBarrier. 2)]
       (try

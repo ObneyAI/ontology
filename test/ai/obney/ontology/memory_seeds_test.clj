@@ -11,7 +11,6 @@
                      {:id (format "s%02d-%02d" s n) :session s
                       :role (if (even? n) "user" "assistant")}))
         ids (mapv :id turns)
-        ;; Eight sessions have both ranked replies and an omitted adjacent user turn.
         omitted (set (map #(format "s%02d-02" %) (range 8)))
         original (filterv (complement omitted) ids)
         flat (mapv :id (filter #(re-find #"-0[01]$" (:id %)) turns))

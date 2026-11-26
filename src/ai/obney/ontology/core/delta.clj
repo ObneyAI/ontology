@@ -13,7 +13,6 @@
 (defn index [xs] (into {} (map (juxt :uri identity)) xs))
 (defn ordered [m] (mapv val (sort-by key m)))
 (defn track [s]
-  ;; Candidate-local bookkeeping; never included in an event or read model.
   (assoc s ::touched {:concepts #{} :edges #{}}))
 (defn touch [s field key]
   (if (contains? s ::touched) (update-in s [::touched field] conj key) s))
@@ -21,7 +20,6 @@
   (if (contains? after ::touched)
     (let [keys (get-in after [::touched field])]
       (records (select-keys (get before field) keys) (select-keys (get after field) keys)))
-    ;; Untracked snapshots remain useful for complete diffs and replay checks.
     (records (get before field) (get after field))))
 (defn changes [before after oid]
   (trace/span :ontology.trace/diff

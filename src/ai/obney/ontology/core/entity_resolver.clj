@@ -16,9 +16,6 @@
   (:require [clojure.string :as str]
             [clojure.set :as set]))
 
-;; =============================================================================
-;; Label Normalization (matches Python normalize_label)
-;; =============================================================================
 
 (defn normalize-label
   "Normalize a label for exact matching.
@@ -142,11 +139,9 @@
       (if (= p x)
         x
         (let [root (find-root uf p)]
-          ;; Path compression
           (swap! uf assoc-in [:parent x] root)
           root))
       (do
-        ;; Initialize element as its own parent
         (swap! uf assoc-in [:parent x] x)
         (swap! uf assoc-in [:rank x] 0)
         x))))
@@ -177,13 +172,11 @@
    Returns: [[uri1 uri2 uri3] [uri4 uri5] ...]"
   [matches]
   (let [uf (make-union-find)]
-    ;; Union all matched pairs
     (doseq [{:keys [source1-uri source2-uri]} matches]
-      (find-root uf source1-uri)  ;; Initialize if needed
+      (find-root uf source1-uri)
       (find-root uf source2-uri)
       (union! uf source1-uri source2-uri))
 
-    ;; Group by root
     (let [all-uris (set (mapcat (juxt :source1-uri :source2-uri) matches))
           by-root (group-by #(find-root uf %) all-uris)]
       (vec (vals by-root)))))
@@ -201,12 +194,9 @@
      existing-uris - Set of URIs from existing ontology (for incremental mode)"
   [uris existing-uris]
   (let [uris-vec (vec uris)
-        ;; Check for existing ontology URIs
         existing-in-group (filter #(contains? existing-uris %) uris-vec)]
     (if (seq existing-in-group)
-      ;; Prefer existing - take shortest existing
       (first (sort-by (juxt count identity) existing-in-group))
-      ;; No existing - take shortest, then alphabetical
       (first (sort-by (juxt count identity) uris-vec)))))
 
 (defn compute-canonical-uris
@@ -294,15 +284,12 @@
                               vec)
         all-matches (into exact-matches semantic-matches)
 
-        ;; Step 3: Canonical URI mapping (Union-Find)
         uri-groups (group-matched-uris all-matches)
         canonical-map (compute-canonical-uris uri-groups :existing-uris existing-uris)
 
-        ;; Step 4: Alignment triples
         alignment-triples (when emit-owl-sameAs?
                             (generate-owl-sameAs-triples canonical-map))
 
-        ;; Stats
         matched-uris (set (keys canonical-map))
         unmatched (->> concepts
                        (remove #(contains? matched-uris (:uri %)))

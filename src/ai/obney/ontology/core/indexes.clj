@@ -50,7 +50,6 @@
       (get-in policies [so :predicate-policies predicate :hierarchical?])
       (reference [:hierarchy [so su] [to tu]] amount))))
 (defn edge-change [s key before after]
-  ;; Metadata-only changes do not alter any edge index.
   (if (and (contains? s :indexes) (not= (some? before) (some? after)))
     (update s :indexes edge-entry (:ontologies s) key (some? after)) s))
 (defn reindex-policy [s oid predicate previous-policy]

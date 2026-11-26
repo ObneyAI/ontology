@@ -143,7 +143,7 @@
 (defn event-data [e] (dissoc (merge e (:body e)) :body))
 
 (defreadmodel :ontology.graph state
-  {:events events :version 5}
+  {:events events :version 1}
   [s e] (select-keys (apply-event (indexes/ensure-indexed (or s {})) e) graph-keys))
 
 (defn- metadata-event [s event]
@@ -163,7 +163,7 @@
   [s e] (metadata-event s e))
 (defreadmodel :ontology.graph policies {:events policy-events :version 1}
   [s e] (select-keys (metadata-event s e) [:ontologies]))
-(defreadmodel :ontology.graph history {:events contribution-events :version 2}
+(defreadmodel :ontology.graph history {:events contribution-events :version 1}
   [s e]
   (select-keys (apply-event s (assoc (event-data e) :changes {}))
                [:sources :contributions :mappings]))
@@ -194,7 +194,7 @@
       {:concepts (select-keys (:concepts s) [key])
        :edges (into {} (filter (fn [[_ edge]] (incident? key edge))) (:edges s))}
       (select-keys s [:edges]))))
-(defreadmodel :ontology.graph concept {:events events :version 2}
+(defreadmodel :ontology.graph concept {:events events :version 1}
   [s e] (view-event s e (:projection/concept-key e)))
 (defreadmodel :ontology.graph concept-by-id {:events events :version 1}
   [s event]
@@ -209,7 +209,7 @@
                           (when (and (= oid ontology-id) (= concept-id (:concept-id c))) key))
                         (get-in e [:changes :concepts :upserts]))))]
     (if key (assoc (view-event s event key) :concept-key key) s)))
-(defreadmodel :ontology.graph relationships {:events events :version 2}
+(defreadmodel :ontology.graph relationships {:events events :version 1}
   [s e] (view-event s e nil))
 
 (defn revision [state oid] (get-in state [:revisions oid] 0))
@@ -225,8 +225,6 @@
 (defn read-request [ctx oid request-id]
   (trace/span :ontology.trace/retry-read
     (get (projection/project ctx :ontology.graph/requests
-                             ;; The request tag already includes ontology identity;
-                             ;; Grain adds tenant scope to the query.
                              [{:types events :tags #{(streams/request-tag oid request-id)}}]) [oid request-id])))
 (defn- with-policies [ctx s ids as-of]
   (let [origins (set/union (set ids) (set (map :source-ontology-id (vals (:edges s)))))

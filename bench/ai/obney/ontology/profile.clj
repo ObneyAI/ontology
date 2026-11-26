@@ -89,8 +89,6 @@
   (let [path [:state :ai.obney.grain.event-store-sqlite-v3.core/write-coordinator]]
     (if-let [^ThreadPoolExecutor executor (get-in store path)]
       (let [context (u/local-context) allocations? trace/*allocations?*
-            ;; Delegate to the actual coordinator: preserve queue, execution and backpressure.
-            ;; This proxy starts no threads and is never installed in the live store.
             forwarding (proxy [ThreadPoolExecutor]
                              [1 1 0 TimeUnit/MILLISECONDS (.getQueue executor)]
                          (execute [task]
