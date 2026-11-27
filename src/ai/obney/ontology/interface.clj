@@ -95,7 +95,7 @@
 
   Update behavior
     Supplied values replace their fields; maps are not deep-merged.
-    Omitted fields remain unchanged. Concept ID, ontology ID and URI are immutable.
+    Omitted fields remain unchanged. This command preserves the concept ID, ontology ID and URI.
     :broader [] removes all parents and maintains inverse views.
 
   Returns
@@ -104,6 +104,27 @@
   {:malli/schema (m/deref ::schemas/update-concept!)}
   [ctx ontology-id concept-id request]
   (core/update-concept! ctx ontology-id concept-id request))
+
+(defn delete-concept!
+  "Remove a concept and its incident relationships. Returns its former UUID and URI.
+  Accepts :request-id and :expected-revision. Returns a concept result or an anomaly."
+  {:malli/schema (m/deref ::schemas/delete-concept!)}
+  [ctx ontology-id concept-id request]
+  (core/delete-concept! ctx ontology-id concept-id request))
+
+(defn rename-concept!
+  "Move a concept to :new-uri, preserving its UUID and redirecting incident relationships.
+  Accepts :request-id and :expected-revision. Returns a concept result or an anomaly."
+  {:malli/schema (m/deref ::schemas/rename-concept!)}
+  [ctx ontology-id concept-id request]
+  (core/rename-concept! ctx ontology-id concept-id request))
+
+(defn merge-concepts!
+  "Merge the source UUID into :target-concept-id in the same ontology. Returns the target.
+  Accepts :request-id and :expected-revision. Returns a concept result or an anomaly."
+  {:malli/schema (m/deref ::schemas/merge-concepts!)}
+  [ctx ontology-id concept-id request]
+  (core/merge-concepts! ctx ontology-id concept-id request))
 
 (defn create-relationship!
   "Create a link between qualified endpoints.
@@ -373,7 +394,8 @@
   (core/get-sources ctx ontology-id))
 
 (defn get-canonical-mappings
-  "Return the graph's accumulated map of source URI to canonical URI.
+  "Return the graph's accumulated map of source URI to current canonical URI.
+  Rename and merge redirect mapped targets. Deletion removes mappings to the deleted concept.
 
   No mappings returns {}. A missing graph returns not-found.
   Invalid input or context returns an anomaly."

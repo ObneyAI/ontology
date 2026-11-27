@@ -45,6 +45,26 @@ Repeating a committed request with the same key and payload returns its original
 
 Manual writes accept an optional UUID `:request-id`. Creation keys are tenant-scoped. Other keys are graph-scoped. Imports require a UUID `:contribution-id` as their retry key and reject `:request-id`. A new contribution ID can record a different interpretation of the same source bytes.
 
+## Delete, merge, and rename concepts
+
+Each operation takes the ontology ID, a concept UUID and a request map. These examples show independent calls.
+
+```clojure
+(ontology/rename-concept! ctx graph-id concept-id {:new-uri "urn:biology:plantae"})
+(ontology/merge-concepts! ctx graph-id duplicate-id {:target-concept-id plant-id})
+(ontology/delete-concept! ctx graph-id concept-id {})
+```
+
+A rename accepts an unused URI reference and keeps the UUID, label and relationships. A concept appearing in an RDF triple requires an absolute destination URI. A merge keeps the target UUID, URI and descriptive fields. The target receives the source label and alternate labels, with duplicates and the target's primary label omitted. Redirected links retain their IDs and metadata. An existing target link wins a collision, including one visible through an inverse or symmetric predicate. A merge drops newly formed self-links and rejects a hierarchy cycle.
+
+Delete removes the concept and its incident links. Each ontology whose relationships change advances one revision in the same commit. Current lookups of a retired UUID or URI return `nil`. A later creation or import can reuse the URI with a fresh UUID. Earlier snapshots and original contribution records remain available.
+
+RDF subject and object URIs follow the edit. A rename or merge also updates schema domain, range, datatype and individual type references that rely on the concept. Deleting the only definition of a referenced type returns a conflict. Separately declared TBox classes and built-in types retain their own meanings. Existing import mappings follow the surviving concept and are removed when it is deleted.
+
+All three operations accept `:request-id` and `:expected-revision` with the retry behavior described above.
+
+## Close the store
+
 The application owns the store. Close it when finished with the example.
 
 ```clojure

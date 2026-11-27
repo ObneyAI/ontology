@@ -20,7 +20,7 @@
     (is (:pass? result) (pr-str result))))
 (defn uri [n] (str "urn:n:" n))
 (def operation-gen
-  (gen/tuple (gen/elements [:add :rename :parents :import :retry :bad-import])
+  (gen/tuple (gen/elements [:add :relabel :parents :import :retry :bad-import :move :merge :delete])
              (gen/choose 0 8) (gen/choose 0 8) (gen/elements ["Alpha" "Beta" "Gamma" "Δ"])))
 (defn reaches? [model from target]
   (loop [todo [from] seen #{}]
@@ -42,6 +42,17 @@
                (set (keep (fn [[u record]] (when (contains? (:broader record) (:uri c)) u)) model))))
           (o/get-concepts ctx {:ontology-id oid})))))
 
+(defn remap-hierarchy [model source target]
+  (let [surviving (cond-> (dissoc model source)
+                    target (assoc target (or (model target) (model source))))
+        redirect #(if (= source %) target %)
+        edges (for [[child record] model parent (:broader record)
+                    :let [from (redirect child) to (redirect parent)]
+                    :when (and from to (not= from to))]
+                [from to])]
+    (reduce (fn [records [child parent]] (update-in records [child :broader] conj parent))
+            (update-vals surviving #(assoc % :broader #{})) edges)))
+
 (defn exercise-sequence [operations]
   (h/with-context [ctx]
     (let [oid (h/graph ctx)]
@@ -49,24 +60,36 @@
         (if-let [[op n p label] (first ops)]
           (let [u (uri n) parent (uri p) existing (get model u)
                 c (o/get-concept-by-uri ctx oid u)
+                id (or (:concept-id c) (random-uuid))
+                remapped (when (#{:move :merge :delete} op)
+                           (remap-hierarchy model u (when-not (= op :delete) parent)))
                 input (when (#{:import :bad-import} op)
                         (h/request ctx oid [(cond-> (assoc (h/concept u) :label label)
                                               (= op :bad-import) (assoc :broader ["urn:absent"]))]))
-                allowed (case op :add (nil? existing) :rename (some? existing)
+                allowed (case op :add (nil? existing) (:relabel :delete) (some? existing)
+                              :move (and existing (nil? (model parent)))
+                              :merge (and existing (model parent) (not= u parent)
+                                          (not-any? #(reaches? remapped % parent)
+                                                    (get-in remapped [parent :broader])))
                               :parents (and existing (model parent) (not (reaches? model parent u)))
                               :bad-import false true)
                 before-events (h/graph-events ctx)
                 result (case op
                          :add (o/create-concept! ctx oid (assoc (h/concept u) :label label))
-                         :rename (o/update-concept! ctx oid (or (:concept-id c) (random-uuid)) {:changes {:label label}})
-                         :parents (o/update-concept! ctx oid (or (:concept-id c) (random-uuid)) {:changes {:broader [parent]}})
+                         :delete (o/delete-concept! ctx oid id {})
+                         :move (o/rename-concept! ctx oid id {:new-uri parent})
+                         :merge (o/merge-concepts! ctx oid id
+                                  {:target-concept-id (or (:concept-id (o/get-concept-by-uri ctx oid parent)) (random-uuid))})
+                         :relabel (o/update-concept! ctx oid id {:changes {:label label}})
+                         :parents (o/update-concept! ctx oid id {:changes {:broader [parent]}})
                          (:import :bad-import) (o/import-contribution! ctx oid input)
                          :retry (when prior (o/import-contribution! ctx oid (first prior))))
                 changes? (and allowed (not= op :retry))
                 expected (if changes?
                            (case op
                              (:add :import) (assoc model u {:label label :broader (or (:broader existing) #{})})
-                             :rename (assoc-in model [u :label] label)
+                             (:move :merge :delete) remapped
+                             :relabel (assoc-in model [u :label] label)
                              :parents (assoc-in model [u :broader] #{parent})) model)
                 next-revision (if changes? (inc revision) revision)
                 snapshot (o/export-snapshot ctx oid)

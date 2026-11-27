@@ -1,11 +1,15 @@
 
 Testing ai.obney.ontology.property-test
-canonical-choice {:seed 7, :num-tests 500, :pass? true, :time-elapsed-ms 94}
-disjoint-import-order {:seed 7, :num-tests 500, :pass? true, :time-elapsed-ms 3585}
-literal-roundtrip {:seed 7, :num-tests 500, :pass? true, :time-elapsed-ms 8573}
-mutation-sequences {:seed 7, :num-tests 500, :pass? true, :time-elapsed-ms 169414}
-source-versions {:seed 7, :num-tests 500, :pass? true, :time-elapsed-ms 46458}
-resolution-scores {:seed 7, :num-tests 500, :pass? true, :time-elapsed-ms 27}
+retry-scopes {:seed 7, :num-tests 500, :pass? true, :time-elapsed-ms 6232}
+canonical-choice {:seed 7, :num-tests 500, :pass? true, :time-elapsed-ms 39}
+disjoint-import-order {:seed 7, :num-tests 500, :pass? true, :time-elapsed-ms 2366}
+literal-roundtrip {:seed 7, :num-tests 500, :pass? true, :time-elapsed-ms 411}
+search-reachability {:seed 7, :num-tests 500, :pass? true, :time-elapsed-ms 1241}
+mutation-sequences {:seed 7, :num-tests 500, :pass? true, :time-elapsed-ms 9694}
+source-versions {:seed 7, :num-tests 500, :pass? true, :time-elapsed-ms 2475}
+resolution-scores {:seed 7, :num-tests 500, :pass? true, :time-elapsed-ms 20}
+metadata-scopes {:seed 7, :num-tests 500, :pass? true, :time-elapsed-ms 7631}
+cross-ontology-views {:seed 7, :num-tests 500, :pass? true, :time-elapsed-ms 12525}
 
-Ran 6 tests containing 6 assertions.
+Ran 10 tests containing 10 assertions.
 0 failures, 0 errors.

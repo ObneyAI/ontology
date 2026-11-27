@@ -3,6 +3,7 @@
   (:require [ai.obney.grain.schema-util.interface :refer [defschemas]]
             [ai.obney.grain.event-store-v3.interface.protocol :as event-store]
             [ai.obney.ontology.core.api-schemas :as-alias api]
+            [ai.obney.ontology.core.rdf :as rdf]
             [clojure.string :as str]
             [malli.util :as mu]))
 
@@ -37,6 +38,9 @@
   {:ontology/create-ontology [:map [:name :string] [:scope {:optional true} scope]
                               [:predicate-policies {:optional true} policies]]
    :ontology/create-concept [:and concept [:map [:ontology-id :uuid]]]
+   :ontology/delete-concept [:map [:ontology-id :uuid] [:concept-id :uuid]]
+   :ontology/rename-concept [:map [:ontology-id :uuid] [:concept-id :uuid] [:new-uri :string]]
+   :ontology/merge-concepts [:map [:ontology-id :uuid] [:concept-id :uuid] [:target-concept-id :uuid]]
    :ontology/update-concept [:map [:ontology-id :uuid] [:concept-id :uuid] [:changes changes]]
    :ontology/create-relationship [:map [:source-ontology-id :uuid] [:target-ontology-id :uuid]
                                  [:source-uri :string] [:target-uri :string] [:predicate :string]]
@@ -63,12 +67,19 @@
    [:abox (record-delta :string :map)]
    [:rdf-triples [:map [:additions [:vector :map]] [:removals [:vector :map]]]]])
 
+(def lifecycle-event
+  [:map [:ontology-id :uuid] [:old-uri :string] [:new-uri [:maybe :string]]
+   [:changes contribution-changes] [:affected-ontology-ids [:vector :uuid]]])
+
 (defschemas events
   {:ontology/ontology-created [:map [:ontology-id :uuid] [:name :string] [:scope {:optional true} scope]
                                [:predicate-policies {:optional true} policies] [:created-at :string]]
    :ontology/concept-created [:map [:ontology-id :uuid] [:concept-id :uuid]
                               [:uri :string] [:label :string] [:description :string]
                               [:scope {:optional true} scope] [:created-at :string]]
+   :ontology/concept-deleted lifecycle-event
+   :ontology/concept-renamed lifecycle-event
+   :ontology/concepts-merged lifecycle-event
    :ontology/concept-updated [:map [:ontology-id :uuid] [:concept-id :uuid]
                               [:changes :map] [:updated-at :string]]
    :ontology/relationship-created [:map [:source-ontology-id :uuid] [:target-ontology-id :uuid]
@@ -211,6 +222,12 @@
    ::api/concept-request
    (mu/merge ::api/concept-definition ::api/command-options)
 
+   ::api/rename-request
+   (mu/merge ::api/command-options [:map [:new-uri [:and :string [:fn rdf/uri-reference?]]]])
+
+   ::api/merge-request
+   (mu/merge ::api/command-options [:map [:target-concept-id :uuid]])
+
    ::api/update-request
    (mu/merge ::api/command-options [:map [:changes ::api/changes]])
 
@@ -325,6 +342,9 @@
 (defschemas functions
   {::api/create-ontology! (signature [::api/context ::api/ontology-request] ::api/command-result)
    ::api/create-concept! (signature [::api/context ::api/ontology-id ::api/concept-request] ::api/concept-result)
+   ::api/delete-concept! (signature [::api/context ::api/ontology-id :uuid ::api/command-options] ::api/concept-result)
+   ::api/rename-concept! (signature [::api/context ::api/ontology-id :uuid ::api/rename-request] ::api/concept-result)
+   ::api/merge-concepts! (signature [::api/context ::api/ontology-id :uuid ::api/merge-request] ::api/concept-result)
    ::api/update-concept! (signature [::api/context ::api/ontology-id :uuid ::api/update-request] ::api/concept-result)
    ::api/create-relationship! (signature [::api/context ::api/relationship-request] ::api/relationship-result)
    ::api/register-predicate! (signature [::api/context ::api/ontology-id ::api/predicate-request] ::api/predicate-result)

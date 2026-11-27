@@ -137,3 +137,55 @@
                 (is (some #{(send (assoc ctx :event-store reopened) left-id)} accepted))
                 (finally (es/stop reopened))))))
         (finally (es/stop (:event-store ctx)) (when file (cleanup file)))))))
+
+(deftest sqlite-concurrent-rename-and-incoming-link-replay
+  (let [file (temp-db) store (open-store file) tenant (random-uuid)
+        ctx {:event-store store :tenant-id tenant}]
+    (try
+      (let [saved
+            (try
+              (let [a (h/graph ctx) b (h/graph ctx)
+                    cid (:concept-id (h/add! ctx a "urn:old"))
+                    target (:concept-id (h/add! ctx a "urn:target"))
+                    _ (h/add! ctx b "urn:peer")
+                    _ (h/ok! (o/register-predicate! ctx b {:predicate "urn:p" :policy {:cross-ontology? true}}))
+                    edge {:source-ontology-id b :source-uri "urn:peer" :predicate "urn:p"
+                          :target-ontology-id a :target-uri "urn:old"}
+                    opts {:new-uri "urn:new" :request-id (random-uuid)}
+                    barrier (java.util.concurrent.CyclicBarrier. 2)
+                    read-state state/read-state
+                    [rename link]
+                    (with-redefs [state/read-state
+                                  (fn [c]
+                                    (let [s (read-state c)]
+                                      (.await barrier 10 java.util.concurrent.TimeUnit/SECONDS)
+                                      s))]
+                      (let [rename (future (o/rename-concept! ctx a cid opts))
+                            link (future (o/create-relationship! ctx edge))]
+                        [@rename @link]))]
+                (is (= [nil :cognitect.anomalies/conflict]
+                       (sort (map :cognitect.anomalies/category [rename link]))))
+                (when (h/anomaly? rename) (h/ok! (o/rename-concept! ctx a cid opts)))
+                (when (h/anomaly? link)
+                  (h/ok! (o/create-relationship! ctx (assoc edge :target-uri "urn:new"))))
+                (let [renamed (o/export-snapshot ctx b)
+                      merged (h/ok! (o/merge-concepts! ctx a cid {:target-concept-id target}))
+                      merged-snapshot (o/export-snapshot ctx b)
+                      delete-opts {:request-id (random-uuid)}
+                      deletion (h/ok! (o/delete-concept! ctx a target delete-opts))]
+                  (is (= ["urn:new"] (mapv :target-uri (:relationships renamed))))
+                  (is (= ["urn:target"] (mapv :target-uri (:relationships merged-snapshot))))
+                  {:a a :b b :target target :deleted deletion :opts delete-opts
+                   :snapshots [renamed merged-snapshot] :merge-revision (:revision merged)}))
+              (finally (es/stop store)))
+            reopened (open-store file) fresh {:event-store reopened :tenant-id tenant}
+            {:keys [a b target opts deleted snapshots merge-revision]} saved]
+        (try
+          (doseq [snapshot snapshots]
+            (is (= snapshot (o/export-snapshot fresh b (:revision snapshot)))))
+          (is (= ["urn:target"] (mapv :uri (:concepts (o/export-snapshot fresh a merge-revision)))))
+          (is (empty? (o/get-relationships fresh b)))
+          (is (nil? (o/get-concept fresh a target)))
+          (is (= deleted (o/delete-concept! fresh a target opts)))
+          (finally (es/stop reopened))))
+      (finally (cleanup file)))))

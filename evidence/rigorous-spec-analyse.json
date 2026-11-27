@@ -16,7 +16,7 @@
       "location": {
         "col": 5,
         "file": "specs/ontology.allium",
-        "line": 158
+        "line": 271
       },
       "message": "Field 'Ontology.ontology_id' is declared but not referenced elsewhere.",
       "severity": "info"
@@ -26,7 +26,7 @@
       "location": {
         "col": 5,
         "file": "specs/ontology.allium",
-        "line": 159
+        "line": 272
       },
       "message": "Field 'Ontology.name' is declared but not referenced elsewhere.",
       "severity": "info"
@@ -36,7 +36,7 @@
       "location": {
         "col": 5,
         "file": "specs/ontology.allium",
-        "line": 162
+        "line": 275
       },
       "message": "Field 'Ontology.base_uri' is declared but not referenced elsewhere.",
       "severity": "info"
@@ -46,7 +46,7 @@
       "location": {
         "col": 5,
         "file": "specs/ontology.allium",
-        "line": 164
+        "line": 277
       },
       "message": "Field 'Ontology.created_at' is declared but not referenced elsewhere.",
       "severity": "info"
@@ -56,7 +56,27 @@
       "location": {
         "col": 5,
         "file": "specs/ontology.allium",
-        "line": 180
+        "line": 279
+      },
+      "message": "Field 'Ontology.predicate_policies' is declared but not referenced elsewhere.",
+      "severity": "info"
+    },
+    {
+      "code": "allium.field.unused",
+      "location": {
+        "col": 5,
+        "file": "specs/ontology.allium",
+        "line": 283
+      },
+      "message": "Field 'Concept.concept_id' is declared but not referenced elsewhere.",
+      "severity": "info"
+    },
+    {
+      "code": "allium.field.unused",
+      "location": {
+        "col": 5,
+        "file": "specs/ontology.allium",
+        "line": 297
       },
       "message": "Field 'Concept.created_at' is declared but not referenced elsewhere.",
       "severity": "info"
@@ -66,7 +86,7 @@
       "location": {
         "col": 5,
         "file": "specs/ontology.allium",
-        "line": 184
+        "line": 301
       },
       "message": "Field 'Concept.incoming' is declared but not referenced elsewhere.",
       "severity": "info"
@@ -76,7 +96,7 @@
       "location": {
         "col": 5,
         "file": "specs/ontology.allium",
-        "line": 191
+        "line": 308
       },
       "message": "Field 'ConceptRelationship.metadata' is declared but not referenced elsewhere.",
       "severity": "info"
@@ -86,7 +106,7 @@
       "location": {
         "col": 5,
         "file": "specs/ontology.allium",
-        "line": 192
+        "line": 309
       },
       "message": "Field 'ConceptRelationship.created_at' is declared but not referenced elsewhere.",
       "severity": "info"
@@ -96,7 +116,7 @@
       "location": {
         "col": 5,
         "file": "specs/ontology.allium",
-        "line": 197
+        "line": 314
       },
       "message": "Field 'CanonicalMapping.source_uri' is declared but not referenced elsewhere.",
       "severity": "info"
@@ -106,7 +126,7 @@
       "location": {
         "col": 5,
         "file": "specs/ontology.allium",
-        "line": 198
+        "line": 315
       },
       "message": "Field 'CanonicalMapping.canonical_uri' is declared but not referenced elsewhere.",
       "severity": "info"
@@ -116,9 +136,9 @@
       "location": {
         "col": 5,
         "file": "specs/ontology.allium",
-        "line": 199
+        "line": 322
       },
-      "message": "Field 'CanonicalMapping.match_type' is declared but not referenced elsewhere.",
+      "message": "Field 'PredicatePolicy.symmetric' is declared but not referenced elsewhere.",
       "severity": "info"
     },
     {
@@ -126,7 +146,7 @@
       "location": {
         "col": 5,
         "file": "specs/ontology.allium",
-        "line": 207
+        "line": 323
       },
       "message": "Field 'PredicatePolicy.inverse' is declared but not referenced elsewhere.",
       "severity": "info"
@@ -136,9 +156,9 @@
       "location": {
         "col": 5,
         "file": "specs/ontology.allium",
-        "line": 208
+        "line": 324
       },
-      "message": "Field 'PredicatePolicy.acyclic' is declared but not referenced elsewhere.",
+      "message": "Field 'PredicatePolicy.hierarchical' is declared but not referenced elsewhere.",
       "severity": "info"
     },
     {
@@ -146,19 +166,9 @@
       "location": {
         "col": 5,
         "file": "specs/ontology.allium",
-        "line": 215
+        "line": 331
       },
       "message": "Field 'RegisteredSource.registered_at' is declared but not referenced elsewhere.",
-      "severity": "info"
-    },
-    {
-      "code": "allium.field.unused",
-      "location": {
-        "col": 5,
-        "file": "specs/ontology.allium",
-        "line": 224
-      },
-      "message": "Field 'Contribution.result' is declared but not referenced elsewhere.",
       "severity": "info"
     }
   ],

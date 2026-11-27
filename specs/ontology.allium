@@ -32,6 +32,13 @@ value ConceptChanges {
     embedding_model: Any?
 }
 
+value ConceptMutationResult {
+    ontology_id: String
+    concept_id: String
+    uri: String
+    revision: Integer
+}
+
 value ConceptSelection {
     ontology_identifier: String?
     ontology_identifiers: List<String>?
@@ -83,6 +90,9 @@ value ContributionRequest {
 contract CustomOntologyMutation {
     create_concept: (ontology: Ontology, definition: ConceptDefinition) -> Concept
     update_concept: (ontology: Ontology, concept: Concept, changes: ConceptChanges) -> Concept
+    delete_concept: (ontology: Ontology, concept: Concept) -> ConceptMutationResult
+    rename_concept: (ontology: Ontology, concept: Concept, new_uri: String) -> ConceptMutationResult
+    merge_concepts: (ontology: Ontology, source: Concept, target: Concept) -> ConceptMutationResult
     create_relationship: (source: Concept, target: Concept, predicate: String, metadata: RelationshipMetadata) -> ConceptRelationship
 
     @invariant AtomicValidatedMutation
@@ -94,6 +104,20 @@ contract CustomOntologyMutation {
         -- implementation exceptions retain their diagnostic information.
         -- Created entity identifiers are independent of command identifiers;
         -- retries recover the originally generated entity identifiers.
+
+    @invariant ExplicitConceptLifecycle
+        -- Delete removes the concept and all incident links from current views.
+        -- Rename keeps the UUID and moves all qualified endpoints to the new URI.
+        -- Merge keeps the chosen target's identity and fields, combines alternate
+        -- labels including the source label, redirects incident edges, drops new
+        -- self-links and prefers existing target edges on collision.
+        -- Each affected ontology advances once. Prior revisions and contribution
+        -- evidence remain readable. Existing import mappings follow their target
+        -- and disappear on deletion. A freed URI can acquire a fresh identity.
+        -- RDF subject and resource object positions follow concept edits; literals
+        -- retain their values. Schema type references follow rename and merge;
+        -- delete rejects when a surviving schema record would lose its type.
+        -- Built-in types and separately declared classes keep their own identity.
 
     @invariant AtomicHostVocabulary
         -- A host may prepare missing concepts and relationships for a vocabulary.
@@ -126,7 +150,8 @@ contract ScopedConceptLookup {
         -- Individual concept lookups require tenant and ontology identity, plus
         -- either a concept UUID or URI. Both return the same concept view.
         -- URI-only global lookup is not part of the public graph contract.
-        -- Concept UUID, ontology identity and URI are immutable across updates.
+        -- Field updates preserve concept UUID, ontology identity and URI.
+        -- Only an explicit rename can move a surviving UUID to another URI.
         -- Collection reads may select one ontology, multiple ontologies or the
         -- whole tenant. The single and multiple selectors are mutually exclusive;
         -- an empty multiple selection returns no records. Scope and direct-parent
@@ -421,6 +446,33 @@ rule UpdateConcept {
         -- changes replace prior aliases used for resolution.
 }
 
+rule DeleteConcept {
+    when: ConceptDeletionRequested(ontology, concept)
+    requires: concept.ontology = ontology
+    requires: schema_survives_deletion(ontology, concept)
+    ensures: not exists concept
+    ensures: ontology.revision = ontology.revision + 1
+}
+
+rule RenameConcept {
+    when: ConceptRenameRequested(ontology, concept, new_uri)
+    requires: concept.ontology = ontology
+    requires: nonblank(new_uri) and valid_destination_uri(ontology, concept, new_uri)
+    requires: ontology.concepts.none(other => other.uri = new_uri)
+    ensures: concept.uri = new_uri
+    ensures: ontology.revision = ontology.revision + 1
+}
+
+rule MergeConcepts {
+    when: ConceptMergeRequested(ontology, source, target)
+    requires: source.ontology = ontology and target.ontology = ontology
+    requires: source != target
+    requires: merged_hierarchy_is_valid(ontology, source, target)
+    ensures: not exists source
+    ensures: target.alt_labels = combined_labels(source, target)
+    ensures: ontology.revision = ontology.revision + 1
+}
+
 rule RegisterPredicate {
     when: PredicateRegistrationRequested(ontology, predicate, cross_ontology, symmetric, inverse, hierarchical)
     requires: nonblank(predicate)
@@ -537,12 +589,16 @@ surface OntologyGraph {
         InitializeOntologyRequested(consumer, name, scope, description, base_uri, predicate_policies)
         ConceptCreationRequested(ontology, definition)
         ConceptUpdateRequested(ontology, concept, changes)
+        ConceptDeletionRequested(ontology, concept)
+        ConceptRenameRequested(ontology, concept, new_uri)
+        ConceptMergeRequested(ontology, source, target)
         RelationshipCreationRequested(source, target, predicate, metadata)
         PredicateRegistrationRequested(ontology, predicate, cross_ontology, symmetric, inverse, hierarchical)
         ContributionImportRequested(ontology, request)
         GraphSearchRequested(ontology, request)
         GraphExportRequested(ontology, revision)
     exposes:
+        ConceptMutationResult
         Ontology
         Concept
         ConceptRelationship

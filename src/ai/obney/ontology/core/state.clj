@@ -9,9 +9,9 @@
             [clojure.set :as set]))
 
 (def events
-  #{:ontology/ontology-created :ontology/concept-created
-    :ontology/concept-updated :ontology/relationship-created
-    :ontology/predicate-registered :ontology/contribution-imported})
+  (into streams/delta-events
+        [:ontology/ontology-created :ontology/concept-created :ontology/concept-updated
+         :ontology/relationship-created :ontology/predicate-registered]))
 
 (def default-predicates
   {"skos:broader" {:hierarchical? true :inverse "skos:narrower"}
@@ -82,6 +82,16 @@
           (add-parents state oid (:uri c) (:broader c) (or (:updated-at c) (:created-at c)) {})
           (replace-parents state oid (:uri c) (:broader c) (or (:updated-at c) (:created-at c)))) state))))
 
+(defn- redirect-mappings [mappings old-uri new-uri]
+  (into {} (keep (fn [[source target]]
+                   (if (= old-uri target)
+                     (when new-uri [source new-uri])
+                     [source target]))) mappings))
+
+(defn- affected-ontologies [event]
+  (or (some-> (:affected-ontology-ids event) set)
+      (set (keep event [:ontology-id :source-ontology-id :target-ontology-id]))))
+
 (defn apply-event [state event]
   (trace/span :ontology.trace/apply-event
     (let [e (merge event (:body event))
@@ -116,6 +126,11 @@
             (put-edge state (select-keys e [:source-ontology-id :target-ontology-id :source-uri
                                            :target-uri :predicate :metadata :relationship-id :created-at]))
 
+            (:ontology/concept-deleted :ontology/concept-renamed :ontology/concepts-merged)
+            (cond-> (delta/apply-changes state oid (:changes e))
+              (get-in state [:mappings oid])
+              (update-in [:mappings oid] redirect-mappings (:old-uri e) (:new-uri e)))
+
             :ontology/contribution-imported
             (let [state (delta/apply-changes state oid (:changes e))]
               (-> state
@@ -128,7 +143,7 @@
                             (select-keys e [:contribution-id :ontology-id :source :input :canonical-map
                                             :resolution :result :request-hash :recorded-at]))))
             state)
-          affected (set (remove nil? [oid (:source-ontology-id e) (:target-ontology-id e)]))]
+          affected (affected-ontologies e)]
       (if (contains? events (:event/type event))
         (cond-> (reduce #(update-in %1 [:revisions %2] (fnil inc 0))
                         (update result :event-count (fnil inc 0)) affected)
@@ -140,6 +155,7 @@
 (def graph-keys [:indexes :ontologies :concepts :edges :revisions :requests :event-count :tbox :abox :rdf-triples])
 (def policy-events #{:ontology/ontology-created :ontology/predicate-registered})
 (def contribution-events #{:ontology/contribution-imported})
+(def history-events (into contribution-events streams/lifecycle-events))
 (defn event-data [e] (dissoc (merge e (:body e)) :body))
 
 (defreadmodel :ontology.graph state
@@ -148,7 +164,7 @@
 
 (defn- metadata-event [s event]
   (let [e (event-data event) oid (:ontology-id e)
-        affected (set (remove nil? [oid (:source-ontology-id e) (:target-ontology-id e)]))
+        affected (affected-ontologies e)
         s (case (:event/type e)
             :ontology/ontology-created (assoc-in s [:ontologies oid]
                                          (assoc (select-keys e [:ontology-id :name :scope :description :base-uri :created-at])
@@ -163,7 +179,7 @@
   [s e] (metadata-event s e))
 (defreadmodel :ontology.graph policies {:events policy-events :version 1}
   [s e] (select-keys (metadata-event s e) [:ontologies]))
-(defreadmodel :ontology.graph history {:events contribution-events :version 1}
+(defreadmodel :ontology.graph history {:events history-events :version 1}
   [s e]
   (select-keys (apply-event s (assoc (event-data e) :changes {}))
                [:sources :contributions :mappings]))
@@ -177,7 +193,7 @@
       (= [oid uri] [(:target-ontology-id e) (:target-uri e)])))
 (defn- view-event [s event key]
   (let [e (event-data event)
-        e (if (= :ontology/contribution-imported (:event/type e))
+        e (if (streams/delta-events (:event/type e))
             (assoc e :changes
                    {:concepts (if key
                                 {:upserts (select-keys (get-in e [:changes :concepts :upserts]) [key])
@@ -200,15 +216,19 @@
   [s event]
   (let [{:keys [ontology-id concept-id]} (:projection/options event)
         e (event-data event)
-        key (or (:concept-key s)
+        moved-key (when (and (streams/delta-events (:event/type e))
+                             (or (nil? (:concept-key s)) (= :ontology/concept-renamed (:event/type e))))
+                    (some (fn [[[oid _ :as key] c]]
+                            (when (and (= oid ontology-id) (= concept-id (:concept-id c))) key))
+                          (get-in e [:changes :concepts :upserts])))
+        key (or moved-key (:concept-key s)
                 (when (and (= :ontology/concept-created (:event/type e))
                            (= ontology-id (:ontology-id e)) (= concept-id (:concept-id e)))
-                  [ontology-id (:uri e)])
-                (when (= :ontology/contribution-imported (:event/type e))
-                  (some (fn [[[oid _ :as key] c]]
-                          (when (and (= oid ontology-id) (= concept-id (:concept-id c))) key))
-                        (get-in e [:changes :concepts :upserts]))))]
-    (if key (assoc (view-event s event key) :concept-key key) s)))
+                  [ontology-id (:uri e)]))]
+    (when key
+      (let [view (view-event s event key)]
+        (when (= concept-id (get-in view [:concepts key :concept-id]))
+          (assoc view :concept-key key))))))
 (defreadmodel :ontology.graph relationships {:events events :version 1}
   [s e] (view-event s e nil))
 
@@ -221,7 +241,7 @@
 (defn metadata-state [ctx oid]
   (projection/project ctx :ontology.graph/metadata (queries events (when oid #{oid}) :ontology nil)))
 (defn history-state [ctx oid]
-  (projection/project ctx :ontology.graph/history (queries contribution-events #{oid} :ontology nil)))
+  (projection/project ctx :ontology.graph/history (queries history-events #{oid} :ontology nil)))
 (defn read-request [ctx oid request-id]
   (trace/span :ontology.trace/retry-read
     (get (projection/project ctx :ontology.graph/requests
@@ -284,16 +304,18 @@
                                        :revision requested-revision})))
       (with-policies ctx (graph-state ctx #{oid} event-id) #{oid} event-id))))
 
+(defn edge-views [state e]
+  (let [policy (get-in state [:ontologies (:source-ontology-id e) :predicate-policies (:predicate e)])]
+    (cond-> [e]
+      (or (:symmetric? policy) (:inverse policy))
+      (conj (assoc e :source-ontology-id (:target-ontology-id e)
+                     :target-ontology-id (:source-ontology-id e)
+                     :source-uri (:target-uri e) :target-uri (:source-uri e)
+                     :predicate (or (:inverse policy) (:predicate e)))))))
+
 (defn- logical-edges [state]
   (->> (:edges state) vals
-       (mapcat (fn [e]
-                 (let [policy (get-in state [:ontologies (:source-ontology-id e) :predicate-policies (:predicate e)])]
-                   (cond-> [e]
-                     (or (:symmetric? policy) (:inverse policy))
-                     (conj (assoc e :source-ontology-id (:target-ontology-id e)
-                                   :target-ontology-id (:source-ontology-id e)
-                                   :source-uri (:target-uri e) :target-uri (:source-uri e)
-                                   :predicate (or (:inverse policy) (:predicate e))))))))
+       (mapcat #(edge-views state %))
        (reduce (fn [m e] (assoc m (edge-key e) e)) {}) vals))
 (defn relationships [state oid]
   (->> (logical-edges state)

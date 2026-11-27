@@ -41,9 +41,17 @@
 (defn create-ontology! [ctx params] (dispatch! ctx :ontology/create-ontology params))
 (defn create-concept! [ctx ontology-id concept]
   (dispatch! ctx :ontology/create-concept (assoc concept :ontology-id (state/normalize-id ontology-id))))
-(defn update-concept! [ctx ontology-id concept-id request]
-  (dispatch! ctx :ontology/update-concept
+(defn- concept-command! [ctx command ontology-id concept-id request]
+  (dispatch! ctx command
              (assoc request :ontology-id (state/normalize-id ontology-id) :concept-id concept-id)))
+(defn update-concept! [ctx ontology-id concept-id request]
+  (concept-command! ctx :ontology/update-concept ontology-id concept-id request))
+(defn delete-concept! [ctx ontology-id concept-id request]
+  (concept-command! ctx :ontology/delete-concept ontology-id concept-id request))
+(defn merge-concepts! [ctx ontology-id concept-id request]
+  (concept-command! ctx :ontology/merge-concepts ontology-id concept-id request))
+(defn rename-concept! [ctx ontology-id concept-id request]
+  (concept-command! ctx :ontology/rename-concept ontology-id concept-id request))
 (defn create-relationship! [ctx edge]
   (dispatch! ctx :ontology/create-relationship
              (-> edge (update :source-ontology-id state/normalize-id) (update :target-ontology-id state/normalize-id))))

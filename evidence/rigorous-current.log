@@ -1,6 +1,8 @@
 
 Testing ai.obney.ontology.algorithms-test
 
+Testing ai.obney.ontology.api-schemas-test
+
 Testing ai.obney.ontology.boundary-test
 
 Testing ai.obney.ontology.delta-test
@@ -10,19 +12,31 @@ SLF4J(W): No SLF4J providers were found.
 SLF4J(W): Defaulting to no-operation (NOP) logger implementation
 SLF4J(W): See https://www.slf4j.org/codes.html#noProviders for further details.
 
+Testing ai.obney.ontology.errors-test
+
+Testing ai.obney.ontology.grain-test
+
 Testing ai.obney.ontology.indexes-test
+
+Testing ai.obney.ontology.lifecycle-test
+
+Testing ai.obney.ontology.memory-seeds-test
 
 Testing ai.obney.ontology.mutation-test
 
 Testing ai.obney.ontology.profile-test
 
 Testing ai.obney.ontology.property-test
-canonical-choice {:seed 20260918, :num-tests 60, :pass? true, :time-elapsed-ms 5}
-disjoint-import-order {:seed 20260918, :num-tests 60, :pass? true, :time-elapsed-ms 341}
-literal-roundtrip {:seed 20260918, :num-tests 60, :pass? true, :time-elapsed-ms 63}
-mutation-sequences {:seed 20260918, :num-tests 60, :pass? true, :time-elapsed-ms 1156}
-source-versions {:seed 20260918, :num-tests 60, :pass? true, :time-elapsed-ms 224}
-resolution-scores {:seed 20260918, :num-tests 60, :pass? true, :time-elapsed-ms 2}
+retry-scopes {:seed 20260918, :num-tests 60, :pass? true, :time-elapsed-ms 696}
+canonical-choice {:seed 20260918, :num-tests 60, :pass? true, :time-elapsed-ms 7}
+disjoint-import-order {:seed 20260918, :num-tests 60, :pass? true, :time-elapsed-ms 305}
+literal-roundtrip {:seed 20260918, :num-tests 60, :pass? true, :time-elapsed-ms 70}
+search-reachability {:seed 20260918, :num-tests 60, :pass? true, :time-elapsed-ms 184}
+mutation-sequences {:seed 20260918, :num-tests 60, :pass? true, :time-elapsed-ms 1136}
+source-versions {:seed 20260918, :num-tests 60, :pass? true, :time-elapsed-ms 275}
+resolution-scores {:seed 20260918, :num-tests 60, :pass? true, :time-elapsed-ms 3}
+metadata-scopes {:seed 20260918, :num-tests 60, :pass? true, :time-elapsed-ms 936}
+cross-ontology-views {:seed 20260918, :num-tests 60, :pass? true, :time-elapsed-ms 1595}
 
 Testing ai.obney.ontology.rdf-test
 
@@ -32,5 +46,5 @@ Testing ai.obney.ontology.search-test
 
 Testing ai.obney.ontology.structural-test
 
-Ran 107 tests containing 744 assertions.
+Ran 145 tests containing 1418 assertions.
 0 failures, 0 errors.

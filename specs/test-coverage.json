@@ -1,5 +1,5 @@
 {
-  "spec_sha256": "d3df4ab606a6fde65e012e26edfccd14dbefa859e31bae2654508789fdffcccc",
+  "spec_sha256": "4c06c7ea27b9facbcfc8970700977d6f826ba4ee9fdeb4a80807fd901a7b41fc",
   "obligations": {
     "entity-fields.OntologyConsumer": {
       "tests": [
@@ -873,9 +873,10 @@
         "ai.obney.ontology.boundary-test/tenant-and-qualified-identity-isolation",
         "ai.obney.ontology.boundary-test/concept-id-lookup-is-scoped-and-returns-current-views",
         "ai.obney.ontology.mutation-test/concept-map-shares-list-scoping-and-error-contract",
-        "ai.obney.ontology.property-test/generated-metadata-updates-preserve-qualified-views-and-replay"
+        "ai.obney.ontology.property-test/generated-metadata-updates-preserve-qualified-views-and-replay",
+        "ai.obney.ontology.lifecycle-test/edits-update-qualified-views-history-and-retries"
       ],
-      "review": "Both UUID and URI point reads are tenant/ontology-qualified. Collection selection supports tenant-wide, one or multiple graphs; qualified map keys preserve repeated URIs and invalid selectors reject. Identity remains immutable across updates. Generated metadata replacements across graphs with overlapping URIs agree with an independent qualified-record model, filters, UUID/URI projections and fresh-store replay."
+      "review": "Both UUID and URI point reads are tenant/ontology-qualified. Collection selection supports tenant-wide, one or multiple graphs; qualified map keys preserve repeated URIs and invalid selectors reject. Field updates preserve identity. Explicit URI renames preserve UUID lookup. Generated metadata replacements across graphs with overlapping URIs agree with an independent qualified-record model, filters, UUID/URI projections and fresh-store replay."
     },
     "prose.SearchValidityAndDeterminism": {
       "tests": [
@@ -1178,6 +1179,116 @@
         "ai.obney.ontology.grain-test/prepare-vocabulary-validates-and-commits-with-host"
       ],
       "review": "A prepared vocabulary is invisible before append. A competing graph creation rejects the stale batch. Current writes produce scoped UUID and URI views, preserve hierarchy and embeddings, and replay without new events."
+    },
+    "contract-signature.CustomOntologyMutation.delete_concept": {
+      "tests": [
+        "ai.obney.ontology.lifecycle-test/edits-update-qualified-views-history-and-retries"
+      ],
+      "review": "The public operation returns a validated result, advances each affected graph once, updates qualified views and can be retried after replay."
+    },
+    "contract-signature.CustomOntologyMutation.rename_concept": {
+      "tests": [
+        "ai.obney.ontology.lifecycle-test/edits-update-qualified-views-history-and-retries"
+      ],
+      "review": "The public operation returns a validated result, advances each affected graph once, updates qualified views and can be retried after replay."
+    },
+    "contract-signature.CustomOntologyMutation.merge_concepts": {
+      "tests": [
+        "ai.obney.ontology.lifecycle-test/edits-update-qualified-views-history-and-retries",
+        "ai.obney.ontology.lifecycle-test/merge-keeps-target-data-and-deduplicates-logical-edges"
+      ],
+      "review": "The public operation returns a validated result, advances each affected graph once, updates qualified views and can be retried after replay."
+    },
+    "rule-success.DeleteConcept": {
+      "tests": [
+        "ai.obney.ontology.lifecycle-test/edits-update-qualified-views-history-and-retries"
+      ],
+      "review": "The public operation returns a validated result, advances each affected graph once, updates qualified views and can be retried after replay."
+    },
+    "rule-failure.DeleteConcept.1": {
+      "tests": [
+        "ai.obney.ontology.lifecycle-test/invalid-edits-are-atomic"
+      ],
+      "review": "A foreign graph or tenant cannot delete the concept."
+    },
+    "rule-failure.DeleteConcept.2": {
+      "tests": [
+        "ai.obney.ontology.lifecycle-test/imported-identities-rdf-and-schema-survive-edits"
+      ],
+      "review": "Deleting a concept that supplies a required type fails without changing the snapshot or event stream."
+    },
+    "rule-success.RenameConcept": {
+      "tests": [
+        "ai.obney.ontology.lifecycle-test/edits-update-qualified-views-history-and-retries"
+      ],
+      "review": "The public operation returns a validated result, advances each affected graph once, updates qualified views and can be retried after replay."
+    },
+    "rule-failure.RenameConcept.1": {
+      "tests": [
+        "ai.obney.ontology.lifecycle-test/invalid-edits-are-atomic"
+      ],
+      "review": "A UUID from a different ontology cannot be renamed."
+    },
+    "rule-failure.RenameConcept.2": {
+      "tests": [
+        "ai.obney.ontology.lifecycle-test/invalid-edits-are-atomic",
+        "ai.obney.ontology.lifecycle-test/imported-identities-rdf-and-schema-survive-edits"
+      ],
+      "review": "Blank destinations reject. A relative destination for an RDF resource rejects atomically."
+    },
+    "rule-failure.RenameConcept.3": {
+      "tests": [
+        "ai.obney.ontology.lifecycle-test/invalid-edits-are-atomic"
+      ],
+      "review": "Occupied destinations, including the current URI, conflict."
+    },
+    "rule-success.MergeConcepts": {
+      "tests": [
+        "ai.obney.ontology.lifecycle-test/edits-update-qualified-views-history-and-retries",
+        "ai.obney.ontology.lifecycle-test/merge-keeps-target-data-and-deduplicates-logical-edges"
+      ],
+      "review": "The public operation returns a validated result, advances each affected graph once, updates qualified views and can be retried after replay."
+    },
+    "rule-failure.MergeConcepts.1": {
+      "tests": [
+        "ai.obney.ontology.lifecycle-test/invalid-edits-are-atomic"
+      ],
+      "review": "The source and target are qualified by the requested ontology."
+    },
+    "rule-failure.MergeConcepts.2": {
+      "tests": [
+        "ai.obney.ontology.lifecycle-test/invalid-edits-are-atomic"
+      ],
+      "review": "A concept cannot be merged with itself."
+    },
+    "rule-failure.MergeConcepts.3": {
+      "tests": [
+        "ai.obney.ontology.lifecycle-test/invalid-edits-are-atomic"
+      ],
+      "review": "Contracting a three-node path into a cycle is rejected before append."
+    },
+    "prose.ExplicitConceptLifecycle": {
+      "tests": [
+        "ai.obney.ontology.lifecycle-test/edits-update-qualified-views-history-and-retries",
+        "ai.obney.ontology.lifecycle-test/merge-keeps-target-data-and-deduplicates-logical-edges",
+        "ai.obney.ontology.lifecycle-test/imported-identities-rdf-and-schema-survive-edits",
+        "ai.obney.ontology.durable-test/sqlite-concurrent-rename-and-incoming-link-replay",
+        "ai.obney.ontology.property-test/generated-mutation-sequences-match-independent-model-and-replay",
+        "ai.obney.ontology.lifecycle-test/explicit-schema-declarations-survive-concept-deletion"
+      ],
+      "review": "Cross-ontology views, current mappings, prior snapshots, schema and RDF changes, URI reuse and replay are checked through the public API. Concurrent SQLite writers cannot commit incompatible changes."
+    },
+    "value-equality.ConceptMutationResult": {
+      "tests": [
+        "ai.obney.ontology.lifecycle-test/edits-update-qualified-views-history-and-retries"
+      ],
+      "review": "Each command returns a schema-checked result containing the qualified UUID, URI and committed revision. A retry after replay returns an equal result."
+    },
+    "entity-fields.ConceptMutationResult": {
+      "tests": [
+        "ai.obney.ontology.lifecycle-test/edits-update-qualified-views-history-and-retries"
+      ],
+      "review": "Each command returns a schema-checked result containing the qualified UUID, URI and committed revision. A retry after replay returns an equal result."
     }
   }
 }

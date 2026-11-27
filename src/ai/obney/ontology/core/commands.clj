@@ -4,6 +4,7 @@
             [ai.obney.ontology.core.delta :as delta]
             [ai.obney.ontology.core.indexes :as indexes]
             [ai.obney.ontology.core.schemas]
+            [ai.obney.ontology.core.lifecycle :as lifecycle]
             [ai.obney.ontology.core.rdf :as rdf]
             [ai.obney.ontology.core.entity-resolver :as entity-resolver]
             [ai.obney.ontology.core.source-registry :as source-registry]
@@ -33,7 +34,6 @@
 (defn- affected-relationship-keys [s event]
   (let [e (state/event-data event) oid (:ontology-id e)]
     (case (:event/type e)
-      :ontology/contribution-imported (keys (get-in e [:changes :relationships :upserts]))
       :ontology/relationship-created [(state/edge-key e)]
       :ontology/concept-created (state/parent-keys s oid (:uri e))
       :ontology/concept-updated (when (contains? (:changes e) :broader)
@@ -41,7 +41,8 @@
       :ontology/predicate-registered (get-in s [:indexes :predicate-edges [oid (:predicate e)]])
       :ontology/ontology-created (mapcat #(get-in s [:indexes :predicate-edges [oid %]])
                                          (keys (get-in s [:ontologies oid :predicate-policies])))
-      [])))
+      (when (streams/delta-events (:event/type e))
+        (keys (get-in e [:changes :relationships :upserts]))))))
 
 (defn validate-hierarchy-edge! [adjacency start target]
   (loop [pending [target] seen #{}]
@@ -83,13 +84,11 @@
   (trace/span :ontology.trace/validate-graph
     (let [s (indexes/ensure-indexed s)
           e (state/event-data event)
-          imported? (= :ontology/contribution-imported (:event/type e))
+          delta? (streams/delta-events (:event/type e))
           concepts (case (:event/type e)
-                     :ontology/contribution-imported (keys (get-in e [:changes :concepts :upserts]))
-                     :ontology/concept-created [[oid (:uri e)]]
-                     :ontology/concept-updated [[oid (:uri e)]]
-                     [])
-          removed (when imported? (get-in e [:changes :concepts :removals]))
+                     (:ontology/concept-created :ontology/concept-updated) [[oid (:uri e)]]
+                     (when delta? (keys (get-in e [:changes :concepts :upserts]))))
+          removed (when delta? (get-in e [:changes :concepts :removals]))
           dependencies (mapcat #(get-in before [:indexes :concept-edges %]) removed)
           edges (into (set (affected-relationship-keys s event)) dependencies)]
       (doseq [key concepts] (validate-concept! (get-in s [:concepts key])))
@@ -195,6 +194,24 @@
                   :updated-at (str (java.time.Instant/now))}
            :result {:concept-id concept-id :uri (:uri c)}})))))
 
+(defcommand :ontology delete-concept {:authorized? tenant-scoped?}
+  [ctx]
+  (let [p (:command ctx)]
+    (command-result ctx (:ontology-id p) (:command/id p)
+                    #(lifecycle/prepare % p :ontology/concept-deleted))))
+
+(defcommand :ontology rename-concept {:authorized? tenant-scoped?}
+  [ctx]
+  (let [p (:command ctx)]
+    (command-result ctx (:ontology-id p) (:command/id p)
+                    #(lifecycle/prepare % p :ontology/concept-renamed))))
+
+(defcommand :ontology merge-concepts {:authorized? tenant-scoped?}
+  [ctx]
+  (let [p (:command ctx)]
+    (command-result ctx (:ontology-id p) (:command/id p)
+                    #(lifecycle/prepare % p :ontology/concepts-merged))))
+
 (defn create-relationship-change [{:keys [source-ontology-id target-ontology-id] :as p}]
   (let [relationship-id (random-uuid)]
     (fn [s]
@@ -241,7 +258,7 @@
     (require! (and (vector? records) (every? #(and (map? %) (nonblank? (:uri %))) records))
               "TBox records require a URI"))
   (let [known (into (or concept-uris #{}) (map :uri (:classes tbox)))
-        known? #(or (known %) (and (string? %) (re-find #"^(?:xsd:|rdf:|rdfs:|owl:|http://www.w3.org/)" %)))]
+        known? #(or (known %) (rdf/built-in-schema-uri? %))]
     (doseq [property (concat (:object-properties tbox) (:datatype-properties tbox))
             reference (keep property [:domain :range :datatype])]
       (require! (known? reference) (str "Unknown schema reference: " reference)))
@@ -302,7 +319,8 @@
                          (sort-by (juxt :uri #(digest (dissoc % :source-id))) incoming))
           incoming (mapv (fn [c]
                            (let [existing (get-in s [:concepts [ontology-id (:uri c)]])]
-                             (cond-> (assoc c :created-at (or (:created-at existing) recorded-at))
+                             (cond-> (assoc c :concept-id (or (:concept-id existing) (random-uuid))
+                                              :created-at (or (:created-at existing) recorded-at))
                                existing (assoc :updated-at recorded-at)))) incoming)
           candidate (reduce #(state/put-concept %1 ontology-id %2) (delta/track s) incoming)
           candidate (reduce (fn [s e]

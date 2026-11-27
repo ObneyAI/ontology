@@ -70,10 +70,16 @@
             (Character/isLowSurrogate c) false
             :else (recur (inc i)))))))
 
-(defn- valid-uri? [s]
-  (and (string? s) (not (str/blank? s)) (valid-unicode? s)
-       (not (re-find #"[\x00-\x20<>\"{}|^`\\]" s))
-       (try (.isAbsolute (java.net.URI. s)) (catch Exception _ false))))
+(defn- parse-uri-reference [s]
+  (when (and (string? s) (not (str/blank? s)) (valid-unicode? s)
+       (not (re-find #"[\x00-\x20<>\"{}|^`\\]" s)))
+    (try (java.net.URI. s) (catch java.net.URISyntaxException _ nil))))
+
+(defn uri-reference? [s] (some? (parse-uri-reference s)))
+(defn- valid-uri? [s] (some-> (parse-uri-reference s) .isAbsolute))
+
+(defn built-in-schema-uri? [uri]
+  (and (string? uri) (re-find #"^(?:xsd:|rdf:|rdfs:|owl:|http://www.w3.org/)" uri)))
 
 (defn validate-triples! [triples]
   (doseq [{:keys [subject predicate object-uri literal language datatype] :as triple} triples]

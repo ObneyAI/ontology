@@ -1,6 +1,8 @@
 (require '[clojure.test :as test]
          '[ai.obney.ontology.boundary-test :as boundary]
          '[ai.obney.ontology.mutation-test :as mutations]
+         '[ai.obney.ontology.lifecycle-test :as lifecycle-tests]
+         '[ai.obney.ontology.core.lifecycle :as lifecycle]
          '[ai.obney.ontology.rdf-test :as rdf-tests]
          '[ai.obney.ontology.search-test :as search-tests]
          '[ai.obney.ontology.core.commands :as commands]
@@ -15,7 +17,18 @@
     @test/*report-counters*))
 
 (let [command-result commands/command-result
-      mutants [{:name :skip-graph-validation :test #'boundary/manual-hierarchy-maintains-inverses-and-rejects-cycles
+      prepare lifecycle/prepare
+      mutants [{:name :discard-lifecycle-rdf-changes
+                :test #'lifecycle-tests/imported-identities-rdf-and-schema-survive-edits
+                :replace {#'lifecycle/prepare
+                          (fn [& args] (assoc-in (apply prepare args) [:body :changes :rdf-triples]
+                                                 {:additions [] :removals []}))}}
+               {:name :lose-merged-alternate-labels
+                :test #'lifecycle-tests/merge-keeps-target-data-and-deduplicates-logical-edges
+                :replace {#'lifecycle/prepare
+                          (fn [& args] (update-in (apply prepare args) [:body :changes :concepts :upserts]
+                                                  update-vals #(dissoc % :alt-labels)))}}
+               {:name :skip-graph-validation :test #'boundary/manual-hierarchy-maintains-inverses-and-rejects-cycles
                 :replace {#'commands/validate-graph! (fn [s & _] s)}}
                {:name :drop-relationship-views :test #'boundary/declared-inverse-produces-reverse-predicate
                 :replace {#'state/relationships (fn [_ _] [])}}

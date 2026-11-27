@@ -18,10 +18,18 @@
   (errors/call ctx #(do (request! request) (operations/create-ontology! ctx request))))
 (defn create-concept! [ctx ontology-id request]
   (scoped-request ctx ontology-id request #(operations/create-concept! ctx ontology-id request)))
-(defn update-concept! [ctx ontology-id concept-id request]
+(defn- concept-command! [operation ctx ontology-id concept-id request]
   (scoped-request ctx ontology-id request
     #(do (errors/require! (uuid? concept-id) "Concept ID must be a UUID")
-         (operations/update-concept! ctx ontology-id concept-id request))))
+         (operation ctx ontology-id concept-id request))))
+(defn update-concept! [ctx ontology-id concept-id request]
+  (concept-command! operations/update-concept! ctx ontology-id concept-id request))
+(defn delete-concept! [ctx ontology-id concept-id request]
+  (concept-command! operations/delete-concept! ctx ontology-id concept-id request))
+(defn merge-concepts! [ctx ontology-id concept-id request]
+  (concept-command! operations/merge-concepts! ctx ontology-id concept-id request))
+(defn rename-concept! [ctx ontology-id concept-id request]
+  (concept-command! operations/rename-concept! ctx ontology-id concept-id request))
 (defn create-relationship! [ctx request]
   (errors/call ctx
     #(do (request! request)

@@ -10,17 +10,21 @@
 (defn request-tag [oid request-id] [:request (identity-id [oid request-id])])
 (defn- changed-keys [a b]
   (filter #(not= (get a %) (get b %)) (set/union (set (keys a)) (set (keys b)))))
+(def lifecycle-events
+  #{:ontology/concept-deleted :ontology/concept-renamed :ontology/concepts-merged})
+(def delta-events (conj lifecycle-events :ontology/contribution-imported))
+
 (defn event-tags [before after event]
   (let [oid (:ontology-id event)
         changes (:changes event)
-        contribution? (= :ontology/contribution-imported (:event/type event))
-        edge-keys (if contribution?
+        delta? (contains? delta-events (:event/type event))
+        edge-keys (if delta?
                     (concat (keys (get-in changes [:relationships :upserts])) (get-in changes [:relationships :removals]))
                     (changed-keys (:edges before) (:edges after)))
         edges (mapcat #(keep (fn [s] (get-in s [:edges %])) [before after]) edge-keys)
         endpoints (set (mapcat (fn [e] [[(:source-ontology-id e) (:source-uri e)]
                                        [(:target-ontology-id e) (:target-uri e)]]) edges))
-        concepts (set/union (set (if contribution?
+        concepts (set/union (set (if delta?
                                    (concat (keys (get-in changes [:concepts :upserts])) (get-in changes [:concepts :removals]))
                                    (changed-keys (:concepts before) (:concepts after)))) endpoints)
         affected (set (remove nil? (concat [oid (:source-ontology-id event) (:target-ontology-id event)] (map first endpoints))))]
